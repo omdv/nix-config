@@ -17,8 +17,8 @@
     # inputs.nix-colors.homeManagerModules.default
 
     # You can also split up your configuration and import pieces of it here:
-    # ./firefox.nix
-    ./kitty.nix
+    ./firefox.nix
+    #./kitty.nix
   ];
 
   nixpkgs = {
