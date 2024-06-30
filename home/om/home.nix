@@ -55,9 +55,7 @@
   };
 
   # Console settings
-  programs.fish.enable = true;
-
-  programs.neovim.enable = true;
+  # programs.neovim.enable = true;
   # home.packages = with pkgs; [ steam ];
 
   # Enable home-manager and git
