@@ -21,6 +21,7 @@
     ./kitty.nix
     ./vscode.nix
     ./starship.nix
+    ./fish.nix
   ];
 
   nixpkgs = {
