@@ -18,7 +18,7 @@
 
     # You can also split up your configuration and import pieces of it here:
     ./firefox.nix
-    #./kitty.nix
+    ./kitty.nix
   ];
 
   nixpkgs = {
@@ -58,20 +58,6 @@
   };
   programs.fish.enable = true;
 
-  programs.kitty = {
-  	enable = true;
-  	theme = "Tokyo Night";
-  	font.name = "JetBrainsMono Nerd Font";
-	shellIntegration.enableFishIntegration = true;
-  	settings = {
-  		confirm_os_window_close = -0;
-  		copy_on_select = true;
-  		clipboard_control = "write-clipboard read-clipboard write-primary read-primary";
-  	};
-  };
-
-
-  programs.firefox.enable = true;
   programs.vscode.enable = true;
   programs.neovim.enable = true;
   # home.packages = with pkgs; [ steam ];
