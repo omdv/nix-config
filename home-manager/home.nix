@@ -19,6 +19,7 @@
     # You can also split up your configuration and import pieces of it here:
     ./firefox.nix
     ./kitty.nix
+    ./vscode.nix
   ];
 
   nixpkgs = {
@@ -58,7 +59,6 @@
   };
   programs.fish.enable = true;
 
-  programs.vscode.enable = true;
   programs.neovim.enable = true;
   # home.packages = with pkgs; [ steam ];
 
