@@ -50,55 +50,6 @@
         symbol = " ";
         style = "bold red";
       };
-      custom = {
-        nix_inspect = let
-          excluded = [
-            "kitty"
-            "imagemagick"
-            "ncurses"
-            "user-environment"
-          ];
-        in {
-          disabled = false;
-          when = "test -z $IN_NIX_SHELL";
-          command = "${lib.getExe pkgs.nix-inspect} ${lib.concatStringsSep " " excluded}";
-          format = "[($output <- )$symbol]($style) ";
-          symbol = " ";
-          style = "bold blue";
-        };
-        juju = let
-          commandScript = pkgs.writeShellApplication {
-            name = "juju-prompt";
-            runtimeInputs = [pkgs.yq];
-            checkPhase = false;
-            text = ''
-              JUJU_DATA="''${JUJU_DATA:-$HOME/.local/share/juju}"
-              if [ -z "''${JUJU_CONTROLLER:-}" ]; then
-                JUJU_CONTROLLER="$(yq -re '."current-controller"' "$JUJU_DATA/controllers.yaml" || exit 1)"
-              fi
-              if [ -z "''${JUJU_MODEL:-}" ]; then
-                JUJU_MODEL="$(yq -r --arg model "$JUJU_CONTROLLER" '.controllers."$model"."current-model"' "$JUJU_DATA/models.yaml" || true)"
-              fi
-
-              if [ -z "$JUJU_MODEL"] || [ "$JUJU_MODEL" = "null" ]; then
-                echo "$JUJU_CONTROLLER"
-              else
-                echo "$JUJU_MODEL ($JUJU_CONTROLLER)"
-              fi
-            '';
-          };
-          whenScript = pkgs.writeShellScriptBin "juju-prompt-when" ''
-            builtin type -P juju &>/dev/null && test -e "''${JUJU_DATA:-$HOME/.local/share/juju}/controllers.yaml"
-          '';
-        in {
-          disabled = false;
-          when = lib.getExe whenScript;
-          command = lib.getExe commandScript;
-          format = "on [$symbol($output)]($style)";
-          symbol = " ";
-          style = "bold fg:208";
-        };
-      };
 
       character = {
         error_symbol = "[~~>](bold red)";
