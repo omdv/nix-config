@@ -16,10 +16,11 @@
     # Or modules exported from other flakes (such as nix-colors):
     # inputs.nix-colors.homeManagerModules.default
 
-    # You can also split up your configuration and import pieces of it here:
+    # Application specific configs
     ./firefox.nix
     ./kitty.nix
     ./vscode.nix
+    ./starship.nix
   ];
 
   nixpkgs = {
@@ -52,7 +53,7 @@
     homeDirectory = "/home/om";
   };
 
-  # Console settings 
+  # Console settings
   programs.atuin = {
      enable = true;
      enableFishIntegration = true;
@@ -72,7 +73,7 @@
   services.gpg-agent = {
 	enable = true;
 	pinentryFlavor = "qt";
-  }; 
+  };
 
   # Git config
   programs.git = {

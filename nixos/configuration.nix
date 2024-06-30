@@ -43,7 +43,7 @@
   # Enable the GNOME Desktop Environment.
   services.xserver.displayManager.gdm.enable = true;
   services.xserver.desktopManager.gnome.enable = true;
-  
+
 
   # Configure keymap in X11
   # services.xserver.xkb.layout = "us";
@@ -63,22 +63,28 @@
   # Enable touchpad support (enabled default in most desktopManager).
   # services.libinput.enable = true;
 
+  programs.fish.enable = true;
+
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.om = {
-     isNormalUser = true;
-     extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
+    isNormalUser = true;
+    shell = pkgs.fish;
+    extraGroups = [
+      "docker"
+      "wheel"
+    ];
   #   packages = with pkgs; [
   #     firefox
   #     tree
   #   ];
-   };
+  };
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-	git
-	wget
-	vim
+	  git
+	  wget
+	  vim
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -125,4 +131,3 @@
   system.stateVersion = "24.05"; # Did you read the comment?
 
 }
-
