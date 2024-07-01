@@ -24,4 +24,6 @@
     homeDirectory = lib.mkDefault "/home/${config.home.username}";
     stateVersion = lib.mkDefault "23.05";
   };
+
+  nix.package = pkgs.nix;
 }

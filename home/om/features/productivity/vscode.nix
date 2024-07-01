@@ -5,6 +5,7 @@
       # General
       "editor.fontSize" = 16;
       "editor.fontFamily" = "'Jetbrains Mono', 'monospace', monospace";
+      "editor.tabSize" = 2;
       "terminal.integrated.fontSize" = 14;
       "terminal.integrated.fontFamily" = "'JetBrainsMono Nerd Font', 'monospace', monospace";
       "window.zoomLevel" = 1;

@@ -13,7 +13,6 @@
         "ca-derivations"
       ];
       warn-dirty = false;
-      flake-registry = ""; # Disable global flake registry
     };
   };
 
