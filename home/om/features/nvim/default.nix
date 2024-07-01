@@ -12,7 +12,6 @@
 in {
   imports = [
     ./lsp.nix
-    ./syntaxes.nix
     ./ui.nix
   ];
   home.sessionVariables.EDITOR = "nvim";
