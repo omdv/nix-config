@@ -1,4 +1,5 @@
 # Build them using 'nix build .#example'
-{pkgs ? import <nixpkgs> {}, ...}: rec {
-  myjava = pkgs.callPackage ./jdk22 { };
+{pkgs, ...}:
+{
+  myjdk = pkgs.callPackage ./myjdk { };
 }
