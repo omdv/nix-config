@@ -1,4 +1,4 @@
-{ stdenv, lib, fetchurl, unzip }:
+{ stdenv, lib, fetchurl }:
 
 stdenv.mkDerivation rec {
   pname = "myjdk";
@@ -6,8 +6,8 @@ stdenv.mkDerivation rec {
 
   src = fetchurl {
     url = "https://download.oracle.com/java/22/latest/jdk-22_linux-x64_bin.tar.gz";
-
-  buildInputs = [ unzip ];
+    sha256 = "uxppla5joERWsfCPrnCnG+WfweNQwnSKJS6HsHvBw24=";
+  };
 
   installPhase = ''
     mkdir -p $out
