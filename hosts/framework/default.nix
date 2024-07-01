@@ -11,6 +11,8 @@
     ../common/users/om
 
     ../common/optional/gnome.nix
+    ../common/optional/docker.nix
+    ../common/optional/pipewire.nix
   ];
 
   networking = {

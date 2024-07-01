@@ -9,7 +9,6 @@
       inputs.home-manager.nixosModules.home-manager
       ./fish.nix
       ./locale.nix
-      ./openssh.nix
     ]
     ++ (builtins.attrValues outputs.nixosModules);
 
