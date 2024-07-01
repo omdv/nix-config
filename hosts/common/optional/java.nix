@@ -1,7 +1,8 @@
+{pkgs, ...}:
 {
   nixpkgs.config.allowUnfree = true;
   programs.java = {
     enable = true;
-    package = pkgs.oraclejre8;
+    package = pkgs.oraclejdk22;
   };
 }
