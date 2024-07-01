@@ -13,6 +13,7 @@
     ../common/optional/gnome.nix
     ../common/optional/docker.nix
     ../common/optional/pipewire.nix
+    ../common/optional/java.nix
   ];
 
   networking = {
