@@ -55,7 +55,13 @@
   };
 
   # Console settings
-  # programs.neovim.enable = true;
+  programs.atuin = {
+     enable = true;
+     enableFishIntegration = true;
+  };
+  programs.fish.enable = true;
+
+  programs.neovim.enable = true;
   # home.packages = with pkgs; [ steam ];
 
   # Enable home-manager and git
@@ -69,4 +75,11 @@
 	enable = true;
 	pinentryFlavor = "qt";
   };
+
+
+  # Nicely reload system units when changing configs
+  systemd.user.startServices = "sd-switch";
+
+  # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
+  home.stateVersion = "23.05";
 }

@@ -1,17 +1,20 @@
 {
-  description = "Your new nix config";
+  description = "My NixOS configuration";
 
   inputs = {
-    # Nixpkgs
+    # Nix ecosystem
     nixpkgs.url = "github:nixos/nixpkgs/nixos-23.11";
-    # You can access packages and modules from different nixpkgs revs
-    # at the same time. Here's an working example:
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
-    # Also see the 'unstable-packages' overlay at 'overlays/default.nix'.
+    systems.url = "github:nix-systems/default-linux";
 
-    # Home manager
-    home-manager.url = "github:nix-community/home-manager/release-23.11";
-    home-manager.inputs.nixpkgs.follows = "nixpkgs";
+    hardware.url = "github:nixos/nixos-hardware";
+    # impermanence.url = "github:nix-community/impermanence";
+    # impermanence.url = "github:misterio77/impermanence";
+    # nix-colors.url = "github:misterio77/nix-colors";
+    home-manager = {
+      url = "github:nix-community/home-manager/release-23.11";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     # Third party programs, packaged with nix
     firefox-addons = {
@@ -24,58 +27,53 @@
     self,
     nixpkgs,
     home-manager,
+    systems,
     ...
   } @ inputs: let
     inherit (self) outputs;
-    # Supported systems for your flake packages, shell, etc.
-    systems = [
-      "aarch64-linux"
-      "i686-linux"
-      "x86_64-linux"
-      "aarch64-darwin"
-      "x86_64-darwin"
-    ];
-    # This is a function that generates an attribute by calling a function you
-    # pass to it, with each system as an argument
-    forAllSystems = nixpkgs.lib.genAttrs systems;
+    lib = nixpkgs.lib // home-manager.lib;
+    forEachSystem = f: lib.genAttrs (import systems) (system: f pkgsFor.${system});
+    pkgsFor = lib.genAttrs (import systems) (
+      system:
+        import nixpkgs {
+          inherit system;
+          config.allowUnfree = true;
+        }
+    );
   in {
-    # Your custom packages
-    # Accessible through 'nix build', 'nix shell', etc
-    packages = forAllSystems (system: import ./pkgs nixpkgs.legacyPackages.${system});
-    # Formatter for your nix files, available through 'nix fmt'
-    # Other options beside 'alejandra' include 'nixpkgs-fmt'
-    formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.alejandra);
-
-    # Your custom packages and modifications, exported as overlays
-    overlays = import ./overlays {inherit inputs;};
-    # Reusable nixos modules you might want to export
-    # These are usually stuff you would upstream into nixpkgs
+    inherit lib;
     nixosModules = import ./modules/nixos;
-    # Reusable home-manager modules you might want to export
-    # These are usually stuff you would upstream into home-manager
-    homeManagerModules = import ./modules/home;
+    homeManagerModules = import ./modules/home-manager;
 
-    # NixOS configuration entrypoint
-    # Available through 'nixos-rebuild --flake .#your-hostname'
+    overlays = import ./overlays {inherit inputs outputs;};
+    hydraJobs = import ./hydra.nix {inherit inputs outputs;};
+
+    packages = forEachSystem (pkgs: import ./pkgs {inherit pkgs;});
+    devShells = forEachSystem (pkgs: import ./shell.nix {inherit pkgs;});
+    formatter = forEachSystem (pkgs: pkgs.alejandra);
+
     nixosConfigurations = {
-      # FIXME replace with your hostname
-      nixos = nixpkgs.lib.nixosSystem {
-        specialArgs = {inherit inputs outputs;};
-        modules = [
-          # > Our main nixos configuration file <
-          ./nixos/configuration.nix
-        ];
+      # Framework laptop
+      framework = lib.nixosSystem {
+        modules = [./hosts/framework];
+        specialArgs = {
+          inherit inputs outputs;
+        };
       };
     };
 
-    # Standalone home-manager configuration entrypoint
+    # Standalone HM only
     homeConfigurations = {
-      "om@nixos" = home-manager.lib.homeManagerConfiguration {
-        pkgs = nixpkgs.legacyPackages.x86_64-linux;
-        extraSpecialArgs = {inherit inputs outputs;};
+      # Framework laptop
+      "om@framework" = lib.homeManagerConfiguration {
         modules = [
-          ./home/om/nixos.nix
+          ./home/om/framework.nix
+          #./home/om/nixpkgs.nix
         ];
+        pkgs = pkgsFor.x86_64-linux;
+        extraSpecialArgs = {
+          inherit inputs outputs;
+        };
       };
     };
   };

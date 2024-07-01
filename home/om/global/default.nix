@@ -8,9 +8,7 @@
 }: {
   imports =
     [
-      inputs.impermanence.nixosModules.home-manager.impermanence
       ../features/cli
-      ../features/nvim
     ]
     ++ (builtins.attrValues outputs.homeManagerModules);
 
@@ -22,12 +20,8 @@
   };
 
   home = {
-    username = lib.mkDefault "gabriel";
+    username = lib.mkDefault "om";
     homeDirectory = lib.mkDefault "/home/${config.home.username}";
-    stateVersion = lib.mkDefault "22.05";
-    sessionPath = ["$HOME/.local/bin"];
-    sessionVariables = {
-      FLAKE = "$HOME/Documents/NixConfig";
-    };
+    stateVersion = lib.mkDefault "23.05";
   };
 }

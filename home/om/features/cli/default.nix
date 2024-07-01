@@ -4,6 +4,7 @@
     ./fish.nix
     ./fzf.nix
     ./git.nix
+    ./gpg.nix
     ./kitty.nix
     ./starship.nix
   ];
