@@ -8,9 +8,6 @@
     systems.url = "github:nix-systems/default-linux";
 
     hardware.url = "github:nixos/nixos-hardware";
-    # impermanence.url = "github:nix-community/impermanence";
-    # impermanence.url = "github:misterio77/impermanence";
-    # nix-colors.url = "github:misterio77/nix-colors";
     home-manager = {
       url = "github:nix-community/home-manager/release-23.11";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -46,10 +43,8 @@
     homeManagerModules = import ./modules/home-manager;
 
     overlays = import ./overlays {inherit inputs outputs;};
-    hydraJobs = import ./hydra.nix {inherit inputs outputs;};
 
     packages = forEachSystem (pkgs: import ./pkgs {inherit pkgs;});
-    devShells = forEachSystem (pkgs: import ./shell.nix {inherit pkgs;});
     formatter = forEachSystem (pkgs: pkgs.alejandra);
 
     nixosConfigurations = {
@@ -68,7 +63,7 @@
       "om@framework" = lib.homeManagerConfiguration {
         modules = [
           ./home/om/framework.nix
-          #./home/om/nixpkgs.nix
+          ./home/om/nixpkgs.nix
         ];
         pkgs = pkgsFor.x86_64-linux;
         extraSpecialArgs = {

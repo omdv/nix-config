@@ -4,11 +4,11 @@
     enable = true;
     profiles.omdv = {
       bookmarks = {};
-#      extensions = with pkgs.inputs.firefox-addons; [
-#        ublock-origin
-#        browserpass
-#        bitwarden
-#      ];
+      extensions = with pkgs.inputs.firefox-addons; [
+        ublock-origin
+        browserpass
+        bitwarden
+      ];
       bookmarks = {};
       settings = {
         "browser.disableResetPrompt" = true;
