@@ -1,8 +1,11 @@
 {pkgs, ...}:
+let
+  myjava = pkgs.myjava;
+in
 {
   nixpkgs.config.allowUnfree = true;
   programs.java = {
     enable = true;
-    package = pkgs.oraclejdk22;
+    package = myjava;
   };
 }
