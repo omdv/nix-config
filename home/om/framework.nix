@@ -6,6 +6,7 @@
 }: {
   imports = [
     ./global
-    ./features/cli
+    ./features/productivity
+    ./features/desktop
   ];
 }

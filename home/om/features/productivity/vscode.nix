@@ -11,6 +11,13 @@
       "editor.multiCursorModifier" = "ctrlCmd";
       "workbench.startupEditor" = "none";
       "explorer.compactFolders" = false;
+      # Copilot
+      "github.copilot.enable"= {
+        "*" = true;
+        "yaml" = true;
+        "plaintext" = false;
+        "markdown" = false;
+      };
       # Whitespace
       "files.trimTrailingWhitespace" = true;
       "files.trimFinalNewlines" = true;
