@@ -8,5 +8,7 @@
     ./global
     ./features/productivity
     ./features/desktop
+    ./features/pass
+    ./features/nvim
   ];
 }
