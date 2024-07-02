@@ -16,6 +16,16 @@
     # ../common/optional/java.nix
   ];
 
+  programs = {
+    dconf.enable = true;
+  };
+
+  # Lid settings
+  services.logind = {
+    lidSwitch = "suspend";
+    lidSwitchExternalPower = "lock";
+  };
+
   networking = {
     hostName = "framework";
     networkmanager.enable = true;
