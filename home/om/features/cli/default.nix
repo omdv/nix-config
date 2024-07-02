@@ -14,12 +14,10 @@
 
     # bc # Calculator
 
-    bottom # System viewer
-    htop # System viewer
-    glances # System viewer
 
     sysz # fzf for systemd
 
+    htop # Better top
     bat # Better cat
     eza # Better ls
     ripgrep # Better grep
@@ -31,7 +29,6 @@
     duf # TUI disk usage
 
     jq # JSON pretty printer and manipulator
-    trekscii # Cute startrek cli printer
 
     # nixd # Nix LSP
     # alejandra # Nix formatter

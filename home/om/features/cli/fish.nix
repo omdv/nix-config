@@ -9,12 +9,13 @@
   hasPackage = name: lib.any (x: x == name) packageNames;
   hasRipgrep = hasPackage "ripgrep";
   hasExa = hasPackage "eza";
+  hasHtop = hasPackage "htop";
   hasSpecialisationCli = hasPackage "specialisation";
   hasAwsCli = hasPackage "awscli2";
   hasNeovim = config.programs.neovim.enable;
   hasEmacs = config.programs.emacs.enable;
   hasNeomutt = config.programs.neomutt.enable;
-  # hasShellColor = config.programs.shellcolor.enable;
+  hasShellColor = config.programs.shellcolor.enable;
   hasKitty = config.programs.kitty.enable;
   shellcolor = "${pkgs.shellcolord}/bin/shellcolor";
 in {
@@ -43,8 +44,7 @@ in {
 
       ls = mkIf hasExa "eza";
       exa = mkIf hasExa "eza";
-
-      e = mkIf hasEmacs "emacsclient -t";
+      top = mkIf hasHtop "htop";
 
       vim = mkIf hasNeovim "nvim";
       vi = vim;
