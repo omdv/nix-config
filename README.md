@@ -1,6 +1,6 @@
 # TODO
 - service for pass
-- pinentry popup
++ pinentry popup
 - respect XDG_folders
 - vim-plugins
 - quiet boot and plymouth
@@ -8,3 +8,4 @@
 - system fonts
 - remove nixpkgs.nix and move overlays calls
 - prettify grub
+- try nixvim

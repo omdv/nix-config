@@ -10,10 +10,6 @@
     done
   '';
 in {
-  imports = [
-    ./lsp.nix
-    ./ui.nix
-  ];
   home.sessionVariables.EDITOR = "nvim";
 
   programs.neovim = {
@@ -121,56 +117,6 @@ in {
         "Sudo save
         cmap w!! w !sudo tee > /dev/null %
       '';
-    extraLuaConfig =
-      /*
-      lua
-      */
-      ''
-        vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { desc = "Go to declaration" })
-        vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Go to definition" })
-        vim.keymap.set("n", "gi", vim.lsp.buf.implementation, { desc = "Go to implementation" })
-        vim.keymap.set("n", "<space>f", vim.lsp.buf.format, { desc = "Format code" })
-        vim.keymap.set("n", "K", vim.lsp.buf.hover, { desc = "Hover Documentation" })
-        vim.keymap.set("n", "<space>a", vim.lsp.buf.code_action, { desc = "Code action" })
-
-        -- Diagnostic
-        vim.keymap.set("n", "<space>d", vim.diagnostic.open_float, { desc = "Floating diagnostic" })
-        vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Previous diagnostic" })
-        vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Next diagnostic" })
-        vim.keymap.set("n", "gl", vim.diagnostic.setloclist, { desc = "Diagnostics on loclist" })
-        vim.keymap.set("n", "gq", vim.diagnostic.setqflist, { desc = "Diagnostics on quickfix" })
-
-        function add_sign(name, text)
-          vim.fn.sign_define(name, { text = text, texthl = name, numhl = name})
-        end
-
-        add_sign("DiagnosticSignError", "󰅚 ")
-        add_sign("DiagnosticSignWarn", " ")
-        add_sign("DiagnosticSignHint", "󰌶 ")
-        add_sign("DiagnosticSignInfo", " ")
-      '';
-
-    plugins = with pkgs.vimPlugins; [
-      vim-table-mode
-      editorconfig-nvim
-      vim-surround
-      {
-        plugin = nvim-autopairs;
-        type = "lua";
-        config =
-          /*
-          lua
-          */
-          ''
-            require('nvim-autopairs').setup{}
-          '';
-      }
-    ];
-  };
-
-  xdg.configFile."nvim/color.vim".source = pkgs.writeText "color.vim" (import ./theme.nix config.colorscheme);
-  xdg.configFile."nvim/color.vim".onChange = reloadNvim;
-  xdg.configFile."nvim/init.lua".onChange = reloadNvim;
 
   xdg.desktopEntries = {
     nvim = {
