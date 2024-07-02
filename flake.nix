@@ -37,13 +37,6 @@
     ];
     forAllSystems = nixpkgs.lib.genAttrs systems;
   in {
-    # inherit lib;
-    # nixosModules = import ./modules/nixos;
-    # homeManagerModules = import ./modules/home-manager;
-    # packages = forAllSystems (pkgs: import ./pkgs { inherit pkgs; });
-    # overlays = import ./overlays {inherit inputs outputs;};
-    # formatter = forEachSystem (pkgs: pkgs.alejandra);
-
     nixosModules = import ./modules/nixos;
     homeManagerModules = import ./modules/home-manager;
     packages = forAllSystems (system: import ./pkgs nixpkgs.legacyPackages.${system});
@@ -63,10 +56,10 @@
 
     # Home configurations
     homeConfigurations = {
-      "om@framework" = nixpkgs.lib.homeManagerConfiguration {
+      "om@framework" = home-manager.lib.homeManagerConfiguration {
         modules = [
           ./home/om/framework.nix
-          # ./home/om/nixpkgs.nix
+          ./home/om/nixpkgs.nix
         ];
         pkgs = nixpkgs.legacyPackages.x86_64-linux;
         extraSpecialArgs = {
