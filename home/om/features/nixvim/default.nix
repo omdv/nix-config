@@ -1,8 +1,10 @@
-{pkgs, ...}:
+{pkgs, inputs, ...}:
 {
-  imports = [ (import <nixpkgs> {}).nixvim ];
+  imports = [
+    inputs.nixvim.homeManagerModules.nixvim
+  ];
 
-  # programs.mixvim = {
-    # enable = true;
-  # };
+  programs.nixvim = {
+    enable = true;
+  };
 }
