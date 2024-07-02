@@ -117,6 +117,7 @@ in {
         "Sudo save
         cmap w!! w !sudo tee > /dev/null %
       '';
+  };
 
   xdg.desktopEntries = {
     nvim = {
