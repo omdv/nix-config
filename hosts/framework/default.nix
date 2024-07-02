@@ -13,7 +13,7 @@
     ../common/optional/gnome.nix
     ../common/optional/docker.nix
     ../common/optional/pipewire.nix
-    ../common/optional/java.nix
+    # ../common/optional/java.nix
   ];
 
   networking = {
@@ -31,5 +31,5 @@
     ];
   };
 
-  system.stateVersion = "24.05";
+  system.stateVersion = "23.05";
 }
