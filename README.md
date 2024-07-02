@@ -6,3 +6,5 @@
 - quiet boot and plymouth
 - colorscheme dracula
 - system fonts
+- remove nixpkgs.nix and move overlays calls
+- prettify grub
