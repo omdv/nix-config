@@ -22,8 +22,6 @@ in {
       ''
         "Use system clipboard
         set clipboard=unnamedplus
-        "Source colorscheme
-        source ~/.config/nvim/color.vim
 
         "Lets us easily trigger completion from binds
         set wildcharm=<tab>
