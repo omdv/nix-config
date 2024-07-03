@@ -9,3 +9,4 @@
 - remove nixpkgs.nix and move overlays calls
 - prettify grub
 - try nixvim
+- btrbk for home with short retention
