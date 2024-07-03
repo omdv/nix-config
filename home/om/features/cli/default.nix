@@ -1,6 +1,7 @@
 {pkgs, ...}: {
   imports = [
     ./atuin.nix
+    ./direnv.nix
     ./fish.nix
     ./fzf.nix
     ./git.nix
@@ -11,11 +12,6 @@
   home.packages = with pkgs; [
     comma # Install and run programs by sticking a , before them
     distrobox # Nice escape hatch, integrates docker images with my environment
-
-    # bc # Calculator
-
-
-    sysz # fzf for systemd
 
     htop # Better top
     bat # Better cat
@@ -28,7 +24,9 @@
     ncdu # TUI disk usage
     duf # TUI disk usage
 
+    bc # Calculator
     jq # JSON pretty printer and manipulator
+    sysz # fzf for systemd
 
     # nixd # Nix LSP
     # alejandra # Nix formatter
