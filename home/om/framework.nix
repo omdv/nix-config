@@ -57,6 +57,6 @@
   # borgmatic service
   services.borgmatic = {
     enable = true;
-    frequency = "daily";
+    frequency = "19:00";
   };
 }
