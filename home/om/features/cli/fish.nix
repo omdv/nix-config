@@ -5,11 +5,15 @@
   ...
 }: let
   inherit (lib) mkIf;
+
   packageNames = map (p: p.pname or p.name or null) config.home.packages;
   hasPackage = name: lib.any (x: x == name) packageNames;
+
   hasRipgrep = hasPackage "ripgrep";
   hasExa = hasPackage "eza";
   hasHtop = hasPackage "htop";
+  hasFd = hasPackage "fd";
+  hasDocker = hasPackage "docker";
   hasSpecialisationCli = hasPackage "specialisation";
   hasNeovim = config.programs.neovim.enable;
   hasEmacs = config.programs.emacs.enable;
@@ -17,57 +21,45 @@
   hasShellColor = config.programs.shellcolor.enable;
   hasKitty = config.programs.kitty.enable;
   shellcolor = "${pkgs.shellcolord}/bin/shellcolor";
+
 in {
   programs.fish = {
     enable = true;
 
     shellAbbrs = rec {
+      # To discover
+      s = mkIf hasSpecialisationCli "specialisation";
+      cik = mkIf hasKitty "clone-in-kitty --type os-window";
       jqless = "jq -C | less -r";
 
-      n = "nix";
-      nd = "nix develop -c $SHELL";
-      ns = "nix shell";
-      nsn = "nix shell nixpkgs#";
-      nb = "nix build";
-      nbn = "nix build nixpkgs#";
-      nf = "nix flake";
-
-      nr = "nixos-rebuild --flake .";
-      nrs = "nixos-rebuild --flake . switch";
-      snr = "sudo nixos-rebuild --flake .";
-      snrs = "sudo nixos-rebuild --flake . switch";
-      hm = "home-manager --flake .";
-      hms = "home-manager --flake . switch";
-
-      s = mkIf hasSpecialisationCli "specialisation";
-
-      ls = mkIf hasExa "eza -ls";
+      # Better tools
+      find = mkIf hasFd "fd";
+      ls = mkIf hasExa "eza -al";
       top = mkIf hasHtop "htop";
       vim = mkIf hasNeovim "nvim";
       mutt = mkIf hasNeomutt "neomutt";
 
-      cik = mkIf hasKitty "clone-in-kitty --type os-window";
-      ck = cik;
+      # Docker
+      dc = mkIf hasDocker "docker-compose";
+      dps = mkIf hasDocker "docker ps -a --format 'table {{.Names}}\t{{.Image}}\t{{.Ports}}\t{{.Status}}'";
+
     };
     shellAliases = {
       # Clear screen and scrollback
       clear = "printf '\\033[2J\\033[3J\\033[1;1H'";
+
+      snrs = "cd /home/om/Documents/nix-config && sudo nixos-rebuild --flake . switch";
+      hms = "cd /home/om/Documents/nix-config && home-manager --flake . switch ";
+
     };
     functions = {
       # Disable greeting
       fish_greeting = "";
     };
-    plugins = [
-    {
-      name = "z";
-      src = pkgs.fetchFromGitHub {
-        owner = "jethrokuan";
-        repo = "z";
-        rev = "e0e1b9dfdba362f8ab1ae8c1afc7ccf62b89f7eb";
-        sha256 = "0dbnir6jbwjpjalz14snzd3cgdysgcs3raznsijd6savad3qhijc";
-      };
-    }
-  ];
 
+    interactiveShellInit = ''
+      set -gx fzf_fd_opts --hidden --no-ignore --exclude=.git
+	    fzf_configure_bindings --git_status=\cg --variables=\cv --directory=\cf --git_log=\cl --processes=\ct
+    '';
   };
 }

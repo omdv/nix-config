@@ -1,3 +1,4 @@
+# https://docs.atuin.sh/configuration/config/
 {pkgs, ...}: {
   programs.atuin = {
      enable = true;
