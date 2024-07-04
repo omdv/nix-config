@@ -2,7 +2,7 @@
 - service for pass
 + pinentry popup
 - respect XDG_folders
-- vim-plugins
+- vim config and plugins
 - quiet boot and plymouth
 - colorscheme dracula
 - system fonts
@@ -10,3 +10,5 @@
 - prettify grub
 - try nixvim
 - btrbk for home with short retention
+- default search engine in firefox
+- fish config
