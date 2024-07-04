@@ -9,6 +9,7 @@
       inputs.home-manager.nixosModules.home-manager
       ./fish.nix
       ./locale.nix
+      ./nix.nix
       ./nix-ld.nix
     ]
     ++ (builtins.attrValues outputs.nixosModules);
@@ -17,8 +18,6 @@
   home-manager.extraSpecialArgs = {
     inherit inputs outputs;
   };
-
-  nix.settings.experimental-features = "nix-command flakes";
 
   nixpkgs = {
     overlays = builtins.attrValues outputs.overlays;
