@@ -7,6 +7,7 @@
     ./git.nix
     ./gpg.nix
     ./kitty.nix
+    ./nnn.nix
     ./starship.nix
   ];
   home.packages = with pkgs; [
