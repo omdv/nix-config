@@ -58,8 +58,10 @@ in {
     };
 
     interactiveShellInit = ''
+      set -gx NNN_PLUG "f:finder;o:fzopen;p:preview-tui;d:diffs;t:nmount;v:imgview"
+
       set -gx fzf_fd_opts --hidden --no-ignore --exclude=.git
-	    fzf_configure_bindings --git_status=\cg --variables=\cv --directory=\cf --git_log=\cl --processes=\ct
+      fzf_configure_bindings --git_status=\cg --variables=\cv --directory=\cf --git_log=\cl --processes=\ct
     '';
   };
 }

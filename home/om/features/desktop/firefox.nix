@@ -9,8 +9,15 @@
         browserpass
         bitwarden
       ];
+      search = {
+        force = true;
+        default = "DuckDuckGo";
+        order = [ "DuckDuckGo" "Google" ];
+      };
       bookmarks = {};
       settings = {
+        "browser.zoom.default" = 1.5;
+        "browser.zoom.siteSpecific" = false;
         "browser.disableResetPrompt" = true;
         "browser.download.panel.shown" = true;
         "browser.download.useDownloadDir" = false;
