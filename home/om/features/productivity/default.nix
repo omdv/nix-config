@@ -1,6 +1,7 @@
 {pkgs, ...}: {
   imports = [
-    ./vscode.nix
+    ./asdf.nix
     ./devenv.nix
+    ./vscode.nix
   ];
 }
