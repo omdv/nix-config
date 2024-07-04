@@ -3,6 +3,57 @@
   lib,
   ...
 }: {
+
+# # add newline between prompts
+# add_newline = true
+
+# # define format
+# format = """
+# $directory\
+# $git_branch\
+# $git_status\
+# $cmd_duration\
+# $character
+# """
+
+# # right format
+# right_format = """
+# $python\
+# $rust
+# """
+
+# [character]
+# error_symbol = "[λ](bold #ff5555)"
+# success_symbol = "[λ](bold #50fa7b)"
+
+# [cmd_duration]
+# format = 'took [$duration]($style) '
+# style = "bold #f1fa8c"
+# min_time = 100
+
+# [directory]
+# truncation_length = 3
+# truncation_symbol = '…/'
+# truncate_to_repo = false
+# read_only = '🔒'
+# style = "bold #50fa7b"
+
+# [direnv]
+# disabled = false
+
+# [git_branch]
+# style = "bold #ff79c6"
+
+# [git_status]
+# style = "bold #ff5555"
+
+# [hostname]
+# style = "bold #bd93f9"
+
+# [username]
+# format = "[$user]($style) on "
+# style_user = "bold #8be9fd"
+
   programs.starship = {
     enable = true;
     settings = {
