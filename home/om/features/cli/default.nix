@@ -7,6 +7,7 @@
     ./git.nix
     ./gpg.nix
     ./kitty.nix
+    ./mc.nix
     ./nnn.nix
     ./starship.nix
   ];
