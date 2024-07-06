@@ -14,11 +14,14 @@
   hasHtop = hasPackage "htop";
   hasFd = hasPackage "fd";
   hasDocker = hasPackage "docker";
+  hasKubecolor = hasPackage "kubecolor";
+  hasNnn = config.programs.nnn.enable;
   hasNeovim = config.programs.neovim.enable;
   hasEmacs = config.programs.emacs.enable;
   hasNeomutt = config.programs.neomutt.enable;
   hasShellColor = config.programs.shellcolor.enable;
   hasKitty = config.programs.kitty.enable;
+
   shellcolor = "${pkgs.shellcolord}/bin/shellcolor";
 
 in {
@@ -36,20 +39,22 @@ in {
       top = mkIf hasHtop "htop";
       vim = mkIf hasNeovim "nvim";
       mutt = mkIf hasNeomutt "neomutt";
-
-      # Docker
-      dc = mkIf hasDocker "docker-compose";
-      dps = mkIf hasDocker "docker ps -a --format 'table {{.Names}}\t{{.Image}}\t{{.Ports}}\t{{.Status}}'";
-
+      n = mkIf hasNnn "nnn";
     };
     shellAliases = {
       # Clear screen and scrollback
       clear = "printf '\\033[2J\\033[3J\\033[1;1H'";
 
+      # Better tools
+      kubectl = mkIf hasKubecolor "kubecolor";
+      k = mkIf hasKubecolor "kubecolor";
+
+      # Shortcuts
       ec = "cd /home/om/Documents/nix-config && code .";
+      dc = mkIf hasDocker "docker-compose";
+      dps = mkIf hasDocker "docker ps -a --format 'table {{.Names}}\t{{.Image}}\t{{.Ports}}\t{{.Status}}'";
       snrs = "cd /home/om/Documents/nix-config && sudo nixos-rebuild --flake . switch";
       hms = "cd /home/om/Documents/nix-config && home-manager --flake . switch ";
-
     };
     functions = {
       # Disable greeting
@@ -86,12 +91,19 @@ in {
       set -gx ZDOTDIR $XDG_CONFIG_HOME/zsh
       set -gx LEIN_HOME $XDG_DATA_HOME/lein
 
+      # kubeconfig
+      set -gx KUBECONFIG $HOME/.kube/config:$HOME/Documents/devops/homelab-server/provision/kubeconfig
+
       # nnn
-      set -gx NNN_PLUG "f:finder;o:fzopen;p:preview-tui;d:diffs;t:nmount;v:imgview"
+      # set -gx NNN_PLUG "f:finder;o:fzopen;p:preview-tui;d:diffs;t:nmount;v:imgview"
 
       # asdf
       source "$HOME/.nix-profile/share/asdf-vm/asdf.fish"
 
+      # direnv
+      direnv hook fish | source
+
+      # fzf settings
       set -gx fzf_fd_opts --hidden --no-ignore --exclude=.git
       fzf_configure_bindings --git_status=\cg --variables=\cv --directory=\cf --git_log=\cl --processes=\ct
     '';
