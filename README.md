@@ -1,16 +1,35 @@
 # TODO
+
+## eyecandy
 - colorschemes
-+ pinentry popup
-+ fish config
-- service for pass
-- respect XDG_folders
 - vim config and plugins
 - quiet boot and plymouth
 - system fonts
-- remove nixpkgs.nix and move overlays calls
 - prettify grub
-- try nixvim
-- btrbk for home with short retention
-- default search engine in firefox
-- (specialization)[https://nixos.wiki/wiki/Specialisation]
+- wayland and hyprland??
+
+## cleaning
+- remove nixpkgs.nix and move overlays calls
+
+## cli
 - bat preview in fzf
+
+## explore
+- service for pass
+- (specialization)[https://nixos.wiki/wiki/Specialisation]
+- sops-nix
+
+## productivity
+- visidata
+- try all scripts
+- devshell secrets
+
+## system
+- respect XDG_folders
+- btrbk for home with short retention
+
+## devops
+- kubeshark
+- ansible
+- home-lab scripts
+- popeye integration

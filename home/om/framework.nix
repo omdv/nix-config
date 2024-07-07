@@ -9,7 +9,8 @@
     ./features/productivity
     ./features/desktop
     ./features/pass
-    ./features/nvim
+    # ./features/nvim
+    ./features/nixvim
   ];
 
   # borgmatic setup

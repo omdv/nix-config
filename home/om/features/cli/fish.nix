@@ -19,7 +19,7 @@
 
   hasBat = config.programs.bat.enable;
   hasNnn = config.programs.nnn.enable;
-  hasNeovim = config.programs.neovim.enable;
+  hasNeovim = config.programs.neovim.enable || config.programs.nixvim.enable;
   hasEmacs = config.programs.emacs.enable;
   hasNeomutt = config.programs.neomutt.enable;
   hasShellColor = config.programs.shellcolor.enable;
@@ -111,7 +111,7 @@ in {
       direnv hook fish | source
 
       # fzf general settings
-      set -gx FZF_DEFAULT_OPTS --inline-info --height 80%
+      set -gx FZF_DEFAULT_OPTS --inline-info --height 100%
 
       # fzf.fish settings
       set -gx fzf_fd_opts --hidden --no-ignore --exclude=.git --max-depth 5
