@@ -1,4 +1,4 @@
-{pkgs, ...}:
+{pkgs, lib, ...}:
 {
   services = {
     xserver = {
@@ -17,4 +17,6 @@
     gnome3.gnome-tweaks
   ];
 
+  # Disable tracker
+  systemd.services."tracker-miner-fs-3".enable = lib.mkForce false;
 }
