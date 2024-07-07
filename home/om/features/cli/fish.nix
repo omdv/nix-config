@@ -15,6 +15,9 @@
   hasFd = hasPackage "fd";
   hasDocker = hasPackage "docker";
   hasKubecolor = hasPackage "kubecolor";
+  hasGopass = hasPackage "gopass";
+
+  hasBat = config.programs.bat.enable;
   hasNnn = config.programs.nnn.enable;
   hasNeovim = config.programs.neovim.enable;
   hasEmacs = config.programs.emacs.enable;
@@ -40,6 +43,8 @@ in {
       vim = mkIf hasNeovim "nvim";
       mutt = mkIf hasNeomutt "neomutt";
       n = mkIf hasNnn "nnn";
+      pass = mkIf hasGopass "gopass";
+
     };
     shellAliases = {
       # Clear screen and scrollback
@@ -48,9 +53,11 @@ in {
       # Better tools
       kubectl = mkIf hasKubecolor "kubecolor";
       k = mkIf hasKubecolor "kubecolor";
+      cat = mkIf hasBat "bat";
 
       # Shortcuts
       ec = "cd /home/om/Documents/nix-config && code .";
+      ff = "source ~/.config/fish/config.fish";
       dc = mkIf hasDocker "docker-compose";
       dps = mkIf hasDocker "docker ps -a --format 'table {{.Names}}\t{{.Image}}\t{{.Ports}}\t{{.Status}}'";
       snrs = "cd /home/om/Documents/nix-config && sudo nixos-rebuild --flake . switch";
@@ -103,8 +110,14 @@ in {
       # direnv
       direnv hook fish | source
 
-      # fzf settings
-      set -gx fzf_fd_opts --hidden --no-ignore --exclude=.git
+      # fzf general settings
+      set -gx FZF_DEFAULT_OPTS --inline-info --height 80%
+
+      # fzf.fish settings
+      set -gx fzf_fd_opts --hidden --no-ignore --exclude=.git --max-depth 5
+      set -gx fzf_preview_dir_cmd eza --all --color=always
+      set -gx fzf_preview_file_cmd bat -n
+      set -gx fzf_diff_highlighter diff-so-fancy
       fzf_configure_bindings --git_status=\cg --variables=\cv --directory=\cf --git_log=\cl --processes=\ct
     '';
   };

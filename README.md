@@ -13,3 +13,4 @@
 - btrbk for home with short retention
 - default search engine in firefox
 - (specialization)[https://nixos.wiki/wiki/Specialisation]
+- bat preview in fzf
