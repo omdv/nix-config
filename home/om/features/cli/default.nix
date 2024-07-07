@@ -15,6 +15,10 @@
     comma # Install and run programs by sticking a , before them
     distrobox # Nice escape hatch, integrates docker images with my environment
 
+    vim # default vim
+    file # base
+    zip # base
+
     htop # Better top
     bat # Better cat
     eza # Better ls
