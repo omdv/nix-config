@@ -9,16 +9,11 @@
     };
     plugins = {
       src = (pkgs.fetchFromGitHub {
-      owner = "jarun";
-      repo = "nnn";
-      rev = "v4.9";
-      sha256 = "sha256-Hpc8YaJeAzJoEi7aJ6DntH2VLkoR6ToP6tPYn3llR7k=";
+        owner = "jarun";
+        repo = "nnn";
+        rev = "v4.9";
+        sha256 = "sha256-g19uI36HyzTF2YUQKFP4DE2ZBsArGryVHhX79Y0XzhU=";
       }) + "/plugins";
-      mappings = {
-        "^p" = "preview-tabbed";
-        "^t" = "trash";
-        "^y" = "yank";
-      };
     };
   };
 }
