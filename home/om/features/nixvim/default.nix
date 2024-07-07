@@ -4,7 +4,8 @@
     inputs.nixvim.homeManagerModules.nixvim
 
     ./settings.nix
-    ./bufferline
+    ./bufferline.nix
+    ./nvim-tree.nix
     ./statusline
   ];
 
