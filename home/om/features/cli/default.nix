@@ -1,6 +1,7 @@
 {pkgs, ...}: {
   imports = [
     ./atuin.nix
+    ./bat.nix
     ./direnv.nix
     ./fish.nix
     ./fzf.nix
@@ -20,12 +21,11 @@
     zip # base
 
     htop # Better top
-    bat # Better cat
     eza # Better ls
     ripgrep # Better grep
     fd # Better find
     httpie # Better curl
-    diffsitter # Better diff
+    diff-so-fancy # Better diff
 
     ncdu # TUI disk usage
     duf # TUI disk usage

@@ -1,7 +1,7 @@
 {pkgs, ...}: {
   programs.kitty = {
     enable = true;
-    theme = "Tokyo Night";
+    theme = "Dracula";
     font = {
       name = "JetBrainsMono Nerd Font";
       size = 14;
