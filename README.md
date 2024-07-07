@@ -20,7 +20,6 @@
 - sops-nix
 
 ## productivity
-- visidata
 - try all scripts
 - devshell secrets
 
@@ -29,7 +28,6 @@
 - btrbk for home with short retention
 
 ## devops
-- kubeshark
 - ansible
 - home-lab scripts
 - popeye integration

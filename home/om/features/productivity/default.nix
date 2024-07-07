@@ -5,4 +5,8 @@
     ./k8s.nix
     ./vscode.nix
   ];
+
+  home.packages = with pkgs; [
+    visidata
+  ];
 }
