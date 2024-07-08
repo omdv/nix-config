@@ -1,18 +1,4 @@
-{
-  pkgs,
-  config,
-  lib,
-  ...
-}: {
-  imports = [
-    ./global
-    ./features/productivity
-    ./features/desktop
-    ./features/pass
-    # ./features/nvim
-    ./features/nixvim
-  ];
-
+{ pkgs, ... }: {
   # borgmatic setup
   programs.borgmatic = {
     enable = true;
