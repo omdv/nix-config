@@ -4,12 +4,13 @@
     userSettings = {
       # General
       "editor.fontSize" = 16;
-      "editor.fontFamily" = "'Jetbrains Mono', 'monospace', monospace";
+      "editor.fontFamily" = "'FiraCode Nerd Font', 'mono', monospace";
+      "editor.fontLigatures" = true;
       "editor.tabSize" = 2;
-      "terminal.integrated.fontSize" = 14;
-      "terminal.integrated.fontFamily" = "'JetBrainsMono Nerd Font', 'monospace', monospace";
-      "window.zoomLevel" = 1;
       "editor.multiCursorModifier" = "ctrlCmd";
+      "terminal.integrated.fontSize" = 14;
+      "terminal.integrated.fontFamily" = "'FiraCode Nerd Font', 'mono', monospace";
+      "window.zoomLevel" = 1;
       "workbench.startupEditor" = "none";
       "explorer.compactFolders" = false;
       # Copilot

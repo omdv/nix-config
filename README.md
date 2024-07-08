@@ -4,7 +4,6 @@
 - prettify grub
 - colorschemes
 - vim config and plugins
-- system fonts
 - wayland and hyprland??
 
 ## cli
