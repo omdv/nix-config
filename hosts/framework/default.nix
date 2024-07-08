@@ -10,11 +10,12 @@
     ../common/global
     ../common/users/om
 
-    ../common/optional/gnome.nix
-    ../common/optional/docker.nix
-    ../common/optional/pipewire.nix
-    ../common/optional/java.nix
     ../common/optional/btrfs.nix
+    ../common/optional/docker.nix
+    ../common/optional/gnome.nix
+    ../common/optional/java.nix
+    ../common/optional/pipewire.nix
+    ../common/optional/quietboot.nix
   ];
 
   programs = {

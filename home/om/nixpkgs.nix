@@ -1,20 +1,18 @@
 # This file should be included when using hm standalone
 {
   outputs,
-  lib,
-  inputs,
   ...
 }: {
-  nix = {
-    settings = {
-      experimental-features = [
-        "nix-command"
-        "flakes"
-        "ca-derivations"
-      ];
-      warn-dirty = false;
-    };
-  };
+  # nix = {
+  #   settings = {
+  #     experimental-features = [
+  #       "nix-command"
+  #       "flakes"
+  #       "ca-derivations"
+  #     ];
+  #     warn-dirty = false;
+  #   };
+  # };
 
   nixpkgs = {
     overlays = builtins.attrValues outputs.overlays;

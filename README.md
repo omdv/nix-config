@@ -8,9 +8,6 @@
 - prettify grub
 - wayland and hyprland??
 
-## cleaning
-- remove nixpkgs.nix and move overlays calls
-
 ## cli
 - bat preview in fzf
 
