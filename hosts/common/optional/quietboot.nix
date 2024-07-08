@@ -9,12 +9,14 @@
   };
 
   boot = {
+    initrd.systemd.enable = true;
+
     plymouth = {
       enable = true;
-      theme = "rings";
+      theme = "cubes";
       themePackages = with pkgs; [
         (adi1090x-plymouth-themes.override {
-          selected_themes = [ "rings" ];
+          selected_themes = [ "cubes" ];
         })
       ];
     };
@@ -23,13 +25,12 @@
     initrd.verbose = false;
     kernelParams = [
       "quiet"
-      "splash"
       "loglevel=3"
       "systemd.show_status=auto"
       "udev.log_level=3"
       "rd.udev.log_level=3"
       "vt.global_cursor_default=0"
     ];
-    loader.timeout = 0;
+    loader.timeout = 5;
   };
 }
