@@ -10,11 +10,15 @@
 - bat preview in fzf
 
 ## explore
+- sops-nix
+- persistence and erasing /root
 - service for pass
 - (specialization)[https://nixos.wiki/wiki/Specialisation]
-- sops-nix
 
 ## productivity
+- launch terminal shortcut
+- declarative mail
+- neomutt
 - try all scripts
 - devshell secrets
 
