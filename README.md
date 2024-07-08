@@ -1,11 +1,10 @@
 # TODO
 
 ## eyecandy
+- prettify grub
 - colorschemes
 - vim config and plugins
-- quiet boot and plymouth
 - system fonts
-- prettify grub
 - wayland and hyprland??
 
 ## cli
