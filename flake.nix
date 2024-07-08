@@ -30,6 +30,10 @@
     nix-colors = {
       url = "github:misterio77/nix-colors";
     };
+    auto-cpufreq = {
+      url = "github:AdnanHodzic/auto-cpufreq";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
@@ -58,7 +62,9 @@
     # Host configurations
     nixosConfigurations = {
       framework = nixpkgs.lib.nixosSystem {
-        modules = [./hosts/framework];
+        modules = [
+          ./hosts/framework
+        ];
         specialArgs = {
           inherit inputs outputs;
         };
