@@ -24,7 +24,7 @@ in {
     gc = {
       automatic = true;
       dates = "20:30";
-      options = "--delete-older-than 3d";
+      options = "--delete-older-than 14d";
     };
 
     # Add each flake input as a registry and nix_path

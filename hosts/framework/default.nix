@@ -15,6 +15,7 @@
     ../common/optional/gnome.nix
     ../common/optional/java.nix
     ../common/optional/pipewire.nix
+    ../common/optional/poweropts.nix
     ../common/optional/quietboot.nix
   ];
 
