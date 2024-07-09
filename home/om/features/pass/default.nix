@@ -15,4 +15,10 @@
     };
     package = pkgs.pass.withExtensions (p: [p.pass-otp]);
   };
+
+  # services.pass-secret-service = {
+  #   enable = true;
+  #   storePath = "$XDG_DATA_HOME/pass";
+  #   extraArgs = ["-e${config.programs.password-store.package}/bin/pass"];
+  # };
 }
