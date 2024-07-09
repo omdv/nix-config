@@ -30,6 +30,17 @@
 in {
   programs.fish = {
     enable = true;
+    plugins = [
+      {
+        name = "fzf";
+        src = pkgs.fetchFromGitHub {
+          owner = "PatrickF1";
+          repo = "fzf.fish";
+          rev = "v10.3";
+          sha256 = "sha256-T8KYLA/r/gOKvAivKRoeqIwE2pINlxFQtZJHpOy9GMM=";
+        };
+      }
+    ];
 
     shellAbbrs = rec {
       # To check
@@ -112,12 +123,11 @@ in {
       # direnv
       direnv hook fish | source
 
-      # fzf.fish settings
-      # set -gx fzf_fd_opts --hidden --no-ignore --exclude=.git --max-depth 5
-      # set -gx fzf_preview_dir_cmd eza --all --color=always
-      # set -gx fzf_preview_file_cmd bat -n
-      # set -gx fzf_diff_highlighter diff-so-fancy
-      # fzf_configure_bindings --git_status=\cg --variables=\cv --directory=\cf --git_log=\cl --processes=\ct
+      # fzf.fish and settings
+      fzf_configure_bindings --git_status=\cg --variables=\cv --directory=\cf --git_log=\cl --processes=\ct
+      set -gx fzf_fd_opts --hidden --no-ignore --exclude=.git --max-depth 5
+      set -gx fzf_preview_dir_cmd eza --all --color=always
+      set -gx fzf_diff_highlighter diff-so-fancy
     '';
   };
 }
