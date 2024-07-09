@@ -45,6 +45,10 @@ in {
       n = mkIf hasNnn "nnn";
       pass = mkIf hasGopass "gopass";
 
+      # Shortcuts
+      hm = "home-manager --flake .";
+      hms = "home-manager --flake . switch ";
+      snrs = "sudo nixos-rebuild --flake . switch";
     };
     shellAliases = {
       # Clear screen and scrollback
@@ -60,8 +64,6 @@ in {
       ff = "source ~/.config/fish/config.fish";
       dc = mkIf hasDocker "docker-compose";
       dps = mkIf hasDocker "docker ps -a --format 'table {{.Names}}\t{{.Image}}\t{{.Ports}}\t{{.Status}}'";
-      snrs = "cd /home/om/Documents/nix-config && sudo nixos-rebuild --flake . switch";
-      hms = "cd /home/om/Documents/nix-config && home-manager --flake . switch ";
     };
     functions = {
       # Disable greeting
@@ -110,15 +112,12 @@ in {
       # direnv
       direnv hook fish | source
 
-      # fzf general settings
-      set -gx FZF_DEFAULT_OPTS --inline-info --height 100%
-
       # fzf.fish settings
-      set -gx fzf_fd_opts --hidden --no-ignore --exclude=.git --max-depth 5
-      set -gx fzf_preview_dir_cmd eza --all --color=always
-      set -gx fzf_preview_file_cmd bat -n
-      set -gx fzf_diff_highlighter diff-so-fancy
-      fzf_configure_bindings --git_status=\cg --variables=\cv --directory=\cf --git_log=\cl --processes=\ct
+      # set -gx fzf_fd_opts --hidden --no-ignore --exclude=.git --max-depth 5
+      # set -gx fzf_preview_dir_cmd eza --all --color=always
+      # set -gx fzf_preview_file_cmd bat -n
+      # set -gx fzf_diff_highlighter diff-so-fancy
+      # fzf_configure_bindings --git_status=\cg --variables=\cv --directory=\cf --git_log=\cl --processes=\ct
     '';
   };
 }
