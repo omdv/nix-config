@@ -27,7 +27,7 @@ in {
       };
       fonts = {
         default_family = config.fontProfiles.regular.family;
-        default_size = "12pt";
+        default_size = "16pt";
       };
     };
     extraConfig = ''
