@@ -3,6 +3,7 @@
     ./asdf.nix
     ./devenv.nix
     ./k8s.nix
+    ./mail.nix
     ./vscode.nix
   ];
 

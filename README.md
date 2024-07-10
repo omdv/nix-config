@@ -3,11 +3,11 @@
 ## eyecandy
 - prettify grub
 - colorschemes
-- vim config and plugins
 - wayland and hyprland??
+- remove gnome bloat
 
 ## cli
-- bat preview in fzf
+- vim config and plugins
 
 ## explore
 - sops-nix
@@ -23,6 +23,7 @@
 - devshell secrets
 
 ## system
+- auto-cpufreq daemon, disable gnome
 - respect XDG_folders
 - btrbk for home with short retention
 
