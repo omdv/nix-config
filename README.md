@@ -8,6 +8,7 @@
 
 ## cli
 - vim config and plugins
+- cd exit for nnn
 
 ## explore
 - sops-nix
