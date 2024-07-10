@@ -18,7 +18,7 @@
       name = "Neovim";
       genericName = "Text Editor";
       comment = "Edit text files";
-      exec = "nvim %F";
+      exec = "kitty -e nvim %F";
       icon = "nvim";
       mimeType = [
         "text/english"

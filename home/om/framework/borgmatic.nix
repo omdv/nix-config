@@ -1,4 +1,7 @@
-{ pkgs, ... }: {
+{ pkgs, config, ... }: let
+  pass = "${config.programs.password-store.package}/bin/pass";
+  backup_key = "backup/framework";
+in {
   # borgmatic setup
   programs.borgmatic = {
     enable = true;
@@ -26,7 +29,7 @@
           };
         };
         storage = {
-          encryptionPasscommand = "pass show backup/borgbase-arch";
+          encryptionPasscommand = "${pass} ${backup_key}";
           extraConfig = {
             ssh_command = "ssh -i /home/om/.ssh/id_rsa";
             borg_base_directory = "/home/om/";
@@ -44,6 +47,6 @@
   # borgmatic service
   services.borgmatic = {
     enable = true;
-    frequency = "19:00";
+    frequency = "20:45";
   };
 }
