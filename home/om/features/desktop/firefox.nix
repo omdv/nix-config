@@ -8,6 +8,7 @@
         ublock-origin
         browserpass
         bitwarden
+        zotero-connector
       ];
       search = {
         force = true;
