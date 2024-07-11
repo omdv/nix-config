@@ -1,14 +1,14 @@
 # https://docs.atuin.sh/configuration/config/
 {pkgs, ...}: {
   programs.atuin = {
-     enable = true;
-     enableFishIntegration = true;
-     flags = [
+    enable = true;
+    enableFishIntegration = true;
+    flags = [
       # "--disable-up-arrow"
       # "--disable-ctrl-r"
-     ];
-     settings = {
-      enter_accept = "false";
-     };
+    ];
+    settings = {
+    enter_accept = "false";
+    };
   };
 }

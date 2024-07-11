@@ -47,6 +47,6 @@ in {
   # borgmatic service
   services.borgmatic = {
     enable = true;
-    frequency = "20:45";
+    frequency = "21:30";
   };
 }
