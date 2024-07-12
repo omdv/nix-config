@@ -2,4 +2,5 @@
 {pkgs, ...}:
 {
   myjdk = pkgs.callPackage ./myjdk { };
+  pass-wofi = pkgs.callPackage ./pass-wofi { };
 }

@@ -5,6 +5,7 @@
 - colorschemes
 - wayland and hyprland??
 - remove gnome bloat
+- wallpaper for monitors
 
 ## cli
 - vim config and plugins
