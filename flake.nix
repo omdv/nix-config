@@ -56,6 +56,7 @@
     homeManagerModules = import ./modules/home-manager;
     packages = forAllSystems (system: import ./pkgs nixpkgs.legacyPackages.${system});
     overlays = import ./overlays {inherit inputs;};
+    hydraJobs = import ./hydra.nix {inherit inputs outputs;};
     formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.alejandra);
 
 

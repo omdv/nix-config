@@ -26,7 +26,7 @@
 - auto-cpufreq daemon, disable gnome
 - respect XDG_folders
 - btrbk for home with short retention
-- hydra auto-upgrade
+- hydra auto-upgrades and remote CI/CD
 
 ## devops
 - ansible
