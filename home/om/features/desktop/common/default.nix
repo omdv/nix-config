@@ -2,6 +2,6 @@
   imports = [
     ./firefox.nix
     ./fonts.nix
-    ./qutebrowser.nix
+    ./kitty.nix
   ];
 }

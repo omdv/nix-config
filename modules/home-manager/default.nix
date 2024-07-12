@@ -3,5 +3,6 @@
 {
   # List your module files here
   fonts = import ./fonts.nix;
+  monitors = import ./monitors.nix;
   # pass-secret-service = import ./pass-secret-service.nix;
 }
