@@ -75,7 +75,7 @@
     homeConfigurations = {
       "om@framework" = home-manager.lib.homeManagerConfiguration {
         modules = [
-          ./home/om/framework
+          ./home/om/framework.nix
           ./home/om/nixpkgs.nix
         ];
         pkgs = nixpkgs.legacyPackages.x86_64-linux;

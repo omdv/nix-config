@@ -1,8 +1,7 @@
-{pkgs, ...}: {
+{ pkgs, ... }: {
+
   imports = [
-    ./firefox.nix
-    ./fonts.nix
-    ./qutebrowser.nix
+    ../common
   ];
 
   # Scaling in GNOME
