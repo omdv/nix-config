@@ -10,6 +10,7 @@
 
     ./global
     ./features/productivity
+    # ./features/desktop/hyprland
     ./features/desktop/gnome
     ./features/pass
     ./features/nixvim
