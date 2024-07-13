@@ -11,6 +11,7 @@
       ./locale.nix
       ./nix.nix
       ./nix-ld.nix
+      ./podman.nix
     ]
     ++ (builtins.attrValues outputs.nixosModules);
 
