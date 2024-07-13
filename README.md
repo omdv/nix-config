@@ -2,10 +2,8 @@
 
 ## eyecandy
 - prettify grub
-- colorschemes
 - wayland and hyprland??
 - remove gnome bloat
-- wallpaper for monitors
 
 ## cli
 - vim config and plugins
@@ -29,6 +27,7 @@
 - respect XDG_folders
 - btrbk for home with short retention
 - hydra auto-upgrades and remote CI/CD
+- htop managed by home-manager
 
 ## devops
 - ansible
