@@ -3,8 +3,6 @@
   ...
 }: {
   imports = [
-      # inputs.nix-colors.homeManagerModules.colorscheme
-
     ./global
     ./features/productivity
     ./features/desktop/gnome
@@ -15,10 +13,9 @@
   ];
 
 
-  # Green
-  wallpaper = pkgs.wallpapers.aenami-northern-lights;
-  colorscheme.type = "rainbow";
-  # colorScheme = inputs.nix-colors.colorSchemes.dracula;
+  # Purple
+  wallpaper = pkgs.wallpapers.towers-ice;
+  colorscheme.type = "tonal-spot";
 
   monitors = [
     {
