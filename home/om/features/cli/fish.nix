@@ -149,8 +149,8 @@ in {
       set -Ux NNN_PLUG "o:fzopen;p:preview-tui;d:diffs;t:tree;f:finder;s:stats"
       set -gx NNN_FIFO "/tmp/nnn.fifo"
 
-      # asdf
-      source "$HOME/.nix-profile/share/asdf-vm/asdf.fish"
+      # # asdf
+      # source "$HOME/.nix-profile/share/asdf-vm/asdf.fish"
 
       # direnv
       direnv hook fish | source
