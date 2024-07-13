@@ -63,9 +63,16 @@
         key = "B";
         map = ["index"];
       }
+      {
+        action = "display-message";
+        key = "<Return>";
+        map = [
+          "index"
+        ];
+      }
     ];
     macros = let
-      browserpipe = "cat /dev/stdin > /tmp/muttmail.html && xdg-open /tmp/muttmail.html";
+      browserpipe = "cat /dev/stdin > /tmp/muttmail.qute && xdg-open /tmp/muttmail.qute";
     in [
       {
         action = "<sidebar-next><sidebar-open>";

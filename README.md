@@ -27,6 +27,7 @@
 - respect XDG_folders
 - btrbk for home with short retention
 - hydra auto-upgrades and remote CI/CD
+- xdg-mime default for html for neomutt
 
 ## devops
 - ansible
