@@ -2,7 +2,9 @@
   imports = [
     ./devenv.nix
     ./k8s.nix
+    ./khard.nix
     ./mail.nix
+    ./neomutt.nix
     ./vscode.nix
     ./zotero.nix
   ];

@@ -268,7 +268,7 @@
 
   xdg = {
     desktopEntries = {
-      neomutt = {
+      k9s = {
         name = "k9s";
         genericName = "k8s CLI";
         comment = "Monitor and control k8s clusters";
