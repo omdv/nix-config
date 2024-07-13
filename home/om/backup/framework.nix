@@ -1,4 +1,7 @@
-{ pkgs, config, ... }: let
+{
+  config,
+  ...
+}: let
   pass = "${config.programs.password-store.package}/bin/pass";
   backup_key = "backup/framework";
 in {
@@ -23,6 +26,8 @@ in {
               "/home/me/Jts"
               "/home/me/.asdf"
               "/home/me/.gnupg"
+              "/home/me/.nix-profile"
+              "/home/me/.nix-defexpr"
             ];
             exclude_if_present = [ ".nobackup" ];
             exclude_caches = true;
@@ -47,6 +52,6 @@ in {
   # borgmatic service
   services.borgmatic = {
     enable = true;
-    frequency = "21:30";
+    frequency = "1hr";
   };
 }

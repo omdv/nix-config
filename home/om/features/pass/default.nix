@@ -1,6 +1,5 @@
 {
   pkgs,
-  config,
   ...
 }: {
   programs.password-store = {
@@ -9,10 +8,5 @@
       PASSWORD_STORE_DIR = "";
     };
     package = pkgs.pass.withExtensions (p: [p.pass-otp]);
-  };
-
-  services.pass-secret-service = {
-    enable = true;
-    extraArgs = ["-e${config.programs.password-store.package}/bin/pass"];
   };
 }
