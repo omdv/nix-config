@@ -27,7 +27,6 @@
 - respect XDG_folders
 - btrbk for home with short retention
 - hydra auto-upgrades and remote CI/CD
-- htop managed by home-manager
 
 ## devops
 - ansible

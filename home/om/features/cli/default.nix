@@ -7,6 +7,7 @@
     ./fzf.nix
     ./git.nix
     ./gpg.nix
+    ./htop.nix
     ./mc.nix
     ./nnn.nix
     ./network-tui.nix
@@ -21,7 +22,6 @@
     zip # base
     wget # base
 
-    htop # Better top
     eza # Better ls
     ripgrep # Better grep
     fd # Better find
