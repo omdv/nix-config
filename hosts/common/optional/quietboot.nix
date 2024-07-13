@@ -1,8 +1,4 @@
-{
-  pkgs,
-  config,
-  ...
-}: {
+{ pkgs, ... }: {
   console = {
     useXkbConfig = true;
     earlySetup = false;
