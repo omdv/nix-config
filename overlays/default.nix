@@ -1,4 +1,13 @@
-{inputs, ...}: {
+{
+  inputs,
+  ...
+}: let
+  addPatches = pkg: patches:
+    pkg.overrideAttrs (oldAttrs: {
+      patches = (oldAttrs.patches or []) ++ patches;
+    });
+in {
+
   # Bring all custom packages into scope
   additions = final: _prev: import ../pkgs _prev;
 
@@ -17,5 +26,10 @@
           else packages
       )
       inputs;
+  };
+
+  modifications = final: prev: {
+    # https://github.com/mdellweg/pass_secret_service/pull/37
+    pass-secret-service = addPatches prev.pass-secret-service [./pass-secret-service-native.diff];
   };
 }
