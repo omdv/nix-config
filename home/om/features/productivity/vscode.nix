@@ -1,4 +1,8 @@
 {pkgs, ...}: {
+  home.packages = with pkgs; [
+    nil
+  ];
+
   programs.vscode = {
     enable = true;
     userSettings = {
@@ -40,6 +44,10 @@
       # Other
       "telemetry.telemetryLevel" = "off";
       "update.showReleaseNotes" = false;
+      ## Language supports
+      # Nix Language
+      "nix.enableLanguageServer" = true;
+      "nix.serverPath" = "nil";
     };
   };
 }
