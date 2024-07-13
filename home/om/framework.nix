@@ -6,11 +6,10 @@
   ...
 }: {
   imports = [
-      inputs.nix-colors.homeManagerModules.colorscheme
+      # inputs.nix-colors.homeManagerModules.colorscheme
 
     ./global
     ./features/productivity
-    # ./features/desktop/hyprland
     ./features/desktop/gnome
     ./features/pass
     ./features/nixvim
@@ -18,7 +17,11 @@
     ./backup/framework.nix
   ];
 
-  colorScheme = inputs.nix-colors.colorSchemes.dracula;
+
+  # Green
+  wallpaper = pkgs.wallpapers.aenami-northern-lights;
+  colorscheme.type = "rainbow";
+  # colorScheme = inputs.nix-colors.colorSchemes.dracula;
 
   monitors = [
     {

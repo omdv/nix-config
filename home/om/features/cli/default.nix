@@ -9,6 +9,7 @@
     ./gpg.nix
     ./mc.nix
     ./nnn.nix
+    ./qutebrowser.nix
     ./starship.nix
   ];
   home.packages = with pkgs; [
