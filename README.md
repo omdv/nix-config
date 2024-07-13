@@ -15,6 +15,7 @@
 - persistence and erasing /root
 - service for pass
 - (specialization)[https://nixos.wiki/wiki/Specialisation]
+- prometheus node exporter + tailscale
 
 ## productivity
 - launch terminal shortcut

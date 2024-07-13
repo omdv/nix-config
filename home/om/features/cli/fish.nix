@@ -9,18 +9,14 @@
   packageNames = map (p: p.pname or p.name or null) config.home.packages;
   hasPackage = name: lib.any (x: x == name) packageNames;
 
-  hasRipgrep = hasPackage "ripgrep";
   hasExa = hasPackage "eza";
   hasHtop = hasPackage "htop";
   hasFd = hasPackage "fd";
-  hasDocker = hasPackage "docker";
   hasKubecolor = hasPackage "kubecolor";
-  hasGopass = hasPackage "gopass";
 
   hasBat = config.programs.bat.enable;
   hasNnn = config.programs.nnn.enable;
   hasNeovim = config.programs.neovim.enable || config.programs.nixvim.enable;
-  hasEmacs = config.programs.emacs.enable;
   hasNeomutt = config.programs.neomutt.enable;
   hasShellColor = config.programs.shellcolor.enable;
   hasKitty = config.programs.kitty.enable;
@@ -42,7 +38,7 @@ in {
       }
     ];
 
-    shellAbbrs = rec {
+    shellAbbrs = {
       # Clone-in-kitty
       cik = mkIf hasKitty "clone-in-kitty --type os-window";
 
@@ -52,16 +48,15 @@ in {
       top = mkIf hasHtop "htop";
       vim = mkIf hasNeovim "nvim";
       mutt = mkIf hasNeomutt "neomutt";
-      # n = mkIf hasNnn "nnn";
-      pass = mkIf hasGopass "gopass";
+      # pass = mkIf hasGopass "gopass";
 
       # Shortcuts
       hm = "home-manager --flake .";
       hms = "home-manager --flake . switch ";
       snrs = "sudo nixos-rebuild --flake . switch";
-      dc = mkIf hasDocker "docker-compose";
-      dps = mkIf hasDocker "docker ps -a --format 'table {{.Names}}\t{{.Image}}\t{{.Ports}}\t{{.Status}}'";
+      dps = "docker ps -a --format 'table {{.Names}}\t{{.Image}}\t{{.Ports}}\t{{.Status}}'";
     };
+
     shellAliases = {
       # Clear screen and scrollback
       clear = "printf '\\033[2J\\033[3J\\033[1;1H'";
@@ -136,7 +131,6 @@ in {
       set -gx LEIN_HOME $XDG_DATA_HOME/lein
       set -gx NVM_DIR $XDG_DATA_HOME/nvm
       set -gx OCI_CLI_RC_FILE $XDG_CONFIG_HOME/oci
-      set -gx PASSWORD_STORE_DIR $XDG_DATA_HOME/pass
       set -gx PSQL_HISTORY $XDG_DATA_HOME/psql_history
       set -gx RUSTUP_HOME $XDG_DATA_HOME/rustup
       set -gx SQLITE_HISTORY $XDG_CACHE_HOME/sqlite_history
