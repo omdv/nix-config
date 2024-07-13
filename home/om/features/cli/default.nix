@@ -9,6 +9,7 @@
     ./gpg.nix
     ./mc.nix
     ./nnn.nix
+    ./network-tui.nix
     ./qutebrowser.nix
     ./starship.nix
   ];
