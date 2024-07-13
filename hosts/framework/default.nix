@@ -12,7 +12,6 @@
 
     ../common/optional/btrfs.nix
     ../common/optional/gnome.nix
-    # ../common/optional/greetd.nix
     ../common/optional/java.nix
     ../common/optional/pipewire.nix
     ../common/optional/poweropts.nix
