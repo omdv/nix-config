@@ -1,18 +1,17 @@
 {
   pkgs,
-  config,
   ...
 }: {
-  # better pass
-  home.packages = with pkgs; [
-    gopass
-  ];
+  # # better pass
+  # home.packages = with pkgs; [
+  #   gopass
+  # ];
 
   programs.password-store = {
     enable = true;
-    settings = {
-      PASSWORD_STORE_DIR = "$XDG_DATA_HOME/pass";
-    };
+    # settings = {
+    #   PASSWORD_STORE_DIR = "$XDG_DATA_HOME/pass";
+    # };
     package = pkgs.pass.withExtensions (p: [p.pass-otp]);
   };
 
