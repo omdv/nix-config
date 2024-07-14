@@ -10,39 +10,55 @@
     ./htop.nix
     ./mc.nix
     ./nnn.nix
-    ./network-tui.nix
     ./qutebrowser.nix
     ./starship.nix
   ];
   home.packages = with pkgs; [
+    # base
+    file
+    zip
+    wget
+
+    # better utils
+    bc # Calculator
     comma # Install and run programs by sticking a , before them
+    diff-so-fancy # Better diff
     distrobox # Nice escape hatch, integrates docker images with my environment
-
-    file # base
-    zip # base
-    wget # base
-
     eza # Better ls
-    ripgrep # Better grep
     fd # Better find
     httpie # Better curl
-    diff-so-fancy # Better diff
+    jq # A lightweight and flexible command-line JSON processor
+    ripgrep # Better grep
+    yq-go # yaml processor https://github.com/mikefarah/yq
 
-    ncdu # TUI disk usage
+    # system tools
     duf # TUI disk usage
-
-    bc # Calculator
-    jq # JSON pretty printer and manipulator
+    iotop # io monitoring
+    lm_sensors # for `sensors` command
+    lsof # list open files
+    ltrace # library call monitoring
+    ncdu # TUI disk usage
+    pciutils # lspci
+    strace # system call monitoring
     sysz # fzf for systemd
+    usbutils # lsusb
 
-    # nixd # Nix LSP
-    # alejandra # Nix formatter
-    # nixfmt-rfc-style
-    # nvd # Differ
-    # nix-diff # Differ, more detailed
-    # nix-output-monitor
-    # nh # Nice wrapper for NixOS and HM
+    # network tools
+    dnsutils  # `dig` + `nslookup`
+    iftop # network monitoring
+    ipcalc  # it is a calculator for the IPv4/v6 addresses
+    iperf3 # determine max bandwidth
+    ldns # replacement of `dig`, it provide the command `drill`
+    mtr # network diagnostic tool
+    nethogs # net top tool
+    nmap # A utility for network discovery and security auditing
+    socat # replacement of openbsd-netcat
 
-    # ltex-ls # Spell checking LSP
+    # nix -related
+    alejandra # Nix formatter
+    nh # Nice wrapper for NixOS and HM
+    nil # Nix LSP
+    nix-diff # Differ, more detailed
+    nix-output-monitor
   ];
 }

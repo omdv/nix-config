@@ -7,6 +7,7 @@
 
 ## cli
 - vim config and plugins
+- separate monitoring tools
 
 ## explore
 - sops-nix
