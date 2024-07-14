@@ -8,7 +8,7 @@
     ./features/desktop/gnome
     ./features/pass
     ./features/nixvim
-
+    ./features/optional/quickemu.nix
     ./backup/framework.nix
   ];
 
