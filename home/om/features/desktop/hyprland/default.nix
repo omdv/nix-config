@@ -18,7 +18,7 @@ in {
     ../common/wayland-wm
 
     ./basic-binds.nix
-    # ./hyprbars.nix
+    ./hyprbars.nix
   ];
 
   xdg.portal = let
@@ -170,7 +170,7 @@ in {
         ];
       };
 
-      # exec = ["${pkgs.swaybg}/bin/swaybg -i ${config.wallpaper} --mode fill"];
+      exec = ["${pkgs.swaybg}/bin/swaybg -i ${config.wallpaper} --mode fill"];
 
       bind = let
         grimblast = lib.getExe pkgs.grimblast;
