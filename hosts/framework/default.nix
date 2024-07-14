@@ -13,6 +13,7 @@
     ../common/optional/btrfs.nix
     ../common/optional/gnome.nix
     ../common/optional/java.nix
+    ../common/optional/libvirt.nix
     ../common/optional/pipewire.nix
     ../common/optional/poweropts.nix
     ../common/optional/quietboot.nix

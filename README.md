@@ -28,6 +28,7 @@
 - btrbk for home with short retention
 - hydra auto-upgrades and remote CI/CD
 - xdg-mime default for html for neomutt
+- virtualization, nixvirt for declarative VMs
 
 ## devops
 - ansible
