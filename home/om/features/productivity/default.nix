@@ -11,6 +11,5 @@
 
   home.packages = with pkgs; [
     visidata
-    nil #lsp
   ];
 }
