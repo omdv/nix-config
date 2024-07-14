@@ -6,7 +6,7 @@
     ./global
     ./features/productivity
     ./features/desktop/gnome
-    ./features/desktop/hyprland
+    # ./features/desktop/hyprland
     ./features/pass
     ./features/nixvim
     ./features/optional/quickemu.nix
