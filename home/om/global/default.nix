@@ -25,5 +25,5 @@
     stateVersion = lib.mkDefault "23.05";
   };
 
-  nix.package = pkgs.nix;
+  # nix.package = pkgs.nix;
 }

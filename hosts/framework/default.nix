@@ -12,7 +12,8 @@
 
     ../common/optional/btrfs.nix
     # ../common/optional/gnome.nix
-    ../common/optional/greetd.nix
+    # ../common/optional/greetd.nix
+
     ../common/optional/java.nix
     ../common/optional/libvirt.nix
     ../common/optional/pipewire.nix
@@ -21,8 +22,20 @@
     ../common/optional/vpn.nix
   ];
 
-  programs = {
-    dconf.enable = true;
+  specialisation = {
+
+    gnome.configuration = {
+      imports = [
+        ../common/optional/gnome.nix
+      ];
+    programs.dconf.enable = true;
+    };
+
+    hyprland.configuration = {
+      imports = [
+        ../common/optional/greetd.nix
+      ];
+    };
   };
 
   # Lid settings
@@ -45,6 +58,8 @@
       "i686-linux"
     ];
   };
+
+  hardware.opengl.enable = true;
 
   system.stateVersion = "23.05";
 }

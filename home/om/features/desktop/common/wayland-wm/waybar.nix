@@ -176,33 +176,34 @@ in {
             Up: {bandwidthUpBits}
             Down: {bandwidthDownBits}'';
         };
-        "custom/tailscale-ping" = {
-          interval = 10;
-          return-type = "json";
-          exec = let
-            pingCmd = host: "timeout 2 tailscale ping -c 1 ${host} | tail -1 | cut -d ' ' -f8";
-            hosts = lib.attrNames outputs.nixosConfigurations;
-            homeMachine = "merope";
-            remoteMachine = "alcyone";
-          in
-            mkScriptJson {
-              deps = [pkgs.tailscale];
-              # Build variables for each host
-              pre = ''
-                ${lib.concatStringsSep "\n" (
-                  map (host: ''
-                    ping_${host}="$(${pingCmd host})" || ping_${host}="Disconnected"
-                  '')
-                  hosts
-                )}
-              '';
-              # Access a remote machine's and a home machine's ping
-              text = "  $ping_${remoteMachine} /   $ping_${homeMachine}";
-              # Show pings from all machines
-              tooltip = lib.concatStringsSep "\n" (map (host: "${host}: $ping_${host}") hosts);
-            };
-          format = "{}";
-        };
+        # "custom/tailscale-ping" = {
+        #   interval = 10;
+        #   return-type = "json";
+        #   exec = let
+        #     # pingCmd = host: "timeout 2 tailscale ping -c 1 ${host} | tail -1 | cut -d ' ' -f8";
+        #     pingCmd = host: "timeout 2 ping -c 1 ${host} | tail -1 | cut -d ' ' -f7";
+        #     hosts = lib.attrNames outputs.nixosConfigurations;
+        #     homeMachine = "framework";
+        #     remoteMachine = "google.com";
+        #   in
+        #     mkScriptJson {
+        #       deps = [pkgs.tailscale];
+        #       # Build variables for each host
+        #       pre = ''
+        #         ${lib.concatStringsSep "\n" (
+        #           map (host: ''
+        #             ping_${host}="$(${pingCmd host})" || ping_${host}="Disconnected"
+        #           '')
+        #           hosts
+        #         )}
+        #       '';
+        #       # Access a remote machine's and a home machine's ping
+        #       text = "  $ping_${remoteMachine} /   $ping_${homeMachine}";
+        #       # Show pings from all machines
+        #       tooltip = lib.concatStringsSep "\n" (map (host: "${host}: $ping_${host}") hosts);
+        #     };
+        #   format = "{}";
+        # };
         "custom/menu" = {
           interval = 1;
           return-type = "json";
