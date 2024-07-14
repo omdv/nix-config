@@ -9,9 +9,9 @@
   vars = ''XDG_DATA_DIRS="$XDG_DATA_DIRS:${lib.concatStringsSep ":" homeSharePaths}" GTK_USE_PORTAL=0'';
 
   omCfg = homeCfgs.om;
-  # gtkTheme = omCfg.gtk.theme;
-  # iconTheme = omCfg.gtk.iconTheme;
-  # wallpaper = omCfg.wallpaper;
+  gtkTheme = omCfg.gtk.theme;
+  iconTheme = omCfg.gtk.iconTheme;
+  wallpaper = omCfg.wallpaper;
 
   sway-kiosk = command: "${lib.getExe pkgs.sway} --unsupported-gpu --config ${pkgs.writeText "kiosk.config" ''
     output * bg #000000 solid_color
@@ -24,8 +24,8 @@
 in {
   users.extraUsers.greeter = {
     packages = [
-      # gtkTheme.package
-      # iconTheme.package
+      gtkTheme.package
+      iconTheme.package
     ];
     # For caching and such
     home = "/tmp/greeter-home";
@@ -34,16 +34,16 @@ in {
 
   programs.regreet = {
     enable = true;
-    # settings = {
-    #   GTK = {
-    #     icon_theme_name = "Papirus";
-    #     theme_name = gtkTheme.name;
-    #   };
-    #   background = {
-    #     path = wallpaper;
-    #     fit = "Cover";
-    #   };
-    # };
+    settings = {
+      GTK = {
+        icon_theme_name = "Papirus";
+        theme_name = gtkTheme.name;
+      };
+      background = {
+        path = wallpaper;
+        fit = "Cover";
+      };
+    };
   };
   services.greetd = {
     enable = true;

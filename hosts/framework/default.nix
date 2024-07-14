@@ -17,6 +17,7 @@
     ../common/optional/pipewire.nix
     ../common/optional/poweropts.nix
     ../common/optional/quietboot.nix
+    ../common/optional/vpn.nix
   ];
 
   programs = {
