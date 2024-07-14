@@ -40,29 +40,35 @@
     self,
     nixpkgs,
     home-manager,
+    systems,
     ...
   } @ inputs: let
     inherit (self) outputs;
-    systems = [
-      "aarch64-linux"
-      "i686-linux"
-      "x86_64-linux"
-      "aarch64-darwin"
-      "x86_64-darwin"
-    ];
-    forAllSystems = nixpkgs.lib.genAttrs systems;
+    lib = nixpkgs.lib // home-manager.lib;
+    forEachSystem = f: lib.genAttrs (import systems) (system: f pkgsFor.${system});
+    pkgsFor = lib.genAttrs (import systems) (
+      system:
+        import nixpkgs {
+          inherit system;
+          config.allowUnfree = true;
+        }
+    );
   in {
+    inherit lib;
     nixosModules = import ./modules/nixos;
     homeManagerModules = import ./modules/home-manager;
-    packages = forAllSystems (system: import ./pkgs nixpkgs.legacyPackages.${system});
-    overlays = import ./overlays {inherit inputs;};
+
+    overlays = import ./overlays {inherit inputs outputs;};
     hydraJobs = import ./hydra.nix {inherit inputs outputs;};
-    formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.alejandra);
+
+    packages = forEachSystem (pkgs: import ./pkgs {inherit pkgs;});
+    devShells = forEachSystem (pkgs: import ./shell.nix {inherit pkgs;});
+    formatter = forEachSystem (pkgs: pkgs.alejandra);
 
 
     # Host configurations
     nixosConfigurations = {
-      framework = nixpkgs.lib.nixosSystem {
+      framework = lib.nixosSystem {
         modules = [
           ./hosts/framework
         ];
@@ -74,12 +80,12 @@
 
     # Home configurations
     homeConfigurations = {
-      "om@framework" = home-manager.lib.homeManagerConfiguration {
+      "om@framework" = lib.homeManagerConfiguration {
         modules = [
           ./home/om/framework.nix
           ./home/om/nixpkgs.nix
         ];
-        pkgs = nixpkgs.legacyPackages.x86_64-linux;
+        pkgs = pkgsFor.x86_64-linux;
         extraSpecialArgs = {
           inherit inputs outputs;
         };
