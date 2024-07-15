@@ -23,7 +23,6 @@
   ];
 
   specialisation = {
-
     gnome.configuration = {
       imports = [
         ../common/optional/gnome.nix
