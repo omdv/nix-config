@@ -4,15 +4,19 @@
 }: {
   imports = [
     ./global
-    ./features/productivity
+
+
+    ./features/desktop/common
     ./features/desktop/gnome
-    # ./features/desktop/hyprland
+    ./features/desktop/hyprland
+
+    ./features/productivity
     ./features/pass
-    ./features/nixvim
+
     ./features/optional/quickemu.nix
+
     ./backup/framework.nix
   ];
-
 
   # Purple
   wallpaper = pkgs.wallpapers.towers-ice;

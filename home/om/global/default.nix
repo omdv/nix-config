@@ -9,6 +9,7 @@
   imports =
     [
       ../features/cli
+      ../features/nixvim
     ]
     ++ (builtins.attrValues outputs.homeManagerModules);
 
