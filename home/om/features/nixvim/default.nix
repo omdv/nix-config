@@ -7,6 +7,7 @@
     ./bufferline.nix
     ./nvim-tree.nix
     ./statusline
+    ./telescope.nix
   ];
 
   programs.nixvim = {
