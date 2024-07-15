@@ -1,7 +1,9 @@
-{ pkgs, ... }: {
+{
   programs.nixvim = {
     # Color scheme
     colorschemes.dracula.enable = true;
+
+    globals.mapleader = " ";
 
     # Options
     opts = {
