@@ -13,9 +13,9 @@
   iconTheme = omCfg.gtk.iconTheme;
   wallpaper = omCfg.wallpaper;
 
-  sway-kiosk = command: "${lib.getExe pkgs.sway} --unsupported-gpu --config ${pkgs.writeText "kiosk.config" ''
+  sway-kiosk = command: "${lib.getExe pkgs.sway} --config ${pkgs.writeText "kiosk.config" ''
     output * bg #000000 solid_color
-    xwayland disable
+    xwayland enable
     input "type:touchpad" {
       tap enabled
     }

@@ -100,6 +100,13 @@ in {
       # wallpaper
       exec = ["${pkgs.swaybg}/bin/swaybg -i ${config.wallpaper} --mode fill"];
 
+      # window rules
+      windowrulev2 = let
+        code = "title:^()$,class:^(code)$";
+      in [
+        "nearestneighbor, ${code}"
+      ];
+
       # monitor settings
       monitor = let
         waybarSpace = let
@@ -119,7 +126,7 @@ in {
         ++ (map (
           m: "${m.name},${
             if m.enabled
-            then "${toString m.width}x${toString m.height}@${toString m.refreshRate},${toString m.x}x${toString m.y},1"
+            then "${toString m.width}x${toString m.height}@${toString m.refreshRate},${toString m.x}x${toString m.y},${toString m.scale}"
             else "disable"
           }"
         ) (config.monitors));

@@ -26,7 +26,7 @@ in {
     openssh.authorizedKeys.keys = lib.splitString "\n" (builtins.readFile ../../../../home/om/ssh.pub);
   };
 
-  home-manager.users.om = import ../../../../home/om/${config.networking.hostName}.nix;
+  # home-manager.users.om = import ../../../../home/om/${config.networking.hostName}.nix;
 
   # fix for swaylock
   security.pam.services = {

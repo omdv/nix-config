@@ -10,10 +10,11 @@
     ../common/global
     ../common/users/om
 
-    ../common/optional/btrfs.nix
-    # ../common/optional/gnome.nix
-    ../common/optional/greetd.nix
+    ../common/optional/dwm.nix
+    ../common/optional/gnome.nix
+    # ../common/optional/greetd.nix
 
+    ../common/optional/btrfs.nix
     ../common/optional/java.nix
     ../common/optional/libvirt.nix
     ../common/optional/pipewire.nix
