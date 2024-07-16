@@ -31,9 +31,5 @@ in {
   modifications = final: prev: {
     # https://github.com/mdellweg/pass_secret_service/pull/37
     pass-secret-service = addPatches prev.pass-secret-service [./pass-secret-service-native.diff];
-
-    hyprbars = addPatches prev.hyprbars [./hyprbars-color-windowrules.patch ./hyprbars-no-remove.patch];
   };
-
-
 }
