@@ -7,7 +7,6 @@
   rgba = color: alpha: "rgba(${lib.removePrefix "#" color}${alpha})";
 in {
   imports = [
-    ../common
     ./wayland-wm
     ./binds.nix
   ];

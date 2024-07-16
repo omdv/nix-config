@@ -10,8 +10,8 @@
     ../common/global
     ../common/users/om
 
-    ../common/optional/dwm.nix
-    ../common/optional/gnome.nix
+    # ../common/optional/dwm.nix
+     ../common/optional/gnome.nix
     # ../common/optional/greetd.nix
 
     ../common/optional/btrfs.nix

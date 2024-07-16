@@ -5,8 +5,8 @@
   imports = [
     ./global
 
-    # ./features/desktop/gnome
-    ./features/desktop/hyprland
+    ./features/desktop/gnome
+    # ./features/desktop/hyprland
 
     ./features/cli
     ./features/nixvim
@@ -30,7 +30,7 @@
       height = 1504;
       workspace = "1";
       primary = true;
-      scale = 1.333333;
+      scale = 1.0;
     }
   ];
 }
