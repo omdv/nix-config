@@ -5,11 +5,12 @@
   imports = [
     ./global
 
-
     ./features/desktop/common
-    ./features/desktop/gnome
+    # ./features/desktop/gnome
     ./features/desktop/hyprland
 
+    ./features/cli
+    ./features/nixvim
     ./features/productivity
     ./features/pass
 

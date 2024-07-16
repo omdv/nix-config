@@ -6,11 +6,7 @@
   outputs,
   ...
 }: {
-  imports =
-    [
-      ../features/cli
-      ../features/nixvim
-    ]
+  imports = []
     ++ (builtins.attrValues outputs.homeManagerModules);
 
   systemd.user.startServices = "sd-switch";
