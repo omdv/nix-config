@@ -16,7 +16,6 @@ in {
     ../common/wayland-wm
 
     ./basic-binds.nix
-    # ./hyprbars.nix
   ];
 
   xdg.portal = let
