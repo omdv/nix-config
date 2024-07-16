@@ -15,7 +15,7 @@ in {
   imports = [
     ../common/wayland-wm
 
-    ./basic-binds.nix
+    ./binds.nix
   ];
 
   xdg.portal = let
