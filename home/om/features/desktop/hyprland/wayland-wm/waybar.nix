@@ -100,7 +100,7 @@ in {
 
         clock = {
           interval = 1;
-          format = "{:%d/%m %H:%M:%S}";
+          format = "{:%d-%m %H:%M}";
           format-alt = "{:%Y-%m-%d %H:%M:%S %z}";
           on-click-left = "mode";
           tooltip-format = ''
@@ -111,18 +111,13 @@ in {
         cpu = {
           format = "  {usage}%";
         };
-        "custom/gpu" = {
-          interval = 5;
-          exec = mkScript {script = "cat /sys/class/drm/card0/device/gpu_busy_percent";};
-          format = "󰒋  {}%";
-        };
         memory = {
           format = "  {}%";
           interval = 5;
         };
 
         pulseaudio = {
-          format = "{icon}  {volume}%";
+          format = "{icon}   {volume}%";
           format-muted = "   0%";
           format-icons = {
             headphone = "󰋋";
