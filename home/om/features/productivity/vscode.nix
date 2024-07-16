@@ -52,7 +52,7 @@
       name = "VSCode";
       genericName = "Development environment";
       comment = "Edit text files";
-      exec = "code --ozone-platform=wayland %F";
+      exec = "code %F";
       icon = "code";
       mimeType = [
         "text/english"

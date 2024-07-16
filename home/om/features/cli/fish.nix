@@ -50,7 +50,6 @@ in {
       mutt = mkIf hasNeomutt "neomutt";
 
       # Shortcuts
-      code = "code --ozone-platform=wayland";
       hm = "home-manager --flake .";
       hms = "home-manager --flake . switch ";
       snrs = "sudo nixos-rebuild --flake . switch";
