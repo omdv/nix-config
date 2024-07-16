@@ -3,7 +3,7 @@
     enable = true;
     userSettings = {
       # General
-      "editor.fontSize" = 16;
+      "editor.fontSize" = 18;
       "editor.fontFamily" = "'FiraCode Nerd Font', 'mono', monospace";
       "editor.fontLigatures" = true;
       "editor.tabSize" = 2;
@@ -44,6 +44,39 @@
       # Nix Language
       "nix.enableLanguageServer" = true;
       "nix.serverPath" = "nil";
+    };
+  };
+
+  xdg.desktopEntries = {
+    code = {
+      name = "VSCode";
+      genericName = "Development environment";
+      comment = "Edit text files";
+      exec = "code --ozone-platform=wayland %F";
+      icon = "code";
+      mimeType = [
+        "text/english"
+        "text/plain"
+        "text/x-makefile"
+        "text/x-c++hdr"
+        "text/x-c++src"
+        "text/x-chdr"
+        "text/x-csrc"
+        "text/x-java"
+        "text/x-moc"
+        "text/x-pascal"
+        "text/x-tcl"
+        "text/x-tex"
+        "application/x-shellscript"
+        "text/x-c"
+        "text/x-c++"
+      ];
+      terminal = false;
+      type = "Application";
+      categories = [
+        "Utility"
+        "TextEditor"
+      ];
     };
   };
 }

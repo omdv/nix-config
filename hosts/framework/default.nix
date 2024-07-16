@@ -12,7 +12,7 @@
 
     ../common/optional/btrfs.nix
     # ../common/optional/gnome.nix
-    # ../common/optional/greetd.nix
+    ../common/optional/greetd.nix
 
     ../common/optional/java.nix
     ../common/optional/libvirt.nix
@@ -22,20 +22,20 @@
     ../common/optional/vpn.nix
   ];
 
-  specialisation = {
-    gnome.configuration = {
-      imports = [
-        ../common/optional/gnome.nix
-      ];
-    programs.dconf.enable = true;
-    };
+  # specialisation = {
+  #   gnome.configuration = {
+  #     imports = [
+  #       ../common/optional/gnome.nix
+  #     ];
+  #   programs.dconf.enable = true;
+  #   };
 
-    hyprland.configuration = {
-      imports = [
-        ../common/optional/greetd.nix
-      ];
-    };
-  };
+  #   hyprland.configuration = {
+  #     imports = [
+  #       ../common/optional/greetd.nix
+  #     ];
+  #   };
+  # };
 
   # Lid settings
   services.logind = {

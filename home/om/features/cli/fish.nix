@@ -48,9 +48,9 @@ in {
       top = mkIf hasHtop "htop";
       vim = mkIf hasNeovim "nvim";
       mutt = mkIf hasNeomutt "neomutt";
-      # pass = mkIf hasGopass "gopass";
 
       # Shortcuts
+      code = "code --ozone-platform=wayland";
       hm = "home-manager --flake .";
       hms = "home-manager --flake . switch ";
       snrs = "sudo nixos-rebuild --flake . switch";
