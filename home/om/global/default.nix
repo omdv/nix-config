@@ -1,10 +1,14 @@
 {
+  pkgs,
   lib,
   config,
   outputs,
   ...
 }: {
-  imports = []
+  imports = [
+    ../features/cli
+    ../features/desktop/common
+  ]
     ++ (builtins.attrValues outputs.homeManagerModules);
 
   systemd.user.startServices = "sd-switch";
@@ -20,5 +24,5 @@
     stateVersion = lib.mkDefault "23.05";
   };
 
-  # nix.package = pkgs.nix;
+  nix.package = pkgs.nix;
 }
