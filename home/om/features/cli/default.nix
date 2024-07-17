@@ -60,5 +60,8 @@
     nil # Nix LSP
     nix-diff # Differ, more detailed
     nix-output-monitor
+
+    # misc
+    tldr
   ];
 }
