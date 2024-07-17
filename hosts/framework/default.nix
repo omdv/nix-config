@@ -10,9 +10,8 @@
     ../common/global
     ../common/users/om
 
-    # ../common/optional/i3wm.nix
+    ../common/optional/i3wm.nix
     #  ../common/optional/gnome.nix
-    # ../common/optional/greetd.nix
 
     ../common/optional/btrfs.nix
     ../common/optional/java.nix
@@ -23,20 +22,20 @@
     ../common/optional/vpn.nix
   ];
 
-  specialisation = {
-    gnome.configuration = {
-      imports = [
-        ../common/optional/gnome.nix
-      ];
-    programs.dconf.enable = true;
-    };
+  # specialisation = {
+  #   gnome.configuration = {
+  #     imports = [
+  #       ../common/optional/gnome.nix
+  #     ];
+  #   programs.dconf.enable = true;
+  #   };
 
-    i3wm.configuration = {
-      imports = [
-        ../common/optional/i3wm.nix
-      ];
-    };
-  };
+  #   i3wm.configuration = {
+  #     imports = [
+  #       ../common/optional/i3wm.nix
+  #     ];
+  #   };
+  # };
 
   # Lid settings
   services.logind = {
