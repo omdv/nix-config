@@ -2,8 +2,7 @@
 
 ## eyecandy
 - prettify grub
-- wayland and hyprland??
-- remove gnome bloat
+- consistent colorschemes
 
 ## cli
 - vim config and plugins
@@ -13,22 +12,19 @@
 - sops-nix
 - persistence and erasing /root
 - service for pass
-- (specialization)[https://nixos.wiki/wiki/Specialisation]
 - prometheus node exporter + tailscale
 
 ## productivity
-- launch terminal shortcut
-- declarative mail
 - neomutt
 - try all scripts
 - devshell secrets
 
 ## system
-- auto-cpufreq daemon, disable gnome
+- auto-cpufreq daemon vs tlp?
 - respect XDG_folders
 - btrbk for home with short retention
 - hydra auto-upgrades and remote CI/CD
-- xdg-mime default for html for neomutt
+- xdg-mime defaults - qutebrowser, neomutt, vim, etc
 - virtualization, nixvirt for declarative VMs
 
 ## devops
