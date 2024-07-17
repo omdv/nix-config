@@ -4,5 +4,6 @@
     ./fonts.nix
     ./gtk.nix
     ./kitty.nix
+    ./pavucontrol.nix
   ];
 }

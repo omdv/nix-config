@@ -5,7 +5,7 @@
   imports = [
     ./global
 
-    # ./features/desktop/i3wm
+    ./features/desktop/i3wm
     # ./features/desktop/gnome
     # ./features/desktop/hyprland
 
