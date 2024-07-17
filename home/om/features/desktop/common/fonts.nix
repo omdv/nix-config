@@ -1,7 +1,12 @@
 {pkgs, ...}: {
   fonts.fontconfig.enable = true;
     home.packages = [
-      (pkgs.nerdfonts.override { fonts = [ "FiraCode" ]; })
+      (pkgs.nerdfonts.override {
+        fonts = [
+          "FiraCode"
+          "NerdFontsSymbolsOnly"
+        ];
+      })
     ];
 
   fontProfiles = {
@@ -13,6 +18,10 @@
     regular = {
       family = "Fira Sans";
       package = pkgs.fira;
+    };
+    icons = {
+      family = "Symbols Nerd Font";
+      package = pkgs.nerdfonts.override {fonts = ["NerdFontsSymbolsOnly"];};
     };
   };
 }
