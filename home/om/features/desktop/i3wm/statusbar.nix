@@ -1,4 +1,4 @@
-{ lib, config, ... }: {
+{ pkgs, lib, config, ... }: {
   xsession.windowManager.i3 = {
     config = {
       bars = [
@@ -6,7 +6,7 @@
           fonts = {
             names = [ config.fontProfiles.monospace.family ];
             style = "Mono";
-            size = 14.0;
+            size = 8.0;
           };
           position = "top";
           statusCommand = "${lib.getExe config.programs.i3status-rust.package} ~/.config/i3status-rust/config-top.toml";
@@ -31,6 +31,10 @@
           }
           {
             block = "sound";
+            click = [{
+              button = "left";
+              cmd = "${lib.getExe pkgs.pavucontrol}";
+            }];
           }
           {
             block = "time";
@@ -38,6 +42,8 @@
             interval = 60;
           }
         ];
+        # icons = "awesome5";
+        theme = "dracula";
       };
     };
   };
