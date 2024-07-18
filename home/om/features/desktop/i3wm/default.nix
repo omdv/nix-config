@@ -17,6 +17,8 @@
     package = pkgs.i3-gaps;
     config = {
 
+      defaultWorkspace = "1";
+
       fonts = {
         names = [
           config.fontProfiles.monospace.family
