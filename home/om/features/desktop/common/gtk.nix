@@ -74,7 +74,7 @@ in rec {
     enable = true;
     font = {
       name = config.fontProfiles.regular.family;
-      size = 12;
+      size = config.i3scaling.gtkfontsize;
     };
     theme = let
       inherit (config.colorscheme) mode colors;

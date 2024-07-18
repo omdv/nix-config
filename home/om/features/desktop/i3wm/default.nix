@@ -8,7 +8,7 @@
   # scaling, etc
   xresources.properties = {
     "Xft.antialias" = true;
-    "Xft.dpi" = 174; # 96 is 1.0
+    "Xft.dpi" = config.i3scaling.dpi;
   };
 
   xsession.windowManager.i3 = {
