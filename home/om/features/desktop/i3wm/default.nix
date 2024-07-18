@@ -1,4 +1,3 @@
-# TODO parameterize xft.dpi via config.monitor
 { pkgs, config, ... }: {
   imports = [
     ./rofi.nix
