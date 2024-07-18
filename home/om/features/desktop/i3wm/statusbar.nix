@@ -1,3 +1,6 @@
+# TODO try notmuch block
+# TODO try rofi notification
+# TODO number of failed services
 {
   pkgs,
   lib,
@@ -22,10 +25,8 @@
     deps ? [],
     pre ? "",
     text ? "",
-    tooltip ? "",
     alt ? "",
-    class ? "",
-    percentage ? "",
+    state ? "",
   }:
     mkScript {
       deps = [pkgs.jq] ++ deps;
@@ -33,11 +34,9 @@
         ${pre}
         jq -cn \
           --arg text "${text}" \
-          --arg tooltip "${tooltip}" \
           --arg alt "${alt}" \
-          --arg class "${class}" \
-          --arg percentage "${percentage}" \
-          '{text:$text,tooltip:$tooltip,alt:$alt,class:$class,percentage:$percentage}'
+          --arg state "${state}" \
+          '{text:$text,alt:$alt,state:$state}'
       '';
     };
 in {
@@ -47,7 +46,6 @@ in {
         {
           fonts = {
             names = [ config.fontProfiles.regular.family ];
-            # style = "Mono";
             size = 10.;
           };
           position = "top";
@@ -65,11 +63,17 @@ in {
           {
             block = "memory";
             format = " $icon $mem_used_percents ";
-            format_alt = " $icon $swap_used_percents ";
+            interval = 5;
           }
           {
             block = "cpu";
-            interval = 1;
+            interval = 5;
+          }
+          {
+            block = "temperature";
+            format = " $icon $average";
+            format_alt = " $icon $max max";
+            interval = 5;
           }
           {
             block = "sound";
@@ -93,50 +97,72 @@ in {
             interval = 60;
           }
           {
+            # number of failed services
             block = "custom";
             interval = 10;
             json = true;
             command = mkScriptJson {
               pre = ''
-                count=$(gpg-connect-agent 'keyinfo --list' /bye | awk '{print $7}' | grep '1')
-                if [ "$count" == "1" ]; then
-                  status=""
+                count=$(systemctl --user list-units | grep -c "failed")
+                if [ "$count" == "0" ]; then
+                  status="$count"
+                  state="Good"
                 else
-                  status=""
+                  status="$count"
+                  state="Bad"
                 fi
               '';
               text = "$status";
+              state = "$state";
             };
           }
-          {
-            block = "custom";
-            interval = 10;
-            json = true;
-            command = mkScriptJson {
-              deps = [pkgs.findutils pkgs.procps];
-              pre = ''
-                count=$(find ~/Mail/*/Inbox/new -type f | wc -l)
-                if pgrep mbsync &>/dev/null; then
-                  status="syncing"
-                else
-                  if [ "$count" == "0" ]; then
-                    status="󰇯"
-                  else
-                    status="󰇮 $count"
-                  fi
-                fi
-              '';
-              text = "$status";
-              alt = "$status";
-            };
-          }
+          # {
+          #   # whether gpg is unlocked
+          #   block = "custom";
+          #   interval = 10;
+          #   json = true;
+          #   command = mkScriptJson {
+          #     pre = ''
+          #       count=$(gpg-connect-agent 'keyinfo --list' /bye | awk '{print $7}' | grep '1')
+          #       if [ "$count" == "1" ]; then
+          #         status="{\"state\":\"Bad\", \"text\": \"unlocked\"}"
+          #       else
+          #         status="{\"state\":\"Good\", \"text\": \"locked\"}"
+          #       fi
+          #     '';
+          #     # 
+          #     text = "$status";
+          #   };
+          # }
+          # {
+          #   block = "custom";
+          #   interval = 10;
+          #   json = true;
+          #   command = mkScriptJson {
+          #     deps = [pkgs.findutils pkgs.procps];
+          #     pre = ''
+          #       count=$(find ~/Mail/*/Inbox/new -type f | wc -l)
+          #       if pgrep mbsync &>/dev/null; then
+          #         status="syncing"
+          #       else
+          #         if [ "$count" == "0" ]; then
+          #           status="󰇯"
+          #         else
+          #           status="󰇮 $count"
+          #         fi
+          #       fi
+          #     '';
+          #     text = "$status";
+          #     alt = "$status";
+          #   };
+          # }
           {
             block = "custom";
             command = "echo ⏻ ";
             interval = "once";
             click = [{
               button = "left";
-              cmd = "systemctl `echo -e 'suspend\npoweroff\nreboot' | dmenu`";
+              cmd = "systemctl `echo -e 'suspend\npoweroff\nreboot' | rofi -dmenu`";
             }];
           }
         ];
