@@ -4,9 +4,9 @@
       bars = [
         {
           fonts = {
-            names = [ config.fontProfiles.monospace.family ];
-            style = "Mono";
-            size = 8.0;
+            names = [ config.fontProfiles.regular.family ];
+            # style = "Mono";
+            size = 10.;
           };
           position = "top";
           statusCommand = "${lib.getExe config.programs.i3status-rust.package} ~/.config/i3status-rust/config-top.toml";
@@ -33,16 +33,34 @@
             block = "sound";
             click = [{
               button = "left";
-              cmd = "${lib.getExe pkgs.pavucontrol}";
+              cmd = "${lib.getExe pkgs.pavucontrol} --tab=3";
             }];
+          }
+          {
+            block = "battery";
+            format = " $icon $percentage ";
+            interval = 30;
           }
           {
             block = "time";
             format = " $timestamp.datetime(f:'%a %d/%m %R') ";
+            click = [{
+              button = "left";
+              cmd = "cal";
+            }];
             interval = 60;
           }
+          {
+            block = "custom";
+            command = "echo \\U23fb";
+            interval = "once";
+            click = [{
+              button = "left";
+              cmd = "systemctl `echo -e 'suspend\npoweroff\nreboot' | dmenu`";
+            }];
+          }
         ];
-        # icons = "awesome5";
+        # icons = "material-nf";
         theme = "dracula";
       };
     };

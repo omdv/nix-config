@@ -7,6 +7,7 @@
           "NerdFontsSymbolsOnly"
         ];
       })
+      pkgs.font-awesome
     ];
 
   fontProfiles = {
@@ -20,8 +21,10 @@
       package = pkgs.fira;
     };
     icons = {
-      family = "Symbols Nerd Font";
-      package = pkgs.nerdfonts.override {fonts = ["NerdFontsSymbolsOnly"];};
+      # family = "Symbols Nerd Font";
+      # package = pkgs.nerdfonts.override {fonts = ["NerdFontsSymbolsOnly"];};
+      family = "Font Awesome";
+      package = pkgs.font-awesome;
     };
   };
 }
