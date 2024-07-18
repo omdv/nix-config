@@ -3,7 +3,7 @@
     enable = true;
     userSettings = {
       # General
-      "editor.fontSize" = 18;
+      "editor.fontSize" = 14;
       "editor.fontFamily" = "'FiraCode Nerd Font', 'mono', monospace";
       "editor.fontLigatures" = true;
       "editor.tabSize" = 2;
