@@ -1,6 +1,7 @@
 # TODO parameterize xft.dpi via config.monitor
 { pkgs, config, ... }: {
   imports = [
+    ./rofi.nix
     ./keybindings.nix
     ./statusbar.nix
   ];
@@ -17,14 +18,24 @@
     config = {
 
       fonts = {
-        names = [ config.fontProfiles.monospace.family ];
-        style = "Mono";
-        size = 8.0;
+        names = [
+          config.fontProfiles.monospace.family
+          config.fontProfiles.icons.family
+          ];
+        size = 12.0;
+      };
+
+      window = {
+        commands = [{
+          command = "border pixel 1";
+          criteria.class = "*";
+        }];
+        titlebar = false;
       };
 
       gaps = {
         inner = 2;
-        top = 10;
+        top = 2;
       };
     };
   };
