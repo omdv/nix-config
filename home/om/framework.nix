@@ -23,7 +23,7 @@
   wallpaper = pkgs.wallpapers.towers-ice;
   colorscheme.type = "tonal-spot";
 
-  # https://github.com/hyprwm/Hyprland/issues/4225
+  # TODO https://github.com/hyprwm/Hyprland/issues/4225
   monitors = [
     {
       name = "eDP-1";
@@ -34,4 +34,8 @@
       scale = 1.0;
     }
   ];
+
+  i3scaling = {
+    dpi = 144;
+  };
 }
