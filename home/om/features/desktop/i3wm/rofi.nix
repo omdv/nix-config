@@ -1,3 +1,4 @@
+# TODO rice rofi
 { config, lib, ... }: {
   programs.rofi = {
     enable = true;
