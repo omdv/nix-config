@@ -10,6 +10,7 @@
   xresources.properties = {
     "Xft.antialias" = true;
     "Xft.dpi" = config.i3scaling.dpi;
+    "Xcursor.size" = 16;
   };
 
   xsession.windowManager.i3 = {
@@ -28,6 +29,7 @@
       window = {
         border = 0;
         titlebar = false;
+        hideEdgeBorders = "smart";
       };
       gaps = {
         inner = 2;
