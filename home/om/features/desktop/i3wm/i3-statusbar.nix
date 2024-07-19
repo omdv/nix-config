@@ -96,26 +96,22 @@ in {
             }];
             interval = 60;
           }
-          {
-            # number of failed services
-            block = "custom";
-            interval = 10;
-            json = true;
-            command = mkScriptJson {
-              pre = ''
-                count=$(systemctl --user list-units | grep -c "failed")
-                if [ "$count" == "0" ]; then
-                  status="$count"
-                  state="Good"
-                else
-                  status="$count"
-                  state="Bad"
-                fi
-              '';
-              text = "$status";
-              state = "$state";
-            };
-          }
+          # {
+          #   # number of failed services
+          #   block = "custom";
+          #   interval = 1;
+          #   json = true;
+          #   shell = "sh";
+          #   command = mkScriptJson {
+          #     pre = ''
+          #       status=$(systemctl --user list-units | grep -c "failed" | tr -d '\n')
+          #       state="Good"
+          #     '';
+          #     text = "$status";
+          #     alt = "$status";
+          #     state = "$state";
+          #   };
+          # }
           # {
           #   # whether gpg is unlocked
           #   block = "custom";
@@ -153,7 +149,6 @@ in {
           #       fi
           #     '';
           #     text = "$status";
-          #     alt = "$status";
           #   };
           # }
           {
