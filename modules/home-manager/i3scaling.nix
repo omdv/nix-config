@@ -9,9 +9,13 @@ in {
       type = types.int;
       default = 1;
     };
-    gtkfontsize = mkOption {
+    gtkFontSize = mkOption {
       type = types.int;
       default = 12;
+    };
+    cursorSize = mkOption {
+      type = types.int;
+      default = 18;
     };
   };
 }

@@ -1,17 +1,9 @@
-# TODO background in i3
 { pkgs, config, ... }: {
   imports = [
     ./rofi.nix
     ./keybindings.nix
     ./polybar.nix
   ];
-
-  # scaling, etc
-  xresources.properties = {
-    "Xft.antialias" = true;
-    "Xft.dpi" = config.i3scaling.dpi;
-    "Xcursor.size" = 16;
-  };
 
   xsession.windowManager.i3 = {
     enable = true;
@@ -46,11 +38,11 @@
           always = true;
           notification = false;
         }
-        # {
-        #   command = "${pkgs.feh}/bin/feh --bg-scale ${config.wallpaper}";
-        #   always = true;
-        #   notification = false;
-        # }
+        {
+          command = "${pkgs.feh}/bin/feh --bg-scale ${config.wallpaper}";
+          always = true;
+          notification = false;
+        }
       ];
     };
   };
