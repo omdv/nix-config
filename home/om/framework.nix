@@ -36,7 +36,8 @@
   ];
 
   i3scaling = {
-    dpi = 144; #96 is 1.0 dpi
-    gtkfontsize = 12;
+    dpi = 144; #96 is 1.0 scale
+    gtkFontSize = 12;
+    cursorSize = 36;
   };
 }

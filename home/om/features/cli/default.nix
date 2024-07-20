@@ -18,6 +18,7 @@
     file
     zip
     wget
+    feh
 
     # better utils
     bc # Calculator

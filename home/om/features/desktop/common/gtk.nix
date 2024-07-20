@@ -74,7 +74,7 @@ in rec {
     enable = true;
     font = {
       name = config.fontProfiles.regular.family;
-      size = config.i3scaling.gtkfontsize;
+      size = config.i3scaling.gtkFontSize;
     };
     theme = let
       inherit (config.colorscheme) mode colors;
@@ -89,6 +89,10 @@ in rec {
       name = "Papirus";
       package = pkgs.papirus-icon-theme;
     };
+    cursorTheme = {
+      name = "Hackneyed";
+      size = config.i3scaling.cursorSize;
+    };
   };
 
   services.xsettingsd = {
@@ -96,6 +100,10 @@ in rec {
     settings = {
       "Net/ThemeName" = "${gtk.theme.name}";
       "Net/IconThemeName" = "${gtk.iconTheme.name}";
+      "Xft/Antialias" = true;
+      "Xft/DPI" = config.i3scaling.dpi * 1024;
+      "Xcursor/size" = config.i3scaling.cursorSize;
+      "Xcursor/theme" = "Hackneyed";
     };
   };
 

@@ -26,6 +26,7 @@
 - hydra auto-upgrades and remote CI/CD
 - xdg-mime defaults - qutebrowser, neomutt, vim, etc
 - virtualization, nixvirt for declarative VMs
+- keyring
 
 ## devops
 - ansible

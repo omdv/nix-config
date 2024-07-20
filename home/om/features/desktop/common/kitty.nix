@@ -29,7 +29,7 @@ in {
     enable = true;
     font = {
       name = config.fontProfiles.monospace.family;
-      size = 10;
+      size = 16;
     };
     keybindings = {
       "ctrl+enter" = "send_text normal clone-in-kitty --type os-window\\r";
