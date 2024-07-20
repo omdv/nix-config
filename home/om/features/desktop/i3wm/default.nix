@@ -3,6 +3,7 @@
     ./rofi.nix
     ./keybindings.nix
     ./polybar.nix
+    ./picom.nix
   ];
 
   xsession.windowManager.i3 = {
@@ -24,8 +25,9 @@
         hideEdgeBorders = "smart";
       };
       gaps = {
-        inner = 2;
-        top = 2;
+        inner = 5;
+        top = 5;
+        bottom = 5;
       };
       startup = [
         {
