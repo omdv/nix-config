@@ -65,14 +65,15 @@ in {
       iwSupport = true;
       githubSupport = true;
     };
-    script = "polybar -q -r top &";
+    script = "polybar -q -r left & polybar -q -r center & polybar -q -r right &";
     config = {
-      "bar/top" = {
+      "bar/root" = {
         monitor = "eDP-1";
-        width = "100%";
         height = "3%";
-        radius = 0;
-        line-size = 3;
+        override-redirect = true;
+        radius = 20;
+        bottom = false;
+
         background = colors.surface;
         foreground = colors.secondary;
         border-size = 0;
@@ -85,10 +86,32 @@ in {
         font-0 = "${config.fontProfiles.regular.family}:size=14;3";
         font-1 = "${config.fontProfiles.icons.family}:size=24;3";
 
-        modules-left = "i3";
-        modules-center = "date";
-        modules-right = "cpu battery";
       };
+
+      "bar/left" = {
+        "inherit" = "bar/root";
+        width = "20%";
+        offset-x = "0.5%";
+        offset-y = 0;
+        modules-center = "i3";
+      };
+
+      "bar/center" = {
+        "inherit" = "bar/root";
+        width = "20%";
+        offset-x = "40%";
+        offset-y = 0;
+        modules-center = "date";
+      };
+
+      "bar/right" = {
+        "inherit" = "bar/root";
+        width = "10%";
+        offset-x = "89.5%";
+        offset-y = 0;
+        modules-center = "cpu battery";
+      };
+
       "module/date" = {
         type = "internal/date";
         interval = 1;
