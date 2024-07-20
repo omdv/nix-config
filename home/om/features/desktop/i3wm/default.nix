@@ -26,7 +26,7 @@
       };
       gaps = {
         inner = 5;
-        top = 5;
+        top = 50;
         bottom = 5;
       };
       startup = [
