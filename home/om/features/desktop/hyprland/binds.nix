@@ -140,24 +140,6 @@
         )
         directions)
       ++
-      # Player controls
-      (
-        let
-          playerctl = lib.getExe' config.services.playerctld.package "playerctl";
-          playerctld = lib.getExe' config.services.playerctld.package "playerctld";
-        in
-          lib.optionals config.services.playerctld.enable [
-            # Media control
-            ",XF86AudioNext,exec,${playerctl} next"
-            ",XF86AudioPrev,exec,${playerctl} previous"
-            ",XF86AudioPlay,exec,${playerctl} play-pause"
-            ",XF86AudioStop,exec,${playerctl} stop"
-            "ALT,XF86AudioNext,exec,${playerctld} shift"
-            "ALT,XF86AudioPrev,exec,${playerctld} unshift"
-            "ALT,XF86AudioPlay,exec,systemctl --user restart playerctld"
-          ]
-      )
-      ++
       # Screen lock
       (
         let

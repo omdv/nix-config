@@ -1,7 +1,6 @@
 {pkgs, ...}: {
   imports = [
     ./cliphist.nix
-    ./hyprland-vnc.nix
     ./gammastep.nix
     ./mako.nix
     ./swayidle.nix
@@ -10,7 +9,6 @@
     ./wofi.nix
     ./zathura.nix
     ./imv.nix
-    ./waypipe.nix
   ];
 
   xdg.mimeApps.enable = true;

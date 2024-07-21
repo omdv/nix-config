@@ -31,7 +31,7 @@
         "identity.fxaccounts.enabled" = false;
         "privacy.trackingprotection.enabled" = true;
         "signon.rememberSignons" = false;
-        "layout.css.devPixelsPerPx" = -1.0;
+        "layout.css.devPixelsPerPx" = 1.2;
       };
     };
   };
