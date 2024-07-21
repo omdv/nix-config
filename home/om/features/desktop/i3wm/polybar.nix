@@ -2,9 +2,21 @@
 # TODO try rofi notification
 # TODO number of failed services
 
-{ pkgs, config, ... }: let
+{ pkgs, config, lib, ... }: let
   inherit (config.colorscheme) colors harmonized;
   # matugen color -t scheme-tonal-spot hex "#2B3975" --show-colors
+
+  commonDeps = with pkgs; [coreutils gnugrep];
+  mkScriptFromFile = {
+    name ? "script",
+    deps ? [],
+    scriptFile ? "",
+  }:
+    lib.getExe (pkgs.writeShellApplication {
+      inherit name;
+      text = builtins.readFile scriptFile;
+      runtimeInputs = commonDeps ++ deps;
+    });
 
   # colors = {
   #   "background"= "#121318";
@@ -57,6 +69,13 @@
   #   "tertiary_fixed_dim"= "#e4bad9"
   # };
 in {
+
+  home.file."${config.xdg.configHome}/polybar/scripts" = {
+  source = ./polybar;
+  recursive = true;
+  executable = true;
+  };
+
   services.polybar = {
     enable = true;
     package = pkgs.polybar.override {
@@ -94,7 +113,7 @@ in {
         offset-y = 0;
         modules-left = "i3";
         modules-center = "date";
-        modules-right = "cpu battery";
+        modules-right = "cpu mem wlan battery";
       };
 
       "module/date" = {
@@ -113,11 +132,31 @@ in {
         format-warn-background = colors.error;
         label-font = 1;
       };
+      "module/mem" = {
+        type = "internal/memory";
+        interval = 1;
+        warn-percentage = 5;
+        label = "MEM %percentage_used%%";
+        format-warn-background = colors.error;
+        label-font = 1;
+      };
       "module/battery" = {
         type = "internal/battery";
         battery = "BAT1";
         adapter = "AC0";
         full-at = 100;
+        label-font = 1;
+        label = "BAT %percentage%%";
+      };
+      "module/wlan" = {
+        type = "custom/script";
+        exec = mkScriptFromFile {
+          deps = [ pkgs.iw pkgs.gawk ];
+          scriptFile = ./polybar/wlan-status.sh;
+        };
+        interval = 1;
+        format = "<label>";
+        label = "WLAN %output:02%%";
         label-font = 1;
       };
       "module/i3" = {
