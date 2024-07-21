@@ -17,7 +17,7 @@
       };
       bookmarks = {};
       settings = {
-        "browser.zoom.default" = 1.0;
+        "browser.zoom.default" = 1.2;
         "browser.zoom.siteSpecific" = false;
         "browser.disableResetPrompt" = true;
         "browser.download.panel.shown" = true;
@@ -31,7 +31,7 @@
         "identity.fxaccounts.enabled" = false;
         "privacy.trackingprotection.enabled" = true;
         "signon.rememberSignons" = false;
-        "layout.css.devPixelsPerPx" = 1.2;
+        "layout.css.devPixelsPerPx" = 1.0;
       };
     };
   };

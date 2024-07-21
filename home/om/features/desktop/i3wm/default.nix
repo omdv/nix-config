@@ -40,11 +40,11 @@
           always = true;
           notification = false;
         }
-        {
-          command = "${pkgs.feh}/bin/feh --bg-scale ${config.wallpaper}";
-          always = true;
-          notification = false;
-        }
+        # {
+        #   command = "${pkgs.feh}/bin/feh --bg-scale ${config.wallpaper}";
+        #   always = true;
+        #   notification = false;
+        # }
       ];
     };
   };

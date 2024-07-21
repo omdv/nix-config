@@ -8,14 +8,14 @@
   homeSharePaths = lib.mapAttrsToList (_: v: "${v.home.path}/share") homeCfgs;
   vars = ''XDG_DATA_DIRS="$XDG_DATA_DIRS:${lib.concatStringsSep ":" homeSharePaths}" GTK_USE_PORTAL=0'';
 
-  # omCfg = homeCfgs.om;
-  # gtkTheme = omCfg.gtk.theme;
-  # iconTheme = omCfg.gtk.iconTheme;
-  # wallpaper = omCfg.wallpaper;
+  gabrielCfg = homeCfgs.gabriel;
+  gtkTheme = gabrielCfg.gtk.theme;
+  iconTheme = gabrielCfg.gtk.iconTheme;
+  wallpaper = gabrielCfg.wallpaper;
 
-  sway-kiosk = command: "${lib.getExe pkgs.sway} --config ${pkgs.writeText "kiosk.config" ''
+  sway-kiosk = command: "${lib.getExe pkgs.sway} --unsupported-gpu --config ${pkgs.writeText "kiosk.config" ''
     output * bg #000000 solid_color
-    xwayland enable
+    xwayland disable
     input "type:touchpad" {
       tap enabled
     }
@@ -23,10 +23,10 @@
   ''}";
 in {
   users.extraUsers.greeter = {
-    # packages = [
-    #   gtkTheme.package
-    #   iconTheme.package
-    # ];
+    packages = [
+      gtkTheme.package
+      iconTheme.package
+    ];
     # For caching and such
     home = "/tmp/greeter-home";
     createHome = true;
@@ -37,12 +37,12 @@ in {
     settings = {
       GTK = {
         icon_theme_name = "Papirus";
-        # theme_name = gtkTheme.name;
+        theme_name = gtkTheme.name;
       };
-      # background = {
-      #   path = wallpaper;
-      #   fit = "Cover";
-      # };
+      background = {
+        path = wallpaper;
+        fit = "Cover";
+      };
     };
   };
   services.greetd = {

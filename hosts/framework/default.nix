@@ -12,7 +12,7 @@
 
     # ../common/optional/i3wm.nix
     # ../common/optional/gnome.nix31
-    ../common/optional/hyprland.nix
+    # ../common/optional/hyprland.nix
     # ../common/optional/greetd.nix1
 
     ../common/optional/btrfs.nix
@@ -23,6 +23,19 @@
     ../common/optional/quietboot.nix
     ../common/optional/vpn.nix
   ];
+
+  specialisation = {
+    hypr.configuration = {
+      imports = [
+        ../common/optional/hyprland.nix
+      ];
+    };
+    i3wm.configuration = {
+      imports = [
+        ../common/optional/i3wm.nix
+      ];
+    };
+  };
 
   # Lid settings
   services.logind = {
