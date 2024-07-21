@@ -62,6 +62,7 @@ in {
         height = 40;
         margin = "6";
         position = "top";
+
         modules-left =
           ["custom/menu"]
           ++ (lib.optionals swayCfg.enable [
@@ -74,21 +75,21 @@ in {
           ]);
 
         modules-center = [
-          "cpu"
-          "memory"
           "clock"
-          "pulseaudio"
-          "battery"
-          "custom/unread-mail"
-          "custom/gpg-agent"
         ];
 
         modules-right = [
           # "custom/gammastep" TODO: currently broken for some reason
+          "custom/unread-mail"
+          "custom/gpg-agent"
+          "custom/systemd"
+          "cpu"
+          "memory"
           "custom/rfkill"
-          "custom/tailscale-ping"
+          "pulseaudio"
           "network"
           "tray"
+          "battery"
           "custom/hostname"
         ];
 
@@ -156,10 +157,11 @@ in {
         };
         network = {
           interval = 3;
-          format-wifi = "   {essid}";
+          format-wifi = "  ";
           format-ethernet = "󰈁 Connected";
           format-disconnected = "";
           tooltip-format = ''
+            {essid}
             {ifname}
             {ipaddr}/{cidr}
             Up: {bandwidthUpBits}
@@ -211,6 +213,28 @@ in {
         "custom/hostname" = {
           exec = mkScript {script = ''echo "$USER@$HOSTNAME"'';};
           on-click = mkScript {script = "systemctl --user restart waybar";};
+        };
+        "custom/systemd" = {
+          interval = 5;
+          return-type = "json";
+          exec = mkScriptJson {
+            deps = [pkgs.systemd];
+            pre = ''
+              count=$(systemctl --user list-units | grep -c "failed")
+              if [ "$count" == "0" ]; then
+                status="good"
+              else
+                status="bad"
+              fi
+            '';
+            text = "$count";
+            alt = "$status";
+          };
+          format = "{icon}  {}";
+          format-icons = {
+            "good" = "";
+            "bad" = "";
+          };
         };
         "custom/unread-mail" = {
           interval = 5;
@@ -303,32 +327,6 @@ in {
             script = "rfkill | grep '\<blocked\>'";
           };
         };
-        "custom/player" = {
-          exec-if = mkScript {
-            deps = [pkgs.playerctl];
-            script = "playerctl status 2>/dev/null";
-          };
-          exec = let
-            format = ''{"text": "{{title}} - {{artist}}", "alt": "{{status}}", "tooltip": "{{title}} - {{artist}} ({{album}})"}'';
-          in
-            mkScript {
-              deps = [pkgs.playerctl];
-              script = "playerctl metadata --format '${format}' 2>/dev/null";
-            };
-          return-type = "json";
-          interval = 2;
-          max-length = 30;
-          format = "{icon} {}";
-          format-icons = {
-            "Playing" = "󰐊";
-            "Paused" = "󰏤 ";
-            "Stopped" = "󰓛";
-          };
-          on-click = mkScript {
-            deps = [pkgs.playerctl];
-            script = "playerctl play-pause";
-          };
-        };
       };
     };
     # Cheatsheet:
@@ -347,7 +345,7 @@ in {
       ''
         * {
           font-family: ${config.fontProfiles.regular.family}, ${config.fontProfiles.monospace.family};
-          font-size: 12pt;
+          font-size: 14pt;
           padding: 0;
           margin: 0 0.4em;
         }

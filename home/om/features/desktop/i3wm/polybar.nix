@@ -65,19 +65,19 @@ in {
       iwSupport = true;
       githubSupport = true;
     };
-    script = "polybar -q -r left & polybar -q -r center & polybar -q -r right &";
+    script = "polybar -q -r top &";
     config = {
       "bar/root" = {
         monitor = "eDP-1";
         height = "3%";
         override-redirect = true;
-        radius = 20;
+        radius = 0;
         bottom = false;
 
-        background = colors.surface;
+        background = colors.surface_container_highest;
         foreground = colors.secondary;
-        border-size = 0;
-        border-color = colors.background;
+        border-size = "1pt";
+        border-color = colors.surface_container_highest;
         padding-left = 0;
         padding-right = 3;
         module-margin-left = 1;
@@ -88,28 +88,13 @@ in {
 
       };
 
-      "bar/left" = {
+      "bar/top" = {
         "inherit" = "bar/root";
-        width = "20%";
-        offset-x = "0.5%";
+        width = "100%";
         offset-y = 0;
-        modules-center = "i3";
-      };
-
-      "bar/center" = {
-        "inherit" = "bar/root";
-        width = "20%";
-        offset-x = "40%";
-        offset-y = 0;
+        modules-left = "i3";
         modules-center = "date";
-      };
-
-      "bar/right" = {
-        "inherit" = "bar/root";
-        width = "10%";
-        offset-x = "89.5%";
-        offset-y = 0;
-        modules-center = "cpu battery";
+        modules-right = "cpu battery";
       };
 
       "module/date" = {
