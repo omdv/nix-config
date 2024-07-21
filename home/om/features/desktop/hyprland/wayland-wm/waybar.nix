@@ -1,5 +1,4 @@
 {
-  outputs,
   config,
   lib,
   pkgs,
@@ -72,15 +71,10 @@ in {
           ++ (lib.optionals hyprlandCfg.enable [
             "hyprland/workspaces"
             "hyprland/submap"
-          ])
-          ++ [
-            "custom/currentplayer"
-            "custom/player"
-          ];
+          ]);
 
         modules-center = [
           "cpu"
-          "custom/gpu"
           "memory"
           "clock"
           "pulseaudio"
@@ -302,38 +296,6 @@ in {
             '';
           };
         };
-        "custom/currentplayer" = {
-          interval = 2;
-          return-type = "json";
-          exec = mkScriptJson {
-            deps = [pkgs.playerctl];
-            pre = ''
-              player="$(playerctl status -f "{{playerName}}" 2>/dev/null || echo "No player active" | cut -d '.' -f1)"
-              count="$(playerctl -l 2>/dev/null | wc -l)"
-              if ((count > 1)); then
-                more=" +$((count - 1))"
-              else
-                more=""
-              fi
-            '';
-            alt = "$player";
-            tooltip = "$player ($count available)";
-            text = "$more";
-          };
-          format = "{icon}{}";
-          format-icons = {
-            "No player active" = " ";
-            "Celluloid" = "󰎁 ";
-            "spotify" = "󰓇 ";
-            "ncspot" = "󰓇 ";
-            "qutebrowser" = "󰖟 ";
-            "firefox" = " ";
-            "discord" = " 󰙯 ";
-            "sublimemusic" = " ";
-            "kdeconnect" = "󰄡 ";
-            "chromium" = " ";
-          };
-        };
         "custom/rfkill" = {
           interval = 1;
           exec-if = mkScript {
@@ -450,7 +412,7 @@ in {
         #tray {
           color: ${colors.on_surface};
         }
-        #custom-gpu, #cpu, #memory {
+        #cpu, #memory {
           margin-left: 0.05em;
           margin-right: 0.55em;
         }
