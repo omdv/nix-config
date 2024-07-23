@@ -2,8 +2,9 @@
   imports = [
     ./rofi.nix
     ./keybindings.nix
-    ./polybar.nix
     ./picom.nix
+    # ./statusbar.nix
+    ./polybar.nix
   ];
 
   xsession.windowManager.i3 = {

@@ -107,7 +107,7 @@ in {
         offset-y = 0;
         modules-left = "i3";
         modules-center = "date";
-        modules-right = "cpu mem audio wlan battery";
+        modules-right = "cpu mem temp audio wlan battery";
       };
       "module/date" = {
         type = "internal/date";
@@ -133,6 +133,11 @@ in {
         format-warn-background = colors.error;
         label-font = 1;
       };
+      "module/temp" = {
+        type = "internal/temperature";
+        interval = 1;
+        label = "TEMP %temperature%";
+      };
       "module/battery" = {
         type = "internal/battery";
         battery = "BAT1";
@@ -146,7 +151,7 @@ in {
         type = "custom/script";
         tail = true;
         exec = mkScriptFromFile {
-          deps = [ pkgs.pulseaudio pkgs.gawk ];
+          deps = [ pkgs.pulseaudio pkgs.wireplumber pkgs.gawk ];
           scriptFile = ./polybar/volume-status.sh;
           args = ["alsa_output.pci-0000_00_1f.3.analog-stereo"];
         };
