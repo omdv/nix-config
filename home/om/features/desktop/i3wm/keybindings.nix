@@ -7,13 +7,14 @@
       in lib.mkOptionDefault {
         "${mod}+Return" = "exec ${lib.getExe config.programs.kitty.package}";
         "${mod}+d" = "exec ${pkgs.rofi}/bin/rofi -show drun";
-        # volume
-# # gradular volume control
-# bindsym $mod+XF86AudioRaiseVolume exec amixer -D pulse sset Master 1%+ && pkill -RTMIN+1 polybar
-# bindsym $mod+XF86AudioLowerVolume exec amixer -D pulse sset Master 1%- && pkill -RTMIN+1 polybar
-
-# # mute
-# bindsym XF86AudioMute exec amixer sset Master toggle && killall -USR1 polybar
+        # normal volume control
+        "XF86AudioRaiseVolume" = "exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.05+";
+        "XF86AudioLowerVolume" = "exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.05-";
+        # granular volume control
+        "${mod}+XF86AudioRaiseVolume" = "exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.01+";
+        "${mod}+XF86AudioLowerVolume" = "exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.01-";
+        # mute
+        "XF86AudioMute" = "exec wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
       };
     };
   };
