@@ -3,21 +3,22 @@
 # TODO number of failed services
 
 { pkgs, config, lib, ... }: let
-  inherit (config.colorscheme) colors harmonized;
-  # matugen color -t scheme-tonal-spot hex "#2B3975" --show-colors
+  inherit (config.colorscheme) colors;
 
   commonDeps = with pkgs; [coreutils gnugrep];
   mkScriptFromFile = {
     name ? "script",
     deps ? [],
     scriptFile ? "",
+    args ? [],
   }:
     lib.getExe (pkgs.writeShellApplication {
       inherit name;
       text = builtins.readFile scriptFile;
       runtimeInputs = commonDeps ++ deps;
-    });
+    })  + " " + lib.concatStringsSep " " args;
 
+  # matugen color -t scheme-tonal-spot hex "#2B3975" --show-colors
   # colors = {
   #   "background"= "#121318";
   #   "error"= "#ffb4ab";
@@ -69,20 +70,14 @@
   #   "tertiary_fixed_dim"= "#e4bad9"
   # };
 in {
-
-  home.file."${config.xdg.configHome}/polybar/scripts" = {
-  source = ./polybar;
-  recursive = true;
-  executable = true;
-  };
-
+  # service itself
   services.polybar = {
     enable = true;
     package = pkgs.polybar.override {
       i3Support = true;
-      alsaSupport = true;
-      iwSupport = true;
-      githubSupport = true;
+      alsaSupport = false;
+      iwSupport = false;
+      githubSupport = false;
     };
     script = "polybar -q -r top &";
     config = {
@@ -106,19 +101,17 @@ in {
         font-1 = "${config.fontProfiles.icons.family}:size=24;3";
 
       };
-
       "bar/top" = {
         "inherit" = "bar/root";
         width = "100%";
         offset-y = 0;
         modules-left = "i3";
         modules-center = "date";
-        modules-right = "cpu mem wlan battery";
+        modules-right = "cpu mem audio wlan battery";
       };
-
       "module/date" = {
         type = "internal/date";
-        interval = 1;
+        interval = 60;
         date = "%Y-%m-%d";
         time = "%H:%M";
         label = "%date% %time%";
@@ -147,6 +140,19 @@ in {
         full-at = 100;
         label-font = 1;
         label = "BAT %percentage%%";
+        interval = 60;
+      };
+      "module/audio" = {
+        type = "custom/script";
+        tail = true;
+        exec = mkScriptFromFile {
+          deps = [ pkgs.pulseaudio pkgs.gawk ];
+          scriptFile = ./polybar/volume-status.sh;
+          args = ["alsa_output.pci-0000_00_1f.3.analog-stereo"];
+        };
+        interval = "once";
+        label = "VOL %output%";
+        label-font = 1;
       };
       "module/wlan" = {
         type = "custom/script";
@@ -200,7 +206,6 @@ in {
 
         label-urgent = "%index%";
         label-urgent-padding = 2;
-
       };
     };
   };
