@@ -1,3 +1,5 @@
+#TODO: lxappearance for styling?
+
 { pkgs, config, ... }: let
   inherit (config.colorscheme) colors;
   # matugen color -t scheme-tonal-spot hex "#2B3975" --show-colors
@@ -99,12 +101,6 @@ in {
           always = true;
           notification = false;
         }
-        # {
-        #   # command = "${pkgs.feh}/bin/feh --bg-scale ${config.wallpaper}";
-        #   command = "${pkgs.feh}/bin/feh --bg-fill ${colors.background}";
-        #   always = true;
-        #   notification = false;
-        # }
       ];
     };
   };
