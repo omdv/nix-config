@@ -17,11 +17,16 @@
 INTERFACE=$(iw dev | awk '$1=="Interface"{print $2}')
 #------------------------------------------------------------------------
 
-COLOR_GE80=${COLOR_GE80:-#00FF00}
-COLOR_GE60=${COLOR_GE60:-#FFF600}
-COLOR_GE40=${COLOR_GE40:-#FFAE00}
-COLOR_LOWR=${COLOR_LOWR:-#FF0000}
-COLOR_DOWN=${COLOR_DOWN:-#FF0000}
+COLOR_GE80="$1"
+COLOR_GE60="$2"
+COLOR_GE40="$3"
+COLOR_LOWR="$4"
+
+# COLOR_GE80=${COLOR_GE80:-#00FF00}
+# COLOR_GE60=${COLOR_GE60:-#FFF600}
+# COLOR_GE40=${COLOR_GE40:-#FFAE00}
+# COLOR_LOWR=${COLOR_LOWR:-#FF0000}
+# COLOR_DOWN=${COLOR_LOWR}
 
 # As per #36 -- It is transparent: e.g. if the machine has no battery or wireless
 # connection (think desktop), the corresponding block should not be displayed.
@@ -29,9 +34,7 @@ COLOR_DOWN=${COLOR_DOWN:-#FF0000}
 
 # If the wifi interface exists but no connection is active, "down" shall be displayed.
 if [[ "$(cat /sys/class/net/"$INTERFACE"/operstate)" = 'down' ]]; then
-    echo "down"
-    echo "down"
-    echo "$COLOR_DOWN"
+    echo "%{F$COLOR_LOWR}down%{F-}"
     exit
 fi
 
@@ -44,14 +47,14 @@ QUALITY=$(iw dev "${INTERFACE}" link | grep 'dBm$' | grep -Eoe '-[0-9]{2}' | awk
 #------------------------------------------------------------------------
 
 # color
-#if [[ $QUALITY -ge 80 ]]; then
-#    echo $COLOR_GE80
-#elif [[ $QUALITY -ge 60 ]]; then
-#    echo $COLOR_GE60
-#elif [[ $QUALITY -ge 40 ]]; then
-#    echo $COLOR_GE40
-#else
-#    echo $COLOR_LOWR
-#fi
+if [[ $QUALITY -ge 80 ]]; then
+    COLOR=$COLOR_GE80
+elif [[ $QUALITY -ge 60 ]]; then
+    COLOR=$COLOR_GE60
+elif [[ $QUALITY -ge 40 ]]; then
+    COLOR=$COLOR_GE40
+else
+    COLOR=$COLOR_LOWR
+fi
 
-echo "$QUALITY" # full text
+echo "%{F$COLOR}WLAN $QUALITY% %{F-}"

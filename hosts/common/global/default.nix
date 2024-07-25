@@ -8,6 +8,7 @@
     [
       inputs.home-manager.nixosModules.home-manager
       ./fish.nix
+      ./gpg.nix
       ./locale.nix
       ./nix.nix
       ./nix-ld.nix

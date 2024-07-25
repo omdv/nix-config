@@ -27,6 +27,7 @@
 - xdg-mime defaults - qutebrowser, neomutt, vim, etc
 - virtualization, nixvirt for declarative VMs
 - keyring
+- systemd services don't popup pgp pin-entry
 
 ## devops
 - ansible

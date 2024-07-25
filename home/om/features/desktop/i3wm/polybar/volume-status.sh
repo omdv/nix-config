@@ -1,4 +1,6 @@
 SINK_NAME="$1"
+COLOR_FOREGROUND_GOOD="$2"
+COLOR_FOREGROUND_BAD="$3"
 SINK_ID=$(pactl list short sinks | awk -v name="$SINK_NAME" '$2 == name {print $1}')
 
 get_status() {
@@ -11,8 +13,6 @@ get_status() {
     echo "$volume $mute_status"
 }
 
-
-# Initial volume display
 print_logic() {
     local status
     local volume
@@ -22,9 +22,11 @@ print_logic() {
     mute_status=$(echo "$status" | awk '{print $2}')
 
     if [ "$mute_status" == "yes" ]; then
-        echo "MUTED"
+        volume="MUTED"
+        echo "%{F$COLOR_FOREGROUND_BAD}$volume%{F-}"
     else
-        echo "$volume%"
+        volume="VOL $volume%"
+        echo "%{F$COLOR_FOREGROUND_GOOD}$volume%{F-}"
     fi
 }
 
