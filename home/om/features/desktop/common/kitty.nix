@@ -47,7 +47,7 @@ in {
 
       # colorscheme
       foreground = "${colors.on_surface}";
-      background = "${colors.surface}";
+      background = "${colors.surface_container}";
       selection_background = "${colors.on_surface}";
       selection_foreground = "${colors.surface}";
       url_color = "${colors.on_surface_variant}";

@@ -3,8 +3,9 @@
 # TODO number of failed services
 
 { pkgs, config, lib, ... }: let
-  inherit (config.colorscheme) colors;
+  inherit (config.colorscheme) colors harmonized;
 
+  mapStrings = f: xs: lib.map (x: f x) xs;
   commonDeps = with pkgs; [coreutils gnugrep];
   mkScriptFromFile = {
     name ? "script",
@@ -12,63 +13,26 @@
     scriptFile ? "",
     args ? [],
   }:
+    let
+      quotedArgs = lib.concatStringsSep " " (mapStrings (arg: "\"${arg}\"") args);
+    in
+      lib.getExe (pkgs.writeShellApplication {
+        inherit name;
+        text = builtins.readFile scriptFile;
+        runtimeInputs = commonDeps ++ deps;
+      })  + " " + quotedArgs;
+
+  mkScript = {
+    name ? "script",
+    deps ? [],
+    cmd ? "",
+    args ? [],
+  }:
     lib.getExe (pkgs.writeShellApplication {
       inherit name;
-      text = builtins.readFile scriptFile;
+      text = cmd;
       runtimeInputs = commonDeps ++ deps;
     })  + " " + lib.concatStringsSep " " args;
-
-  # matugen color -t scheme-tonal-spot hex "#2B3975" --show-colors
-  # colors = {
-  #   "background"= "#121318";
-  #   "error"= "#ffb4ab";
-  #   "error_container"= "#93000a";
-  #   "inverse_on_surface"= "#303036";
-  #   "inverse_primary"= "#4f5b92";
-  #   "inverse_surface"= "#e3e1e9";
-  #   "on_background"= "#e3e1e9";
-  #   "on_error"= "#690005";
-  #   "on_error_container"= "#ffdad6";
-  #   "on_primary"= "#202c61";
-  #   "on_primary_container"= "#dde1ff";
-  #   "on_primary_fixed"= "#07164b";
-  #   "on_primary_fixed_variant"= "#374379";
-  #   "on_secondary"= "#2c2f42";
-  #   "on_secondary_container"= "#dfe1f9";
-  #   "on_secondary_fixed"= "#171b2c";
-  #   "on_secondary_fixed_variant"= "#424659";
-  #   "on_surface"= "#e3e1e9";
-  #   "on_surface_variant"= "#c6c5d0";
-  #   "on_tertiary"= "#44273e";
-  #   "on_tertiary_container"= "#ffd7f3";
-  #   "on_tertiary_fixed"= "#2c1229";
-  #   "on_tertiary_fixed_variant"= "#5c3d56";
-  #   "outline"= "#90909a";
-  #   "outline_variant"= "#45464f";
-  #   "primary"= "#b8c3ff";
-  #   "primary_container"= "#374379";
-  #   "primary_fixed"= "#dde1ff";
-  #   "primary_fixed_dim"= "#b8c3ff";
-  #   "scrim"= "#000000";
-  #   "secondary"= "#c3c5dd";
-  #   "secondary_container"= "#c3c5dd";
-  #   "secondary_fixed"= "#dfe1f9";
-  #   "secondary_fixed_dim"= "#c3c5dd";
-  #   "shadow"= "#000000";
-  #   "surface"= "#121318";
-  #   "surface_bright"= "#38393f";
-  #   "surface_container"= "#1f1f25";
-  #   "surface_container_high"= "#292a2f";
-  #   "surface_container_highest"= "#34343a";
-  #   "surface_container_low"= "#1b1b21";
-  #   "surface_container_lowest"= "#0d0e13";
-  #   "surface_dim"= "#121318";
-  #   "surface_variant"= "#45464f";
-  #   "tertiary"= "#e4bad9";
-  #   "tertiary_container"= "#5c3d56";
-  #   "tertiary_fixed"= "#ffd7f3";
-  #   "tertiary_fixed_dim"= "#e4bad9"
-  # };
 in {
   # service itself
   services.polybar = {
@@ -88,10 +52,10 @@ in {
         radius = 0;
         bottom = false;
 
-        background = colors.surface_container_highest;
+        background = colors.surface_container;
         foreground = colors.secondary;
         border-size = "1pt";
-        border-color = colors.surface_container_highest;
+        border-color = colors.surface_container;
         padding-left = 0;
         padding-right = 3;
         module-margin-left = 1;
@@ -99,6 +63,7 @@ in {
 
         font-0 = "${config.fontProfiles.regular.family}:size=14;3";
         font-1 = "${config.fontProfiles.icons.family}:size=24;3";
+        font-2 = "${config.fontProfiles.icons.family}:size=12;3";
 
       };
       "bar/top" = {
@@ -107,7 +72,7 @@ in {
         offset-y = 0;
         modules-left = "i3";
         modules-center = "date";
-        modules-right = "cpu mem temp audio wlan battery";
+        modules-right = "cpu mem temp audio wlan systemd email battery";
       };
       "module/date" = {
         type = "internal/date";
@@ -137,12 +102,17 @@ in {
         type = "internal/temperature";
         interval = 1;
         label = "TEMP %temperature%";
+        thermal-zone = 5;
+        warn-temperature = 60;
+        format = "%{F${harmonized.green}} <label> {F-}";
+        format-warn = "%{F${harmonized.red}} <label> {F-}";
       };
       "module/battery" = {
         type = "internal/battery";
         battery = "BAT1";
         adapter = "AC0";
         full-at = 100;
+        low-at = 10;
         label-font = 1;
         label = "BAT %percentage%%";
         interval = 60;
@@ -153,10 +123,14 @@ in {
         exec = mkScriptFromFile {
           deps = [ pkgs.pulseaudio pkgs.wireplumber pkgs.gawk ];
           scriptFile = ./polybar/volume-status.sh;
-          args = ["alsa_output.pci-0000_00_1f.3.analog-stereo"];
+          args = [
+            "alsa_output.pci-0000_00_1f.3.analog-stereo"
+            "${harmonized.green}"
+            "${harmonized.red}"
+            ];
         };
         interval = "once";
-        label = "VOL %output%";
+        label = "%output%";
         label-font = 1;
       };
       "module/wlan" = {
@@ -164,11 +138,65 @@ in {
         exec = mkScriptFromFile {
           deps = [ pkgs.iw pkgs.gawk ];
           scriptFile = ./polybar/wlan-status.sh;
+          args = [
+            "${harmonized.green}"
+            "${harmonized.yellow}"
+            "${harmonized.orange}"
+            "${harmonized.red}"
+          ];
         };
         interval = 1;
         format = "<label>";
-        label = "WLAN %output:02%%";
+        label = "%output%";
         label-font = 1;
+      };
+      "module/systemd" = {
+        type = "custom/script";
+        exec = mkScriptFromFile {
+          deps = [ pkgs.systemdMinimal ];
+          scriptFile = ./polybar/systemd-status.sh;
+          args = [
+            "${harmonized.green}"
+            "${harmonized.red}"
+          ];
+          # cmd = ''
+          # count=$(systemctl --user list-units -all | grep -c "failed" | tr -d \\n)
+          # # if [ "$count" == "0" ]; then
+          # #   status=" "
+          # # else
+          # #   status="  $count"
+          # # fi
+          # echo "$count"
+          # '';
+        };
+        interval = 60;
+        format = "<label>";
+        label = "%output%";
+        label-font = 1;
+      };
+      "module/email" = {
+        type = "custom/script";
+        exec = mkScript {
+          deps = [pkgs.findutils pkgs.procps];
+          cmd = ''
+            count=$(find ~/Mail/*/Inbox/new -type f | wc -l)
+            if pgrep mbsync &>/dev/null; then
+              status="syncing"
+            # else
+            #   if [ "$count" == "0" ]; then
+            #     status="󰇯"
+            #   else
+            #     status="󰇮 $count"
+            #   fi
+            fi
+            status="$count"
+            echo "MAIL $status"
+          '';
+        };
+        interval = 60;
+        format = "<label>";
+        label = "%output%";
+        label-font = 3;
       };
       "module/i3" = {
         type = "internal/i3";
