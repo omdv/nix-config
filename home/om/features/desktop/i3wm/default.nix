@@ -66,6 +66,10 @@ in {
     enable = true;
     package = pkgs.i3-gaps;
     config = {
+      assigns = {
+        "2" = [{ class = "firefox"; }];
+        "3" = [{ class = "Code"; }];
+      };
       bars = [];
       defaultWorkspace = "1";
       fonts = {
@@ -86,11 +90,8 @@ in {
         bottom = 5;
       };
       startup = [
-        {
-          command = "exec i3-msg workspace 1";
-          always = true;
-          notification = false;
-        }
+        { command = "firefox"; notification = false; }
+        { command = "i3-msg workspace 1"; notification = false; }
         {
           command = "systemctl --user restart polybar.service";
           always = true;

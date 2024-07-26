@@ -18,21 +18,9 @@
     in
       lib.getExe (pkgs.writeShellApplication {
         inherit name;
-        text = builtins.readFile scriptFile;
+        text = builtins.readFile scriptFile; # or just text=cmd
         runtimeInputs = commonDeps ++ deps;
       })  + " " + quotedArgs;
-
-  mkScript = {
-    name ? "script",
-    deps ? [],
-    cmd ? "",
-    args ? [],
-  }:
-    lib.getExe (pkgs.writeShellApplication {
-      inherit name;
-      text = cmd;
-      runtimeInputs = commonDeps ++ deps;
-    })  + " " + lib.concatStringsSep " " args;
 in {
   # service itself
   services.polybar = {
@@ -72,7 +60,7 @@ in {
         offset-y = 0;
         modules-left = "i3";
         modules-center = "date";
-        modules-right = "cpu mem temp audio wlan systemd email battery";
+        modules-right = "cpu mem temp audio wlan email battery";
       };
       "module/date" = {
         type = "internal/date";
@@ -104,8 +92,8 @@ in {
         label = "TEMP %temperature%";
         thermal-zone = 5;
         warn-temperature = 60;
-        format = "%{F${harmonized.green}} <label> {F-}";
-        format-warn = "%{F${harmonized.red}} <label> {F-}";
+        # format = "%{F${harmonized.green}} <label> {F-}";
+        # format-warn = "%{F${harmonized.red}} <label> {F-}";
       };
       "module/battery" = {
         type = "internal/battery";
@@ -159,15 +147,6 @@ in {
             "${harmonized.green}"
             "${harmonized.red}"
           ];
-          # cmd = ''
-          # count=$(systemctl --user list-units -all | grep -c "failed" | tr -d \\n)
-          # # if [ "$count" == "0" ]; then
-          # #   status=" "
-          # # else
-          # #   status="  $count"
-          # # fi
-          # echo "$count"
-          # '';
         };
         interval = 60;
         format = "<label>";
@@ -176,27 +155,15 @@ in {
       };
       "module/email" = {
         type = "custom/script";
-        exec = mkScript {
+        exec = mkScriptFromFile {
           deps = [pkgs.findutils pkgs.procps];
-          cmd = ''
-            count=$(find ~/Mail/*/Inbox/new -type f | wc -l)
-            if pgrep mbsync &>/dev/null; then
-              status="syncing"
-            # else
-            #   if [ "$count" == "0" ]; then
-            #     status="󰇯"
-            #   else
-            #     status="󰇮 $count"
-            #   fi
-            fi
-            status="$count"
-            echo "MAIL $status"
-          '';
+          scriptFile = ./polybar/email-status.sh;
+          args = [ "${harmonized.orange}" ];
         };
         interval = 60;
         format = "<label>";
         label = "%output%";
-        label-font = 3;
+        label-font = 1;
       };
       "module/i3" = {
         type = "internal/i3";

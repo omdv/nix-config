@@ -5,10 +5,10 @@
   };
 
   services.gpg-agent = {
-	  enable = true;
+    enable = true;
     enableFishIntegration = true;
-	  pinentryPackage = pkgs.pinentry-curses;
-    defaultCacheTtl = 60;
+    pinentryPackage = pkgs.pinentry-gtk2;
+    defaultCacheTtl = 1800;
     extraConfig =
       ''
       allow-emacs-pinentry

@@ -13,6 +13,7 @@
           password-input-width = 24
           password-alignment = center
           show-sys-info = true
+
           [greeter-theme]
           background-image = ""
           background-color = "#121318"
