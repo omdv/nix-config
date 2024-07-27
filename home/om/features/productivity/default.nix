@@ -10,6 +10,7 @@
   ];
 
   home.packages = with pkgs; [
+    bruno
     visidata
   ];
 }

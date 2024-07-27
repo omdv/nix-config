@@ -28,8 +28,8 @@ in {
 
   # home-manager.users.om = import ../../../../home/om/${config.networking.hostName}.nix;
 
-  # fix for swaylock
-  security.pam.services = {
-    swaylock = {};
-  };
+  # # gnome-keyring
+  # security.pam.services = {
+  #   login.enableGnomeKeyring = true;
+  # };
 }

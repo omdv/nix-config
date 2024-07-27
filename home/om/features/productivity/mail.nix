@@ -22,13 +22,13 @@ in {
     accounts = {
       personal =
         rec {
+          primary = true;
           msmtp.enable = true;
           address = "omdv@fastmail.com";
 
           smtp.host = "smtp.fastmail.com";
           userName = address;
 
-          primary = true;
           aliases = [
             "omdv@fastmail.com"
           ];
@@ -56,8 +56,7 @@ in {
               "Trash"
             ];
           };
-        }
-        // common;
+        } // common;
     };
   };
 

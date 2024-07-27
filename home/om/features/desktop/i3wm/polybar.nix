@@ -90,7 +90,7 @@ in {
         type = "internal/temperature";
         interval = 1;
         label = "TEMP %temperature%";
-        thermal-zone = 5;
+        thermal-zone = 4;
         warn-temperature = 60;
         # format = "%{F${harmonized.green}} <label> {F-}";
         # format-warn = "%{F${harmonized.red}} <label> {F-}";

@@ -13,6 +13,7 @@
   hasHtop = hasPackage "htop";
   hasFd = hasPackage "fd";
   hasKubecolor = hasPackage "kubecolor";
+  hasGopass = hasPackage "gopass";
 
   hasBat = config.programs.bat.enable;
   hasNnn = config.programs.nnn.enable;
@@ -48,6 +49,7 @@ in {
       top = mkIf hasHtop "htop";
       vim = mkIf hasNeovim "nvim";
       mutt = mkIf hasNeomutt "neomutt";
+      pass = mkIf hasGopass "gopass";
 
       # Shortcuts
       hm = "home-manager --flake .";
@@ -130,6 +132,7 @@ in {
       set -gx LEIN_HOME $XDG_DATA_HOME/lein
       set -gx NVM_DIR $XDG_DATA_HOME/nvm
       set -gx OCI_CLI_RC_FILE $XDG_CONFIG_HOME/oci
+      set -gx PASSWORD_STORE_DIR $HOME/.password-store
       set -gx PSQL_HISTORY $XDG_DATA_HOME/psql_history
       set -gx RUSTUP_HOME $XDG_DATA_HOME/rustup
       set -gx SQLITE_HISTORY $XDG_CACHE_HOME/sqlite_history
