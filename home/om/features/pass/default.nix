@@ -9,4 +9,8 @@
     };
     package = pkgs.pass.withExtensions (p: [p.pass-otp]);
   };
+
+  home.packages = [
+    pkgs.gopass
+  ];
 }

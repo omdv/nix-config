@@ -5,6 +5,7 @@
     ./fonts.nix
     ./gtk.nix
     ./kitty.nix
+    ./keyring.nix
     ./pavucontrol.nix
   ];
 }

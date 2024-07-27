@@ -4,6 +4,7 @@
     settings = {};
   };
 
+  # enabling gpg-agent services
   services.gpg-agent = {
     enable = true;
     enableFishIntegration = true;

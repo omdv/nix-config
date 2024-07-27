@@ -97,6 +97,11 @@ in {
           always = true;
           notification = false;
         }
+        # {
+        #   command = "gnome-keyring-daemon --start --components=pkcs11,secrets";
+        #   always = true;
+        #   notification = false;
+        # }
         {
           command = "xsetroot -solid '${colors.background}'";
           always = true;
