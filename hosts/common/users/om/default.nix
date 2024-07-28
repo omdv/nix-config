@@ -28,8 +28,12 @@ in {
 
   # home-manager.users.om = import ../../../../home/om/${config.networking.hostName}.nix;
 
-  # # gnome-keyring
-  # security.pam.services = {
-  #   login.enableGnomeKeyring = true;
-  # };
+  # gnome-keyring
+  security = {
+    pam.services = {
+      login.enableGnomeKeyring = true;
+      lightdm.enableGnomeKeyring = true;
+    };
+    polkit.enable = true;
+  };
 }

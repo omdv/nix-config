@@ -1,6 +1,7 @@
 { pkgs, ... }: {
   home.packages = with pkgs; [
     gnome.gnome-keyring
+    gnome.seahorse
     libsecret
     libgnome-keyring
   ];
@@ -12,11 +13,21 @@
     ];
   };
 
-  # security.pam.services.lightdm = {
-  #   enable = true;
-  #   text = ''
-  #     auth optional pam_gnome_keyring.so
-  #     session optional pam_gnome_keyring.so auto_start
-  #   '';
-  # };
+  xdg = {
+    desktopEntries = {
+      seahorse = {
+        name = "seahorse";
+        genericName = "OS keyring GUI";
+        comment = "Interface for the system keyring.";
+        exec = "seahorse";
+        icon = "seahorse";
+        terminal = false;
+        categories = [
+          "System"
+          "Security"
+        ];
+        type = "Application";
+      };
+    };
+  };
 }

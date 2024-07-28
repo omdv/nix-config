@@ -16,7 +16,6 @@
 
 ## productivity
 - neomutt
-- try all scripts
 - devshell secrets
 
 ## system
@@ -26,8 +25,7 @@
 - hydra auto-upgrades and remote CI/CD
 - xdg-mime defaults - qutebrowser, neomutt, vim, etc
 - virtualization, nixvirt for declarative VMs
-- keyring
-- systemd services don't popup pgp pin-entry
+- extra btrfs services - balance, defrag, etc
 
 ## devops
 - ansible

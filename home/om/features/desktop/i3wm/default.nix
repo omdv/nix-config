@@ -1,7 +1,8 @@
 #TODO: lxappearance for styling?
 
-{ pkgs, config, ... }: let
+{ pkgs, config, lib, ... }: let
   inherit (config.colorscheme) colors;
+
   # matugen color -t scheme-tonal-spot hex "#2B3975" --show-colors
   # colors = {
   #   "background"= "#121318";
@@ -97,11 +98,11 @@ in {
           always = true;
           notification = false;
         }
-        # {
-        #   command = "gnome-keyring-daemon --start --components=pkcs11,secrets";
-        #   always = true;
-        #   notification = false;
-        # }
+        {
+          command = "gnome-keyring-daemon --start --components=pkcs11,secrets";
+          always = true;
+          notification = false;
+        }
         {
           command = "xsetroot -solid '${colors.background}'";
           always = true;
