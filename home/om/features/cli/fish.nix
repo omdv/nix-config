@@ -19,10 +19,7 @@
   hasNnn = config.programs.nnn.enable;
   hasNeovim = config.programs.neovim.enable || config.programs.nixvim.enable;
   hasNeomutt = config.programs.neomutt.enable;
-  hasShellColor = config.programs.shellcolor.enable;
   hasKitty = config.programs.kitty.enable;
-
-  shellcolor = "${pkgs.shellcolord}/bin/shellcolor";
 
 in {
   programs.fish = {
