@@ -60,7 +60,7 @@ in {
         offset-y = 0;
         modules-left = "i3";
         modules-center = "date";
-        modules-right = "cpu mem temp audio wlan email battery";
+        modules-right = "cpu mem temp xkeyboard audio wlan email battery";
       };
       "module/date" = {
         type = "internal/date";
@@ -94,16 +94,6 @@ in {
         warn-temperature = 60;
         # format = "%{F${harmonized.green}} <label> {F-}";
         # format-warn = "%{F${harmonized.red}} <label> {F-}";
-      };
-      "module/battery" = {
-        type = "internal/battery";
-        battery = "BAT1";
-        adapter = "AC0";
-        full-at = 100;
-        low-at = 10;
-        label-font = 1;
-        label = "BAT %percentage%%";
-        interval = 60;
       };
       "module/audio" = {
         type = "custom/script";
@@ -153,17 +143,39 @@ in {
         label = "%output%";
         label-font = 1;
       };
+      "module/xkeyboard" = {
+        type = "internal/xkeyboard";
+        format = "<label-layout> <label-indicator>";
+        format-padding = "5px";
+        label-font = 1;
+        label-layout-padding = "5px";
+        label-layout-background = "${colors.surface_bright}";
+        label-layout-foreground = "${colors.primary}";
+        label-indicator-background = "${colors.tertiary_container}";
+        label-indicator-foreground = "${colors.primary}";
+        label-indicator-padding = "5px";
+      };
       "module/email" = {
         type = "custom/script";
         exec = mkScriptFromFile {
           deps = [pkgs.findutils pkgs.procps];
           scriptFile = ./polybar/email-status.sh;
-          args = [ "${harmonized.orange}" ];
+          args = [ "${harmonized.green}" ];
         };
         interval = 60;
         format = "<label>";
         label = "%output%";
         label-font = 1;
+      };
+      "module/battery" = {
+        type = "internal/battery";
+        battery = "BAT1";
+        adapter = "AC0";
+        full-at = 100;
+        low-at = 10;
+        label-font = 1;
+        label = "BAT %percentage%%";
+        interval = 60;
       };
       "module/i3" = {
         type = "internal/i3";
@@ -197,9 +209,9 @@ in {
         # focused button
         label-focused = "%icon%";
         label-focused-padding = 3;
-        label-focused-underline = colors.secondary;
-        label-focused-foreground = "#e3e1e9";
-        label-focused-background = "#38393f";
+        # label-focused-underline = colors.secondary;
+        label-focused-foreground = colors.primary;
+        label-focused-background = colors.primary_container;
 
         label-visible = "%icon%";
         label-visible-padding = 2;
