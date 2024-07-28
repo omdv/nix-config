@@ -35,14 +35,24 @@ in {
 
         # backlight control
         "XF86MonBrightnessUp" = "exec ${mkScriptFromFile {
-          deps = [ pkgs.acpilight ];
+          deps = [];
           scriptFile = ./scripts/brightness-control.sh;
-          args = [ "up" ];
+          args = [ "up" "5"];
         }}";
         "XF86MonBrightnessDown" = "exec ${mkScriptFromFile {
-          deps = [ pkgs.acpilight ];
+          deps = [];
           scriptFile = ./scripts/brightness-control.sh;
-          args = [ "down" ];
+          args = [ "down" "5" ];
+        }}";
+        "${mod}+XF86MonBrightnessUp" = "exec ${mkScriptFromFile {
+          deps = [];
+          scriptFile = ./scripts/brightness-control.sh;
+          args = [ "up" "1"];
+        }}";
+        "${mod}+XF86MonBrightnessDown" = "exec ${mkScriptFromFile {
+          deps = [];
+          scriptFile = ./scripts/brightness-control.sh;
+          args = [ "down" "1" ];
         }}";
       };
     };
