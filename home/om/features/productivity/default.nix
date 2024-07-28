@@ -10,7 +10,8 @@
   ];
 
   home.packages = with pkgs; [
-    bruno
-    visidata
+    bruno # api tool
+    pgcli # great postgres cli from Ukraine
+    visidata # cli for data analysis
   ];
 }
