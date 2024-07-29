@@ -32,7 +32,7 @@ in {
           aliases = [
             "omdv@fastmail.com"
           ];
-          passwordCommand = "${pass} ${address}";
+          passwordCommand = "${pass} email/${address}";
 
           imap.host = "imap.fastmail.com";
           mbsync = {
