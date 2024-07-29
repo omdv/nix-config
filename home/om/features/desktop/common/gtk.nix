@@ -108,4 +108,10 @@ in rec {
   };
 
   xdg.portal.extraPortals = [pkgs.xdg-desktop-portal-gtk];
+
+  # theme engines for pinentry
+  home.packages = [
+    pkgs.gtk-engine-murrine
+    pkgs.gnome-themes-extra
+  ];
 }

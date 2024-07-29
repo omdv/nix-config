@@ -16,7 +16,7 @@
   xdg = {
     desktopEntries = {
       seahorse = {
-        name = "seahorse";
+        name = "Seahorse";
         genericName = "OS keyring GUI";
         comment = "Interface for the system keyring.";
         exec = "seahorse";
