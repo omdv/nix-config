@@ -8,7 +8,7 @@
   services.gpg-agent = {
     enable = true;
     enableFishIntegration = true;
-    pinentryPackage = pkgs.pinentry-gtk2;
+    pinentryPackage = pkgs.pinentry-rofi;
     defaultCacheTtl = 1800;
     extraConfig =
       ''
