@@ -70,7 +70,7 @@ in {
         type = "internal/cpu";
         interval = 1;
         warn-percentage = 5;
-        label = "CPU %percentage%%";
+        label = "%{T3} %{T-}%percentage%%";
         format-warn-background = colors.error;
         label-font = 1;
       };
@@ -78,18 +78,20 @@ in {
         type = "internal/memory";
         interval = 1;
         warn-percentage = 5;
-        label = "MEM %percentage_used%%";
+        label = "%{T3} %{T-}%percentage_used%%";
         format-warn-background = colors.error;
         label-font = 1;
       };
       "module/temp" = {
         type = "internal/temperature";
         interval = 1;
-        label = "TEMP %temperature%";
         thermal-zone = 4;
-        warn-temperature = 60;
-        # format = "%{F${harmonized.green}} <label> {F-}";
-        # format-warn = "%{F${harmonized.red}} <label> {F-}";
+        warn-temperature = 70;
+        format = "%{F${harmonized.green}} <label> %{F-}";
+        format-warn = "%{F${harmonized.red}} <label-warn> %{F-}";
+        label = "%{T3}%{T-} %temperature%";
+        label-warn = "%{T3}%{T-} %temperature%";
+
       };
       "module/audio" = {
         type = "custom/script";
