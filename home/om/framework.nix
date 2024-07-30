@@ -14,6 +14,7 @@
     ./features/pass
 
     ./features/optional/quickemu.nix
+    ./features/optional/mpv.nix
 
     ./backup/framework.nix
   ];

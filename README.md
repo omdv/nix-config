@@ -17,6 +17,7 @@
 ## system
 - auto-cpufreq daemon vs tlp?
 - respect XDG_folders
+- fontpreview with config
 - btrbk for home with short retention
 - hydra auto-upgrades and remote CI/CD
 - xdg-mime defaults - qutebrowser, neomutt, vim, etc
