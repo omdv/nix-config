@@ -69,10 +69,12 @@ in {
       "module/cpu" = {
         type = "internal/cpu";
         interval = 1;
-        warn-percentage = 5;
-        label = "%{T3} %{T-}%percentage%%";
-        format-warn-background = colors.error;
+        warn-percentage = 90;
         label-font = 1;
+        format = "<label>";
+        format-warn = "%{F${harmonized.red}} <label-warn> %{F-}";
+        label = "%{T3} %{T-}%percentage%%";
+        label-warn = "%{T3} %{T-}%percentage%%";
       };
       "module/mem" = {
         type = "internal/memory";
@@ -87,7 +89,7 @@ in {
         interval = 1;
         thermal-zone = 4;
         warn-temperature = 70;
-        format = "%{F${harmonized.green}} <label> %{F-}";
+        format = "<label>";
         format-warn = "%{F${harmonized.red}} <label-warn> %{F-}";
         label = "%{T3}%{T-} %temperature%";
         label-warn = "%{T3}%{T-} %temperature%";
@@ -121,7 +123,7 @@ in {
             "${harmonized.red}"
           ];
         };
-        interval = 1;
+        interval = 10;
         format = "<label>";
         label = "%output%";
         label-font = 1;
@@ -171,7 +173,7 @@ in {
         adapter = "AC0";
         full-at = 100;
         low-at = 10;
-        interval = 1;
+        interval = 10;
 
         format-discharging = "%{F${colors.error}}<ramp-capacity> <label-discharging>%{F-}";
         ramp-capacity-0 = "%{T3} %{T-}";
