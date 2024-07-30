@@ -64,5 +64,8 @@
 
     # misc
     tldr
+
+    # awesome-tui
+    pyradio # Internet radio player
   ];
 }
