@@ -11,12 +11,8 @@
 ## explore
 - sops-nix
 - persistence and erasing /root
-- service for pass
-- prometheus node exporter + tailscale
-
-## productivity
-- neomutt
-- devshell secrets
+- prometheus node exporter
+- tailscale
 
 ## system
 - auto-cpufreq daemon vs tlp?

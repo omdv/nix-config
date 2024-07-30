@@ -1,7 +1,3 @@
-# TODO try notmuch block
-# TODO try rofi notification
-# TODO number of failed services
-
 { pkgs, config, lib, ... }: let
   inherit (config.colorscheme) colors harmonized;
 
@@ -51,7 +47,7 @@ in {
 
         font-0 = "${config.fontProfiles.regular.family}:size=14;3";
         font-1 = "${config.fontProfiles.icons.family}:size=24;3";
-        font-2 = "${config.fontProfiles.icons.family}:size=12;3";
+        font-2 = "${config.fontProfiles.icons.family}:size=16;3";
 
       };
       "bar/top" = {
@@ -103,8 +99,8 @@ in {
           scriptFile = ./polybar/volume-status.sh;
           args = [
             "alsa_output.pci-0000_00_1f.3.analog-stereo"
-            "${harmonized.green}"
-            "${harmonized.red}"
+            "${colors.secondary}"
+            "${colors.error}"
             ];
         };
         interval = "once";
@@ -173,9 +169,24 @@ in {
         adapter = "AC0";
         full-at = 100;
         low-at = 10;
-        label-font = 1;
-        label = "BAT %percentage%%";
-        interval = 60;
+        interval = 1;
+
+        format-discharging = "%{F${colors.error}}<ramp-capacity> <label-discharging>%{F-}";
+        ramp-capacity-0 = "%{T3} %{T-}";
+        ramp-capacity-1 = "%{T3} %{T-}";
+        ramp-capacity-2 = "%{T3} %{T-}";
+        ramp-capacity-3 = "%{T3} %{T-}";
+        ramp-capacity-4 = "%{T3} %{T-}";
+        label-discharging = "%percentage%% %time%";
+
+        format-charging = "%{F${harmonized.green}}<animation-charging> <label-charging>%{F-}";
+        animation-charging-0 = "%{T3} %{T-}";
+        animation-charging-1 = "%{T3} %{T-}";
+        animation-charging-2 = "%{T3} %{T-}";
+        animation-charging-3 = "%{T3} %{T-}";
+        animation-charging-4 = "%{T3} %{T-}";
+        animation-charging-framerate = 500;
+        label-charging = "%percentage%% %time%";
       };
       "module/i3" = {
         type = "internal/i3";
