@@ -5,6 +5,7 @@
 
     ./settings.nix
     ./bufferline.nix
+    ./fzf.nix
     ./nvim-tree.nix
     ./statusline
     ./telescope.nix

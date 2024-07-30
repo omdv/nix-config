@@ -15,7 +15,7 @@ in {
       background-alt: ${colors.surface_container_highest};
       foreground: ${colors.primary};
       selected: ${colors.on_primary_container};
-      active: ${colors.inverse_surface};
+      active: ${colors.inverse_primary};
       urgent: ${colors.error};
   }
   '';
