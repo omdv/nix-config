@@ -5,10 +5,11 @@
 
     ./settings.nix
     ./bufferline.nix
+    ./css-color.nix
+    ./cursorline.nix
     ./fzf.nix
     ./nvim-tree.nix
     ./statusline
-    ./telescope.nix
   ];
 
   programs.nixvim = {
