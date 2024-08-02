@@ -9,6 +9,7 @@
     ./gpg.nix
     ./htop.nix
     ./mc.nix
+    ./navi.nix
     ./nnn.nix
     ./qutebrowser.nix
     ./starship.nix
