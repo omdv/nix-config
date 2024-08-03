@@ -1,20 +1,31 @@
-# TODO
+## DONE
+It is my daily runner already, fully productive:
+- flakes with home-manager, following [outstanding example](https://github.com/Misterio77/nix-starter-configs)
+- lightdm with plymouth and greeter
+- i3wm, almost r/unixporn quality
+- neomutt, nvim, vscode, etc
+- working java
+- virtualization
+- dynamic colorschemes, inspired by [misterio77](https://github.com/misterio77/nix-config)
 
-## eyecandy
+
+## TODO
+
+### eyecandy
 - prettify grub
 - consistent colorschemes
 
-## cli
+### cli
 - vim config and plugins
 - separate monitoring tools
 
-## explore
+### explore
 - sops-nix
 - persistence and erasing /root
 - prometheus node exporter
 - tailscale
 
-## system
+### system
 - auto-cpufreq daemon vs tlp?
 - respect XDG_folders
 - fontpreview with config
@@ -22,9 +33,9 @@
 - hydra auto-upgrades and remote CI/CD
 - xdg-mime defaults - qutebrowser, neomutt, vim, etc
 - virtualization, nixvirt for declarative VMs
-- extra btrfs services - balance, defrag, etc
+- extra btrfs services - balance, defrag - really needed?
 
-## devops
+### devops
 - ansible
-- home-lab scripts
+- switch my ubuntu homelab to nixos
 - popeye integration
