@@ -4,6 +4,7 @@
     nativeBuildInputs = with pkgs; [
       git
       pre-commit
+      detect-secrets
     ];
   };
 }

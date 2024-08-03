@@ -4,3 +4,4 @@ result*
 .nixie
 .clj-kondo
 .lsp
+.secrets.baseline
