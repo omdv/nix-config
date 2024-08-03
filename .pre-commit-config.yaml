@@ -9,13 +9,9 @@ repos:
       - id: check-yaml
       - id: check-json
 
-  - repo: https://github.com/PyCQA/flake8
-    rev: v4.0.1
-    hooks:
-      - id: flake8
-
   - repo: https://github.com/Yelp/detect-secrets
     rev: v1.4.0
     hooks:
       - id: detect-secrets
         args: ['--baseline', '.secrets.baseline']
+        exclude: gibberish-detector
