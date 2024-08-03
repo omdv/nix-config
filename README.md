@@ -8,7 +8,7 @@ It is my daily runner already, fully productive:
 - virtualization
 - dynamic colorschemes, inspired by [misterio77](https://github.com/misterio77/nix-config)
 
-![Screenshot](https://github.com/omdv/nix-config/blob/master/screenshot.png | width=600)
+![Screenshot](https://github.com/omdv/nix-config/blob/8cf74c44e5a5b11e70f779128a2a87287c1f2685/screenshot.png)
 
 
 ## TODO
