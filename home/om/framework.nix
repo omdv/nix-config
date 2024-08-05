@@ -6,7 +6,6 @@
     ./global
 
     ./features/desktop/i3wm
-    # ./features/desktop/hyprland
 
     ./features/cli
     ./features/nixvim
@@ -15,6 +14,7 @@
 
     ./features/optional/quickemu.nix
     ./features/optional/mpv.nix
+    ./features/optional/zathura.nix
 
     ./backup/framework.nix
   ];
@@ -23,7 +23,6 @@
   wallpaper = pkgs.wallpapers.towers-ice;
   colorscheme.type = "tonal-spot";
 
-  # TODO https://github.com/hyprwm/Hyprland/issues/4225
   monitors = [
     {
       name = "eDP-1";

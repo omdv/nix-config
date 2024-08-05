@@ -7,5 +7,6 @@
     ./kitty.nix
     ./keyring.nix
     ./pavucontrol.nix
+    ./xdg.nix
   ];
 }
