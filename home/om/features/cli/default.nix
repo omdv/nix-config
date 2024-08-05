@@ -13,6 +13,7 @@
     ./nnn.nix
     ./qutebrowser.nix
     ./starship.nix
+    ./tmux.nix
   ];
   home.packages = with pkgs; [
     # base
