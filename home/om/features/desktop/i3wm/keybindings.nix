@@ -22,7 +22,9 @@ in {
       keybindings = let
         mod = config.xsession.windowManager.i3.config.modifier;
       in lib.mkOptionDefault {
-
+        "${mod}+h" = "split h";
+        "${mod}+v" = "split v";
+        "${mod}+f" = "fullscreen toggle";
         "${mod}+Return" = "exec ${lib.getExe config.programs.kitty.package}";
         "${mod}+d" = "exec ${pkgs.rofi}/bin/rofi -show drun";
 
@@ -54,6 +56,16 @@ in {
           scriptFile = ./scripts/brightness-control.sh;
           args = [ "down" "1" ];
         }}";
+      };
+      modes = {
+        resize = {
+          Left   = "resize shrink width 10 px or 10 ppt";
+          Down   = "resize grow height 10 px or 10 ppt";
+          Up     = "resize shrink height 10 px or 10 ppt";
+          Right  = "resize grow width 10 px or 10 ppt";
+          Return = "mode default";
+          Escape = "mode default";
+        };
       };
     };
   };
