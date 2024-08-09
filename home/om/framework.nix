@@ -15,6 +15,7 @@
     ./features/optional/quickemu.nix
     ./features/optional/mpv.nix
     ./features/optional/zathura.nix
+    ./features/optional/steam.nix
 
     ./backup/framework.nix
   ];
