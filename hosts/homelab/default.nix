@@ -8,6 +8,7 @@
 
     ../common/global
     ../common/optional/zfs.nix
+    ../common/optional/k3s.nix
 
     ../common/users/om
   ];
