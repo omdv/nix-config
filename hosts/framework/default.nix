@@ -13,6 +13,7 @@
     ../common/optional/i3wm.nix
 
     ../common/optional/btrfs.nix
+    ../common/optional/docker.nix
     ../common/optional/java.nix
     ../common/optional/libvirt.nix
     ../common/optional/pipewire.nix

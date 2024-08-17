@@ -7,6 +7,8 @@
 }: {
   imports = [
     ./fonts.nix
+    ./kitty.nix
+    ./xdg.nix
   ]
     ++ (builtins.attrValues outputs.homeManagerModules);
 
