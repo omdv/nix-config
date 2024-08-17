@@ -12,6 +12,8 @@
       ./nix.nix
       ./nix-ld.nix
       ./docker.nix
+      ./openssh.nix
+      ./sops.nix
     ]
     ++ (builtins.attrValues outputs.nixosModules);
 
