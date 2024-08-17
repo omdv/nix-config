@@ -1,5 +1,4 @@
 {
-  pkgs,
   inputs,
   ...
 }: {
@@ -19,14 +18,12 @@
   boot = {
     loader.systemd-boot.enable = true;
     loader.efi.canTouchEfiVariables = true;
-    kernelPackages = pkgs.linuxKernel.packages.linux_xanmod_latest;
-    binfmt.emulatedSystems = [
-      "aarch64-linux"
-      "i686-linux"
-    ];
+    # kernelPackages = pkgs.linuxKernel.packages.linux_xanmod_latest;
+    # binfmt.emulatedSystems = [
+      # "aarch64-linux"
+      # "i686-linux"
+    # ];
   };
-
-  hardware.opengl.enable = true;
 
   system.stateVersion = "23.05";
 }
