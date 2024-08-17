@@ -17,6 +17,7 @@
     ./features/optional/quickemu.nix
     ./features/optional/mpv.nix
     ./features/optional/zathura.nix
+    ./features/optional/zotero.nix
 
     ./backup/framework.nix
     inputs.sops-nix.homeManagerModules.sops
