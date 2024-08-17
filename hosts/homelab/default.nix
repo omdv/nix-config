@@ -7,6 +7,8 @@
     ./hardware-configuration.nix
 
     ../common/global
+    ../common/optional/zfs.nix
+
     ../common/users/om
   ];
 
