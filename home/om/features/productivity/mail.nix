@@ -2,7 +2,7 @@
   mbsync = "${config.programs.mbsync.package}/bin/mbsync";
   pass = "${config.programs.password-store.package}/bin/pass";
   # fastmailAddress = builtins.readFile "${config.sops.secrets.email_fastmail_address.path}";
-  fastmailAddress = "${pass} email/fastmail_address";
+  # fastmailAddress = "${pass} email/fastmail_address";
 
   common = rec {
     realName = "Oleg Medvedev";
@@ -22,13 +22,13 @@ in {
         rec {
           primary = true;
           msmtp.enable = true;
-          address = fastmailAddress;
+          address = "omdv@fastmail.com";
 
           smtp.host = "smtp.fastmail.com";
           userName = address;
 
           aliases = [
-            fastmailAddress
+            "omdv@fastmail.com"
           ];
           passwordCommand = "${pass} email/${address}";
 

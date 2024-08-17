@@ -7,6 +7,7 @@
 
     ./features/cli
     ./features/nixvim
+    ./features/pass
   ];
 
   # Purple

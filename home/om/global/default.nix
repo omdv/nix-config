@@ -5,10 +5,7 @@
   outputs,
   ...
 }: {
-  imports = [
-    ../features/cli
-    ../features/desktop/common
-  ]
+  imports = []
     ++ (builtins.attrValues outputs.homeManagerModules);
 
   systemd.user.startServices = "sd-switch";
