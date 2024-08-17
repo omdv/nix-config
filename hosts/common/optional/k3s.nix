@@ -6,7 +6,7 @@
   services.k3s = {
     enable = true;
     role = "server";
-    extraArgs = toString [
+    extraFlags = toString [
       "--disable traefik"
       "--disable metrics-server"
       "--flannel-backend=vxlan"
