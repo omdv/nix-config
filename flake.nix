@@ -10,7 +10,10 @@
       url = "github:nix-community/home-manager/release-24.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
+    sops-nix = {
+      url = "github:mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     nix-gl = {
       url = "github:nix-community/nixgl";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -76,6 +79,17 @@
       framework = lib.nixosSystem {
         modules = [
           ./hosts/framework
+        ];
+        specialArgs = {
+          inherit inputs outputs;
+        };
+      };
+    };
+
+    nixosConfigurations = {
+      homelab = lib.nixosSystem {
+        modules = [
+          ./hosts/homelab
         ];
         specialArgs = {
           inherit inputs outputs;
