@@ -41,3 +41,6 @@ It is my daily runner already, fully productive:
 - ansible
 - switch my ubuntu homelab to nixos
 - popeye integration
+
+## homelab
+- backup scripts

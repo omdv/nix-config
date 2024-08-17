@@ -111,5 +111,18 @@
       };
     };
 
+    homeConfigurations = {
+      "om@homelab" = lib.homeManagerConfiguration {
+        modules = [
+          ./home/om/homelab.nix
+          ./home/om/nixpkgs.nix
+        ];
+        pkgs = pkgsFor.x86_64-linux;
+        extraSpecialArgs = {
+          inherit inputs outputs;
+        };
+      };
+    };
+
   };
 }
