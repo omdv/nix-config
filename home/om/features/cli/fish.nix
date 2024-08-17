@@ -14,8 +14,6 @@
   hasFd = hasPackage "fd";
   hasKubecolor = hasPackage "kubecolor";
   hasGopass = hasPackage "gopass";
-  hasDocker = config.virtualisation.docker.enable;
-  hasDockerCompose = hasPackage "docker-compose";
 
   hasBat = config.programs.bat.enable;
   hasNnn = config.programs.nnn.enable;
@@ -54,8 +52,7 @@ in {
       hm = "home-manager --flake .";
       hms = "home-manager --flake . switch ";
       snrs = "sudo nixos-rebuild --flake . switch";
-      dps = mkIf hasDocker "docker ps -a --format 'table {{.Names}}\t{{.Image}}\t{{.Ports}}\t{{.Status}}'";
-      dc = mkIf hasDockerCompose "docker-compose";
+      dps = "docker ps -a --format 'table {{.Names}}\t{{.Image}}\t{{.Ports}}\t{{.Status}}'";
     };
 
     shellAliases = {

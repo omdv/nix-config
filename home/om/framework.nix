@@ -1,5 +1,7 @@
 {
   pkgs,
+  inputs,
+  config,
   ...
 }: {
   imports = [
@@ -17,6 +19,7 @@
     ./features/optional/zathura.nix
 
     ./backup/framework.nix
+    inputs.sops-nix.homeManagerModules.sops
   ];
 
   # Purple
@@ -39,4 +42,14 @@
     gtkFontSize = 12;
     cursorSize = 36;
   };
+
+  # sops-nix
+  sops = {
+    defaultSopsFile = ./secrets.yaml;
+    secrets.email_fastmail_address = {
+      sopsFile = ./secrets.yaml;
+    };
+    age.keyFile = "${config.xdg.configHome}/sops/age/keys.txt";
+  };
+
 }

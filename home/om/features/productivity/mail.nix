@@ -1,10 +1,8 @@
-{
-  lib,
-  config,
-  ...
-}: let
+{ lib, config, ...}: let
   mbsync = "${config.programs.mbsync.package}/bin/mbsync";
   pass = "${config.programs.password-store.package}/bin/pass";
+  # fastmailAddress = builtins.readFile "${config.sops.secrets.email_fastmail_address.path}";
+  fastmailAddress = "${pass} email/fastmail_address";
 
   common = rec {
     realName = "Oleg Medvedev";
@@ -24,13 +22,13 @@ in {
         rec {
           primary = true;
           msmtp.enable = true;
-          address = "omdv@fastmail.com";
+          address = fastmailAddress;
 
           smtp.host = "smtp.fastmail.com";
           userName = address;
 
           aliases = [
-            "omdv@fastmail.com"
+            fastmailAddress
           ];
           passwordCommand = "${pass} email/${address}";
 
@@ -57,6 +55,43 @@ in {
             ];
           };
         } // common;
+      # gmail =
+      #   rec {
+      #     primary = false;
+      #     msmtp.enable = true;
+      #     address = gmailAddress;
+
+      #     smtp.host = "smtp.gmail.com";
+      #     userName = gmailAddress;
+
+      #     aliases = [
+      #       gmail
+      #     ];
+      #     passwordCommand = "${pass} email/${address}";
+
+      #     imap.host = "imap.gmail.com";
+      #     mbsync = {
+      #       enable = true;
+      #       create = "maildir";
+      #       expunge = "both";
+      #     };
+      #     folders = {
+      #       inbox = "Inbox";
+      #       drafts = "Drafts";
+      #       sent = "Sent";
+      #       trash = "Trash";
+      #     };
+      #     neomutt = {
+      #       enable = true;
+      #       extraMailboxes = [
+      #         "Archive"
+      #         "Drafts"
+      #         "Spam"
+      #         "Sent"
+      #         "Trash"
+      #       ];
+      #     };
+      #   } // common;
     };
   };
 
