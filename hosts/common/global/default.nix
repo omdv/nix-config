@@ -11,7 +11,6 @@
       ./locale.nix
       ./nix.nix
       ./nix-ld.nix
-      ./docker.nix
       ./openssh.nix
       ./sops.nix
     ]
