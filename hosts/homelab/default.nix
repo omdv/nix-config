@@ -13,6 +13,7 @@
   ];
 
   networking = {
+    hostId = "c6589261";
     hostName = "homelab";
     networkmanager.enable = true;
   };
