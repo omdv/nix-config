@@ -20,8 +20,11 @@ in {
     backups = {
       borgbase = {
         location = {
-          sourceDirectories = [ "/home/om" ];
-          repositories = [ "ssh://ylc5axw6@ylc5axw6.repo.borgbase.com/./repo" ];
+          sourceDirectories = [
+            "/home/om"
+            "/pool"
+          ];
+          repositories = [ "ssh://nnyrw2md@nnyrw2md.repo.borgbase.com/./repo" ];
           extraConfig = {
             remote_path = "borg1";
             exclude_patterns = [

@@ -34,8 +34,12 @@
   };
 
   sops.secrets = {
-    borg_passphrase = {
+    backup_passphrase = {
+      owner = "om";
+      group = "wheel";
+      mode = "0400";
       sopsFile = ./secrets.yaml;
+      path = "/run/user-secrets/backup-passphrase";
     };
   };
 

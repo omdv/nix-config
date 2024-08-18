@@ -1,6 +1,7 @@
 {
   pkgs,
   inputs,
+  lib,
   ...
 }: {
   imports = [
@@ -45,22 +46,15 @@
     ];
   };
 
-  # sops.secrets = {
-  #   email_fastmail_address = {
-  #     owner = "om";
-  #     group = "wheel";
-  #     mode = "0400";
-  #     sopsFile = ./secrets.yaml;
-  #     path = "/run/user-secrets/email-fastmail-address";
-  #   };
-  #   # email_gmail_address = {
-  #   #   owner = "om";
-  #   #   group = "wheel";
-  #   #   mode = "0400";
-  #   #   sopsFile = ./secrets.yaml;
-  #   #   path = "/run/user-secrets/email-gmail-address";
-  #   # };
-  # };
+  sops.secrets = {
+    backup_passphrase = {
+      owner = "om";
+      group = "wheel";
+      mode = "0400";
+      sopsFile = ./secrets.yaml;
+      path = "/run/user-secrets/backup-passphrase";
+    };
+  };
 
   hardware.opengl.enable = true;
 
