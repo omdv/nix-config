@@ -20,7 +20,8 @@
   hasNeovim = config.programs.neovim.enable || config.programs.nixvim.enable;
   hasNeomutt = config.programs.neomutt.enable;
   hasKitty = config.programs.kitty.enable;
-
+  hasShellColor = config.programs.shellcolor.enable;
+  shellcolor = "${pkgs.shellcolord}/bin/shellcolor";
 in {
   programs.fish = {
     enable = true;
@@ -71,6 +72,20 @@ in {
     functions = {
       # Disable greeting
       fish_greeting = "";
+      # Integrate ssh with shellcolord
+      ssh =
+        mkIf hasShellColor # fish
+        ''
+          ${shellcolor} disable $fish_pid
+          # Check if kitty is available
+          if set -q KITTY_PID && set -q KITTY_WINDOW_ID && type -q -f kitty
+            kitty +kitten ssh $argv
+          else
+            command ssh $argv
+          end
+          ${shellcolor} enable $fish_pid
+          ${shellcolor} apply $fish_pid
+        '';
       # n wrapper with cd quit
       n = mkIf hasNnn ''
         # Block nesting of nnn in subshells
@@ -105,7 +120,6 @@ in {
         end
       '';
     };
-
     interactiveShellInit = ''
       # XDG configs
       set -gx XDG_CONFIG_HOME $HOME/.config
