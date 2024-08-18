@@ -10,7 +10,7 @@
     ./features/pass
   ];
 
-  # Purple
-  wallpaper = pkgs.wallpapers.towers-ice;
+  # colorscheme
+  colorscheme.source = "#e05b18";
   colorscheme.type = "tonal-spot";
 }
