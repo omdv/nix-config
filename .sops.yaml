@@ -1,0 +1,40 @@
+keys:
+  # Users
+  - &users:
+    - &om 2ACE1FFD5BBC0290E4D79D52C86CD9E2DCEB2452
+  # Hosts
+  - &hosts:
+    - &framework age1cv5pnzc4672e3u9zswkvqgn9ws8nm73z6xvju9zgxd8n885wva7s92mcdz
+    - &homelab age1ujk86zknye398v9gaa8slwect79k8e73wq5us4nh6jw2vnlfge8qcpkr3c
+
+creation_rules:
+  # For all users on framework
+  - path_regex: hosts/framework/secrets.ya?ml$
+    key_groups:
+    - age:
+      - *framework
+      pgp:
+      - *om
+  # For all users on framework
+  - path_regex: hosts/homelab/secrets.ya?ml$
+    key_groups:
+    - age:
+      - *homelab
+      pgp:
+      - *om
+  # For all users on all machines
+  - path_regex: hosts/common/secrets.ya?ml$
+    key_groups:
+    - age:
+      - *framework
+      - *homelab
+      pgp:
+      - *om
+
+  # For current user on all machines
+  - path_regex: home/om/secrets.ya?ml$
+    key_groups:
+    - age:
+      - *framework
+      pgp:
+      - *om

@@ -33,5 +33,11 @@
     loader.efi.canTouchEfiVariables = true;
   };
 
+  sops.secrets = {
+    borg_passphrase = {
+      sopsFile = ./secrets.yaml;
+    };
+  };
+
   system.stateVersion = "23.05";
 }
