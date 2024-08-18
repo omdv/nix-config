@@ -30,6 +30,10 @@
     nameservers = [ "8.8.8.8" "8.8.4.4" ];
   };
 
+  networking.firewall.allowedTCPPorts = [
+    80 443 32400
+  ];
+
   boot = {
     loader.systemd-boot.enable = true;
     loader.efi.canTouchEfiVariables = true;
