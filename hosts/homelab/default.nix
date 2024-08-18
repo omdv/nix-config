@@ -30,6 +30,7 @@
     nameservers = [ "8.8.8.8" "8.8.4.4" ];
   };
 
+  # web and plex
   networking.firewall.allowedTCPPorts = [
     80 443 32400
   ];
