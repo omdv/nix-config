@@ -28,7 +28,6 @@ in {
       hostname = {
         format = "[@$hostname]($style) ";
         ssh_only = false;
-        ssh_symbol = "🌐 ";
         style = "bold ${colors.tertiary}";
       };
       localip = {
