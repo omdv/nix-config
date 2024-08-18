@@ -2,7 +2,6 @@
 {pkgs ? import <nixpkgs> {}, ...}: rec {
   # Packages with an actual source
   myjdk = pkgs.callPackage ./myjdk { };
-  shellcolord = pkgs.callPackage ./shellcolord {};
   hyprbars = pkgs.callPackage ./hyprbars {};
   pass-wofi = pkgs.callPackage ./pass-wofi {};
 
