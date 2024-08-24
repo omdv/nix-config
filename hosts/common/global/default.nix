@@ -13,6 +13,7 @@
       ./nix-ld.nix
       ./openssh.nix
       ./sops.nix
+      ./tailscale.nix
     ]
     ++ (builtins.attrValues outputs.nixosModules);
 
