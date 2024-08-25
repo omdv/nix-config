@@ -8,7 +8,7 @@ in {
   home.activation = {
     generateSSHKey = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
       if [ ! -f ~/.ssh/id_rsa ]; then
-        ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_rsa -N "" -C "${config.home.username}@${hostName}";
+        /run/current-system/sw/bin/ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_rsa -N "" -C "${config.home.username}@${hostName}";
       fi
     '';
   };
