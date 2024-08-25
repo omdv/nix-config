@@ -15,7 +15,8 @@ It is my daily runner already, fully productive:
 
 ### eyecandy
 - prettify grub
-- consistent colorschemes
+- starship colors - change for diff hosts
+- shellcolord
 
 ### cli
 - vim config and plugins
@@ -23,8 +24,8 @@ It is my daily runner already, fully productive:
 
 ### system
 - persistence and erasing /root
-- prometheus node exporter
-- tailscale
+- prometheus node exporter via tailscale
+- lock screen
 - auto-cpufreq daemon vs tlp?
 - respect XDG_folders
 - fontpreview with config
@@ -37,8 +38,5 @@ It is my daily runner already, fully productive:
 
 ## homelab
 - backup scripts
-- k3s
-- firewall
-- proper IP
-- tailscale
+- monitoring scripts
 - script to transfer k3s context
