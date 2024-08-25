@@ -8,6 +8,7 @@
   imports = [
     ./fonts.nix
     ./kitty.nix
+    ./ssh.nix
     ./xdg.nix
   ]
     ++ (builtins.attrValues outputs.homeManagerModules);
