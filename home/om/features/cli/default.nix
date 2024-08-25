@@ -12,6 +12,7 @@
     ./navi.nix
     ./nnn.nix
     ./qutebrowser.nix
+    ./ssh.nix
     ./starship.nix
     ./tmux.nix
   ];
