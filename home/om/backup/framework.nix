@@ -26,17 +26,17 @@ in {
             remote_path = "borg1";
             exclude_patterns = [
               "*.pyc"
-              "/home/me/.cache"
-              "/home/me/.ssh"
-              "/home/me/.config/borg"
-              "/home/me/*/node_modules/"
-              "/home/me/*/Trash/"
-              "/home/me/*/.venv/"
-              "/home/me/Jts"
-              "/home/me/.asdf"
-              "/home/me/.gnupg"
-              "/home/me/.nix-profile"
-              "/home/me/.nix-defexpr"
+              "/home/om/.cache"
+              "/home/om/.ssh"
+              "/home/om/.config/borg"
+              "/home/om/*/node_modules/"
+              "/home/om/*/Trash/"
+              "/home/om/*/.venv/"
+              "/home/om/Jts"
+              "/home/om/.asdf"
+              "/home/om/.gnupg"
+              "/home/om/.nix-profile"
+              "/home/om/.nix-defexpr"
             ];
             exclude_if_present = [ ".nobackup" ];
             exclude_caches = true;

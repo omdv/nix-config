@@ -10,6 +10,7 @@
     ./fzf.nix
     ./nvim-tree.nix
     ./statusline
+    ./lazy.nix
   ];
 
   programs.nixvim = {
