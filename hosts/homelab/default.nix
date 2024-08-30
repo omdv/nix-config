@@ -7,10 +7,10 @@
     ./hardware-configuration.nix
 
     ../common/global
+    ../common/users/om
+
     ../common/optional/zfs.nix
     ../common/optional/k3s.nix
-
-    ../common/users/om
   ];
 
   networking = {
