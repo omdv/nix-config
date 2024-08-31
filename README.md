@@ -15,7 +15,6 @@ It is my daily runner already, fully productive:
 
 ### eyecandy
 - prettify grub
-- starship colors - change for diff hosts
 - shellcolord
 
 ### cli
