@@ -24,7 +24,6 @@
   ];
 
   # colorscheme
-  # wallpaper = pkgs.wallpapers.towers-ice;
   colorscheme.source = "#2B3975";
   colorscheme.type = "tonal-spot";
 
