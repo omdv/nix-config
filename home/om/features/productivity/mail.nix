@@ -1,8 +1,6 @@
 { lib, config, ...}: let
   mbsync = "${config.programs.mbsync.package}/bin/mbsync";
   pass = "${config.programs.password-store.package}/bin/pass";
-  # fastmailAddress = builtins.readFile "${config.sops.secrets.email_fastmail_address.path}";
-  # fastmailAddress = "${pass} email/fastmail_address";
 
   common = rec {
     realName = "Oleg Medvedev";
@@ -55,43 +53,46 @@ in {
             ];
           };
         } // common;
-      # gmail =
-      #   rec {
-      #     primary = false;
-      #     msmtp.enable = true;
-      #     address = gmailAddress;
+      gmail =
+        rec {
+          primary = false;
+          msmtp.enable = true;
+          address = "ole.bjorne@gmail.com";
 
-      #     smtp.host = "smtp.gmail.com";
-      #     userName = gmailAddress;
+          smtp.host = "smtp.gmail.com";
+          userName = address;
 
-      #     aliases = [
-      #       gmail
-      #     ];
-      #     passwordCommand = "${pass} email/${address}";
+          aliases = [
+            "ole.bjorne@gmail.com"
+          ];
+          passwordCommand = "${pass} email/${address}";
 
-      #     imap.host = "imap.gmail.com";
-      #     mbsync = {
-      #       enable = true;
-      #       create = "maildir";
-      #       expunge = "both";
-      #     };
-      #     folders = {
-      #       inbox = "Inbox";
-      #       drafts = "Drafts";
-      #       sent = "Sent";
-      #       trash = "Trash";
-      #     };
-      #     neomutt = {
-      #       enable = true;
-      #       extraMailboxes = [
-      #         "Archive"
-      #         "Drafts"
-      #         "Spam"
-      #         "Sent"
-      #         "Trash"
-      #       ];
-      #     };
-      #   } // common;
+          imap.host = "imap.gmail.com";
+          mbsync = {
+            enable = true;
+            create = "maildir";
+            expunge = "both";
+            patterns = [ "*" "[Gmail]*" ];
+          };
+          folders = {
+            inbox = "Inbox";
+            drafts = "[Gmail]/Drafts";
+            sent   = "[Gmail]/Sent Mail";
+            trash  = "[Gmail]/Trash";
+          };
+          neomutt = {
+            enable = true;
+            extraMailboxes = [
+              "Inbox"
+              "[Gmail]/Drafts"
+              "[Gmail]/Sent Mail"
+              "[Gmail]/Spam"
+              "[Gmail]/Starred"
+              "[Gmail]/Important"
+              "[Gmail]/Trash"
+            ];
+          };
+        } // common;
     };
   };
 
