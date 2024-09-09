@@ -18,6 +18,7 @@
     ./features/optional/mpv.nix
     ./features/optional/zathura.nix
     ./features/optional/zotero.nix
+    ./features/optional/zed.nix
 
     ./backup/framework.nix
     inputs.sops-nix.homeManagerModules.sops
