@@ -6,6 +6,7 @@ in {
     options = {
       default-bg = colors.surface;
       default-fg = colors.on_surface;
+      database = "sqlite";
     };
   };
 
