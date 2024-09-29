@@ -9,6 +9,7 @@
     ../common/global
     ../common/users/om
 
+    ../common/optional/samba.nix
     ../common/optional/zfs.nix
     ../common/optional/k3s.nix
   ];
@@ -27,11 +28,6 @@
       };
     };
   };
-
-  # open ports for other k3s apps
-  networking.firewall.allowedTCPPorts = [
-    445 #samba
-  ];
 
   boot = {
     loader.systemd-boot.enable = true;
