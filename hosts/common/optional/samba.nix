@@ -1,16 +1,15 @@
 {
   services.samba = {
     enable = true;
+    securityType = "user";
+    openFirewall = true;
     shares = {
-      "pool" = {
-        path = "/pool";
+      "scanned_files" = {
+        path = "/pool/documents/scanned_files";
         writeable = true;
         browsable = true;
         guestOk = true;
       };
     };
   };
-
-  networking.firewall.allowedTCPPorts = [ 139 445 ];
-  networking.firewall.allowedUDPPorts = [ 137 138 ];
 }
