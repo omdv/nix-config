@@ -28,6 +28,11 @@
     };
   };
 
+  # open ports for other k3s apps
+  networking.firewall.allowedTCPPorts = [
+    445 #samba
+  ];
+
   boot = {
     loader.systemd-boot.enable = true;
     loader.efi.canTouchEfiVariables = true;
