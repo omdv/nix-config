@@ -1,7 +1,5 @@
 {
   inputs,
-  config,
-  ...
 }: {
   imports = [
     ./global
@@ -21,7 +19,6 @@
     ./features/optional/zed.nix
 
     ./backup/framework.nix
-    inputs.sops-nix.homeManagerModules.sops
   ];
 
   # colorscheme
@@ -44,14 +41,4 @@
     gtkFontSize = 12;
     cursorSize = 36;
   };
-
-  # sops-nix
-  sops = {
-    defaultSopsFile = ./secrets.yaml;
-    secrets.email_fastmail_address = {
-      sopsFile = ./secrets.yaml;
-    };
-    age.keyFile = "${config.xdg.configHome}/sops/age/keys.txt";
-  };
-
 }
