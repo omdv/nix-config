@@ -53,6 +53,20 @@
       sopsFile = ./secrets.yaml;
       path = "/run/user-secrets/backup-passphrase";
     };
+    gmail_password = {
+      owner = "om";
+      group = "wheel";
+      mode = "0400";
+      sopsFile = ./secrets.yaml;
+      path = "/run/user-secrets/gmail-password";
+    };
+    fastmail_password = {
+      owner = "om";
+      group = "wheel";
+      mode = "0400";
+      sopsFile = ./secrets.yaml;
+      path = "/run/user-secrets/fastmail-password";
+    };
   };
 
   hardware.opengl.enable = true;
