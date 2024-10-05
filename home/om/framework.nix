@@ -1,4 +1,4 @@
-{
+{ inputs, config, ... }: {
   imports = [
     ./global
 
@@ -17,6 +17,7 @@
     ./features/optional/zed.nix
 
     ./backup/framework.nix
+    inputs.sops-nix.homeManagerModules.sops
   ];
 
   # colorscheme
@@ -33,6 +34,14 @@
       scale = 1.0;
     }
   ];
+
+  # sops-nix
+  sops = {
+    defaultSopsFile = ./secrets.yaml;
+    secrets.fastmail_password = { sopsFile = ./secrets.yaml; };
+    secrets.gmail_password = { sopsFile = ./secrets.yaml; };
+    age.keyFile = "${config.xdg.configHome}/sops/age/keys.txt";
+  };
 
   i3scaling = {
     dpi = 144; #96 is 1.0 scale
