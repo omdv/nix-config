@@ -1,6 +1,7 @@
-{ lib, config, ...}: let
+{ lib, config, pkgs, ...}: let
   mbsync = "${config.programs.mbsync.package}/bin/mbsync";
-  pass = "${config.programs.password-store.package}/bin/pass";
+  fastmail_password = "${pkgs.coreutils-full}/bin/cat ${config.sops.secrets.fastmail_password.path}";
+  gmail_password = "${pkgs.coreutils-full}/bin/cat ${config.sops.secrets.gmail_password.path}";
 
   common = rec {
     realName = "Oleg Medvedev";
@@ -28,7 +29,7 @@ in {
           aliases = [
             "omdv@fastmail.com"
           ];
-          passwordCommand = "${pass} email/${address}";
+          passwordCommand = fastmail_password;
 
           imap.host = "imap.fastmail.com";
           mbsync = {
@@ -65,7 +66,7 @@ in {
           aliases = [
             "ole.bjorne@gmail.com"
           ];
-          passwordCommand = "${pass} email/${address}";
+          passwordCommand = gmail_password;
 
           imap.host = "imap.gmail.com";
           mbsync = {
