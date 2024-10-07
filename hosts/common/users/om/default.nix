@@ -35,19 +35,15 @@ in {
   };
 
   # allow inhibit explicitly for borgmatic
-  services.polkit = {
+  security.polkit = {
     enable = true;
-    rules = [
-      {
-        action = [
-          "org.freedesktop.systemd1.manage-units"
-          "org.freedesktop.login1.inhibit-handle-delay-lock"
-          "org.freedesktop.login1.inhibit-handle-delay-shutdown"
-          "org.freedesktop.login1.inhibit-handle-delay-sleep"
-        ];
-        user = "om";
-        resultAny = [ "yes" ];
-      }
-    ];
+    extraConfig = ''
+      polkit.addRule(function(action, subject) {
+        if (action.id == "org.freedesktop.systemd-inhibit" &&
+            subject.user == "om") {
+          return polkit.Result.YES;
+        }
+      });
+    '';
   };
 }
