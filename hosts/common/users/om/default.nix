@@ -39,9 +39,15 @@ in {
     enable = true;
     extraConfig = ''
       polkit.addRule(function(action, subject) {
-        if (action.id == "org.freedesktop.systemd-inhibit" &&
-            subject.user == "om") {
-          return polkit.Result.YES;
+        if (subject.user == "om") {
+          if ([
+            "org.freedesktop.login1.inhibit-block-shutdown",
+            "org.freedesktop.login1.inhibit-block-sleep",
+            "org.freedesktop.login1.inhibit-delay-shutdown",
+            "org.freedesktop.login1.inhibit-delay-sleep",
+          ].indexOf(action.id) != -1) {
+            return polkit.Result.YES;
+          }
         }
       });
     '';
