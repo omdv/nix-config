@@ -32,6 +32,22 @@ in {
       login.enableGnomeKeyring = true;
       lightdm.enableGnomeKeyring = true;
     };
-    polkit.enable = true;
+  };
+
+  # allow inhibit explicitly for borgmatic
+  services.polkit = {
+    enable = true;
+    rules = [
+      {
+        action = [
+          "org.freedesktop.systemd1.manage-units"
+          "org.freedesktop.login1.inhibit-handle-delay-lock"
+          "org.freedesktop.login1.inhibit-handle-delay-shutdown"
+          "org.freedesktop.login1.inhibit-handle-delay-sleep"
+        ];
+        user = "om";
+        resultAny = [ "yes" ];
+      }
+    ];
   };
 }
