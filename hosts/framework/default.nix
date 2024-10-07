@@ -24,12 +24,6 @@
     ../common/optional/vpn.nix
   ];
 
-  # Lid settings
-  services.logind = {
-    lidSwitch = "suspend";
-    lidSwitchExternalPower = "lock";
-  };
-
   networking = {
     hostName = "framework";
     networkmanager.enable = true;
@@ -53,21 +47,20 @@
       sopsFile = ./secrets.yaml;
       path = "/run/user-secrets/backup-passphrase";
     };
-    gmail_password = {
-      owner = "om";
-      group = "wheel";
-      mode = "0400";
-      sopsFile = ./secrets.yaml;
-      path = "/run/user-secrets/gmail-password";
-    };
-    fastmail_password = {
-      owner = "om";
-      group = "wheel";
-      mode = "0400";
-      sopsFile = ./secrets.yaml;
-      path = "/run/user-secrets/fastmail-password";
-    };
   };
+
+  # Lid settings
+  services.logind = {
+    lidSwitch = "suspend";
+    lidSwitchExternalPower = "lock";
+  };
+
+  systemd.sleep.extraConfig = ''
+    AllowSuspend=yes
+    AllowHibernation=no
+    AllowHybridSleep=no
+    AllowSuspendThenHibernate=no
+  '';
 
   hardware.opengl.enable = true;
 
