@@ -34,6 +34,9 @@
     loader.efi.canTouchEfiVariables = true;
   };
 
+  # enable lingering for systemd services
+  users.users.om.lingering = true;
+
   sops.secrets = {
     backup_passphrase = {
       owner = "om";
