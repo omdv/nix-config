@@ -26,8 +26,6 @@ in {
     openssh.authorizedKeys.keys = lib.splitString "\n" (builtins.readFile ../../../../home/om/ssh.pub);
   };
 
-  # home-manager.users.om = import ../../../../home/om/${config.networking.hostName}.nix;
-
   # gnome-keyring
   security = {
     pam.services = {
