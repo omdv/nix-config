@@ -16,6 +16,8 @@
     ./features/optional/zotero.nix
     ./features/optional/zed.nix
 
+    ./features/gaming/wesnoth.nix
+
     ./backup/framework.nix
     inputs.sops-nix.homeManagerModules.sops
   ];

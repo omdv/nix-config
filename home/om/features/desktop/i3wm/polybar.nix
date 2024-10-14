@@ -31,8 +31,9 @@ in {
     config = {
       "bar/root" = {
         monitor = "eDP-1";
-        height = "3%";
         override-redirect = true;
+        wm-restack = "i3";
+        height = "3%";
         radius = 0;
         bottom = false;
 

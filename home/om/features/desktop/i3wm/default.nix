@@ -86,6 +86,7 @@ in {
         hideEdgeBorders = "smart";
       };
       gaps = {
+        smartGaps = false;
         inner = 5;
         top = 50;
         bottom = 5;
