@@ -17,6 +17,7 @@
     ./features/optional/zed.nix
 
     ./features/gaming/wesnoth.nix
+    ./features/gaming/cdda.nix
 
     ./backup/framework.nix
     inputs.sops-nix.homeManagerModules.sops
