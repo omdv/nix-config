@@ -1,5 +1,6 @@
 { pkgs, ... }: {
   imports = [
+    ./cursor.nix
     ./devenv.nix
     ./k9s.nix
     ./khard.nix
