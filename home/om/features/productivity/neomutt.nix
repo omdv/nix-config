@@ -127,6 +127,9 @@
         alternates "${lib.concatStringsSep "|" addresses}"
       ''
       + ''
+        # For html
+        auto_view text/html
+
         # From: https://github.com/dracula/mutt/blob/master/dracula.muttrc
         # general ------------ foreground ---- background -----------------------------
         color error		color231	color212
@@ -167,5 +170,12 @@
         color signature		color212	default
 
       '';
+  };
+
+  # mailcap
+  home.file = {
+    ".mailcap".text = ''
+      text/html; w3m -dump %s; copiousoutput
+    '';
   };
 }
