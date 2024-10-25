@@ -15,6 +15,7 @@
     ./ssh.nix
     ./starship.nix
     ./tmux.nix
+    ./w3m.nix
   ];
   home.packages = with pkgs; [
     # base

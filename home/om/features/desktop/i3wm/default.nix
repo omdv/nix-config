@@ -63,6 +63,11 @@ in {
     ./dunst.nix
   ];
 
+  xsession.initExtra = ''
+    xset s off          # Disable screen saver
+    xset -dpms          # Disable DPMS (Display Power Management Signaling)
+  '';
+
   xsession.windowManager.i3 = {
     enable = true;
     package = pkgs.i3-gaps;
