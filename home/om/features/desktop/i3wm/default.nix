@@ -74,7 +74,10 @@ in {
     config = {
       assigns = {
         "2" = [{ class = "firefox"; }];
-        "3" = [{ class = "Code"; }];
+        "3" = [
+          { class = "Code"; }
+          { class = "Cursor"; }
+        ];
       };
       bars = [];
       defaultWorkspace = "1";
