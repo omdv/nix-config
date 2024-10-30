@@ -51,15 +51,16 @@
 
   # Lid settings
   services.logind = {
-    lidSwitch = "suspend";
-    lidSwitchExternalPower = "lock";
+    lidSwitch = "suspend-then-hibernate";
+    lidSwitchExternalPower = "suspend-then-hibernate";
   };
 
   systemd.sleep.extraConfig = ''
     AllowSuspend=yes
-    AllowHibernation=no
+    AllowHibernation=yes
     AllowHybridSleep=no
-    AllowSuspendThenHibernate=no
+    AllowSuspendThenHibernate=yes
+    HibernateDelaySec=1h
   '';
 
   hardware.opengl.enable = true;
