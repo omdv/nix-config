@@ -82,7 +82,7 @@ in {
         interval = 1;
         warn-percentage = 5;
         label = "%{T3} %{T-}%percentage_used%%";
-        format-warn-background = colors.error;
+        format-warn-background = harmonized.red;
         label-font = 1;
       };
       "module/temp" = {
@@ -105,7 +105,7 @@ in {
           args = [
             "alsa_output.pci-0000_00_1f.3.analog-stereo"
             "${colors.secondary}"
-            "${colors.error}"
+            "${harmonized.red}"
             ];
         };
         interval = "once";
