@@ -176,7 +176,7 @@ in {
         low-at = 10;
         interval = 10;
 
-        format-discharging = "%{F${colors.error}}<ramp-capacity> <label-discharging>%{F-}";
+        format-discharging = "%{F${harmonized.red}}<ramp-capacity> <label-discharging>%{F-}";
         ramp-capacity-0 = "%{T3} %{T-}";
         ramp-capacity-1 = "%{T3} %{T-}";
         ramp-capacity-2 = "%{T3} %{T-}";
