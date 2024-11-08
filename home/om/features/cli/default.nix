@@ -16,6 +16,7 @@
     ./starship.nix
     ./tmux.nix
     ./w3m.nix
+    ./yazi.nix
   ];
   home.packages = with pkgs; [
     # base
@@ -39,6 +40,7 @@
     # system tools
     duf # TUI disk usage
     iotop # io monitoring
+    kmon # TUI kernel manager
     lm_sensors # for `sensors` command
     lsof # list open files
     ltrace # library call monitoring
