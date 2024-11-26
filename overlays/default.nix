@@ -22,12 +22,9 @@
     unstable = inputs.nixpkgs-unstable.legacyPackages.${final.system};
   };
 
-  # Bring all custom packages into scope
-  additions = final: _prev: {
-    pkgs = import ../pkgs _prev;
-  };
+  # Adds custom packages here
+  additions = final: prev: import ../pkgs {pkgs = final;};
 
   # Add custom modifications here
-  modifications = final: prev: {
-  };
+  modifications = final: prev: {};
 }

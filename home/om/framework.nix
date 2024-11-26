@@ -14,7 +14,6 @@
     ./features/optional/mpv.nix
     ./features/optional/zathura.nix
     ./features/optional/zotero.nix
-    ./features/optional/zed.nix
 
     ./features/gaming/wesnoth.nix
     ./features/gaming/cdda.nix
