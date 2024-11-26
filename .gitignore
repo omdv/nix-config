@@ -5,3 +5,5 @@ result*
 .clj-kondo
 .lsp
 .secrets.baseline
+*.code-workspace
+*.code-workspace.lock
