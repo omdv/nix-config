@@ -32,7 +32,6 @@
     distrobox # Nice escape hatch, integrates docker images with my environment
     eza # Better ls
     fd # Better find
-    httpie # Better curl
     jq # A lightweight and flexible command-line JSON processor
     ripgrep # Better grep
     yq-go # yaml processor https://github.com/mikefarah/yq
@@ -55,6 +54,7 @@
     iftop # network monitoring
     ipcalc  # it is a calculator for the IPv4/v6 addresses
     iperf3 # determine max bandwidth
+    httpstat # http request metrics
     ldns # replacement of `dig`, it provide the command `drill`
     mtr # network diagnostic tool
     nethogs # net top tool
@@ -63,10 +63,13 @@
 
     # nix -related
     alejandra # Nix formatter
+    deadnix # Nix dead code finder
+    manix # man pages for nix
     nh # Nice wrapper for NixOS and HM
     nil # Nix LSP
     nix-diff # Differ, more detailed
-    nix-output-monitor
+    nix-tree # Nix tree
+    nix-output-monitor # Nix build monitor
 
     # misc
     tldr # Simplified man

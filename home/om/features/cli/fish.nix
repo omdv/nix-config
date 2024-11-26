@@ -20,6 +20,7 @@
   hasNeovim = config.programs.neovim.enable || config.programs.nixvim.enable;
   hasNeomutt = config.programs.neomutt.enable;
   hasKitty = config.programs.kitty.enable;
+  hasYazi = config.programs.yazi.enable;
 in {
   programs.fish = {
     enable = true;
@@ -46,11 +47,12 @@ in {
       vim = mkIf hasNeovim "nvim";
       mutt = mkIf hasNeomutt "neomutt";
       pass = mkIf hasGopass "gopass";
+      ya = mkIf hasYazi "yazi";
 
       # Shortcuts
-      hm = "home-manager --flake .";
-      hms = "home-manager --flake . switch ";
-      snrs = "sudo nixos-rebuild --flake . switch";
+      snrs = "nh os switch .";
+      hms = "nh home switch .";
+
       dps = "docker ps -a --format 'table {{.Names}}\t{{.Image}}\t{{.Ports}}\t{{.Status}}'";
     };
 
