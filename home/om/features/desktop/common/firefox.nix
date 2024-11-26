@@ -2,6 +2,7 @@
   programs.browserpass.enable = true;
   programs.firefox = {
     enable = true;
+    package = pkgs.unstable.firefox;
     profiles.omdv = {
       bookmarks = {};
       extensions = with pkgs.inputs.firefox-addons; [

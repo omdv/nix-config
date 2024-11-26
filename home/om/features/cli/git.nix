@@ -1,11 +1,4 @@
-{
-  pkgs,
-  config,
-  lib,
-  ...
-}: let
-  ssh = "${pkgs.openssh}/bin/ssh";
-in {
+{ pkgs, config, lib, ...}: {
   programs.git = {
     enable = true;
     package = pkgs.gitAndTools.gitFull;

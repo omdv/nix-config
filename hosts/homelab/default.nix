@@ -35,7 +35,7 @@
   };
 
   # enable lingering for systemd services
-  users.users.om.lingering = true;
+  users.users.om.linger = true;
 
   sops.secrets = {
     backup_passphrase = {

@@ -1,6 +1,4 @@
 { inputs, ... }: {
-  # Bring all custom packages into scope
-  additions = final: _prev: import ../pkgs _prev;
 
   # For every flake input, aliases 'pkgs.inputs.${flake}' to
   # 'inputs.${flake}.packages.${pkgs.system}' or
@@ -19,6 +17,17 @@
       inputs;
   };
 
+  # Adds pkgs.unstable == inputs.nixpkgs-unstable.legacyPackages.${pkgs.system}
+  unstable = final: _: {
+    unstable = inputs.nixpkgs-unstable.legacyPackages.${final.system};
+  };
+
+  # Bring all custom packages into scope
+  additions = final: _prev: {
+    pkgs = import ../pkgs _prev;
+  };
+
+  # Add custom modifications here
   modifications = final: prev: {
   };
 }
