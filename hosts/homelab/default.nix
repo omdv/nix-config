@@ -1,5 +1,6 @@
 {
   inputs,
+  config,
   ...
 }: {
   imports = [
@@ -38,9 +39,11 @@
   users.users.om.linger = true;
 
   # allow om to inhibit systemd services
-  polkit.extraConfig = ''
+  security.polkit.enable = true;
+  security.polkit.extraConfig = ''
     polkit.addRule(function(action, subject) {
-      if (action.id == "org.freedesktop.systemd1.inhibit" && subject.user == "om") {
+      if (action.id == "org.freedesktop.login1.inhibit" &&
+          subject.user == "${config.users.users.om.name}") {
         return polkit.Result.YES;
       }
     });
