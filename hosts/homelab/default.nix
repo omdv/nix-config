@@ -37,6 +37,15 @@
   # enable lingering for systemd services
   users.users.om.linger = true;
 
+  # allow om to inhibit systemd services
+  polkit.extraConfig = ''
+    polkit.addRule(function(action, subject) {
+      if (action.id == "org.freedesktop.systemd1.inhibit" && subject.user == "om") {
+        return polkit.Result.YES;
+      }
+    });
+  '';
+
   sops.secrets = {
     backup_passphrase = {
       owner = "om";
