@@ -47,7 +47,7 @@
           "org.freedesktop.login1.inhibit-block-idle",
           "org.freedesktop.login1.inhibit-block-shutdown",
         ].indexOf(action.id) >= 0 &&
-        subject.user == "${config.users.users.your-username.name}") {
+        subject.user == "${config.users.users.om.name}") {
         return polkit.Result.YES;
       }
     });
