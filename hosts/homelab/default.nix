@@ -42,8 +42,12 @@
   security.polkit.enable = true;
   security.polkit.extraConfig = ''
     polkit.addRule(function(action, subject) {
-      if (action.id == "org.freedesktop.login1.inhibit" &&
-          subject.user == "${config.users.users.om.name}") {
+      if ([
+          "org.freedesktop.login1.inhibit-block-sleep",
+          "org.freedesktop.login1.inhibit-block-idle",
+          "org.freedesktop.login1.inhibit-block-shutdown",
+        ].indexOf(action.id) >= 0 &&
+        subject.user == "${config.users.users.your-username.name}") {
         return polkit.Result.YES;
       }
     });
