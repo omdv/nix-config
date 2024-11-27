@@ -10,8 +10,9 @@
     ./features/productivity
     ./features/pass
 
-    ./features/optional/quickemu.nix
     ./features/optional/mpv.nix
+    ./features/optional/pyradio.nix
+    ./features/optional/quickemu.nix
     ./features/optional/zathura.nix
     ./features/optional/zotero.nix
 
