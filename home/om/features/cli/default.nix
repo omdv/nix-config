@@ -74,8 +74,5 @@
     # misc
     tldr # Simplified man
     dive # Docker image explorer
-
-    # awesome-tui
-    pyradio # Internet radio player
   ];
 }
