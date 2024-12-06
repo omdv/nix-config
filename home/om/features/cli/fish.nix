@@ -113,6 +113,9 @@ in {
       set -gx XDG_STATE_HOME $HOME/.local/state
       set -gx XDG_CACHE_HOME $HOME/.cache
 
+      # kitty TERM for ssh
+      set -gx TERM xterm-256color
+
       # xdg folder cleanup
       set -gx ASDF_DATA_DIR $XDG_DATA_HOME/asdf
       set -gx CALCHISTFILE $XDG_CACHE_HOME/calc_history

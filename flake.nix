@@ -34,10 +34,6 @@
     nix-colors = {
       url = "github:misterio77/nix-colors";
     };
-    auto-cpufreq = {
-      url = "github:AdnanHodzic/auto-cpufreq";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   outputs = {
