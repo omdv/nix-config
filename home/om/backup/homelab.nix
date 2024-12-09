@@ -71,7 +71,7 @@ in {
   systemd.user.services.borgmatic-backup = {
     Unit = {
       Description = "Borgmatic backup service";
-      ConditionACPower = false;
+      ConditionACPower = true;
     };
 
     Service = {
