@@ -19,6 +19,7 @@
     ../common/optional/pipewire.nix
     ../common/optional/light.nix
     ../common/optional/poweropts.nix
+    ../common/optional/platformio.nix
     ../common/optional/steam.nix
     ../common/optional/quietboot.nix
     ../common/optional/vpn.nix
@@ -48,20 +49,6 @@
       path = "/run/user-secrets/backup-passphrase";
     };
   };
-
-  # Lid settings
-  services.logind = {
-    lidSwitch = "suspend-then-hibernate";
-    lidSwitchExternalPower = "suspend-then-hibernate";
-  };
-
-  systemd.sleep.extraConfig = ''
-    AllowSuspend=yes
-    AllowHibernation=yes
-    AllowHybridSleep=no
-    AllowSuspendThenHibernate=yes
-    HibernateDelaySec=1h
-  '';
 
   hardware.opengl.enable = true;
 

@@ -1,6 +1,4 @@
-{ pkgs, lib, ... }: {
-
-
+{
   powerManagement.enable = true;
 
   systemd.sleep.extraConfig = ''
@@ -14,11 +12,6 @@
     IdleAction=hibernate
     IdleActionSec=30min
   '';
-
-  # # glibc is needed for auto-cpufreq
-  # environment.systemPackages = with pkgs; [
-  #   glibc
-  # ];
 
   services.auto-cpufreq = {
     enable = true;

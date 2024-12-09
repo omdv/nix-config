@@ -1,9 +1,5 @@
 {pkgs, ...}: let
-  inherit (pkgs) lib;
-  matugen = import (fetchTarball {
-    url = "https://github.com/InioX/matugen/archive/3040fe974b94bc70b49e6c3b868a8eb1c7b294a3.tar.gz";
-    sha256 = "sha256:0v7np4294fzwxmgf7pjcxvky63lrq1ajim1b8ywbp47wy9k0pcgs";
-  }) {inherit pkgs;};
+  inherit (pkgs) lib matugen;
   generateColorscheme = name: source: let
     schemeTypes = ["content" "expressive" "fidelity" "fruit-salad" "monochrome" "neutral" "rainbow" "tonal-spot"];
     isHexColor = c: lib.isString c && (builtins.match "#([0-9a-fA-F]{3}){1,2}" c) != null;
