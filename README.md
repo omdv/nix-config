@@ -38,4 +38,3 @@ It is my daily runner already, fully productive:
 ## homelab
 - backup scripts
 - monitoring scripts
-- script to transfer k3s context
