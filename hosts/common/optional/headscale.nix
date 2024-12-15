@@ -1,10 +1,12 @@
 { config, ... }:
-  let domain = "tailscale.hut.sh";
-in {
-  services = {
-    headscale = {
+  let
+    domain = "tailscale.hut.sh";
+    port = 8000;
+  in {
+    services = {
+      headscale = {
       enable = true;
-      port = 8000;
+      port = port;
       address = "0.0.0.0";
       settings = {
         dns_config = {
@@ -47,6 +49,7 @@ in {
     };
   };
 
+  networking.firewall.allowedTCPPorts = [ port ];
   environment.systemPackages = [config.services.headscale.package];
 
 }
