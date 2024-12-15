@@ -13,6 +13,7 @@
     ../common/optional/samba.nix
     ../common/optional/zfs.nix
     ../common/optional/k3s.nix
+    ../common/optional/headscale.nix
   ];
 
   networking = {
