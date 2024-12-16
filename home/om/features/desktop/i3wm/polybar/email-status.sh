@@ -1,9 +1,9 @@
-COLOR_FOREGROUND_UNREAD="$1"
+COLOR_FOREGROUND="$1"
 
 COUNT=$(find ~/Mail/*/Inbox/new -type f | wc -l)
 
 if [ "$COUNT" == "0" ]; then
-    echo "NO MAIL"
+    echo ""
 else
-    echo "%{F$COLOR_FOREGROUND_UNREAD}MAIL $COUNT%{F-}"
+    echo "%{F$COLOR_FOREGROUND}󰇮 $COUNT%{F-}"
 fi
