@@ -57,7 +57,7 @@ in {
         offset-y = 0;
         modules-left = "i3";
         modules-center = "date";
-        modules-right = "cpu mem temp xkeyboard audio headscale wlan email battery";
+        modules-right = "email cpu mem temp xkeyboard audio headscale wlan battery";
       };
       "module/date" = {
         type = "internal/date";
@@ -127,7 +127,7 @@ in {
         interval = 10;
         format = "<label>";
         label = "%output%";
-        label-font = 1;
+        label-font = 3;
       };
       "module/headscale" = {
         type = "custom/script";
@@ -176,12 +176,12 @@ in {
         exec = mkScriptFromFile {
           deps = [pkgs.findutils pkgs.procps];
           scriptFile = ./polybar/email-status.sh;
-          args = [ "${harmonized.green}" ];
+          args = [ "${colors.tertiary}" ];
         };
         interval = 60;
         format = "<label>";
         label = "%output%";
-        label-font = 1;
+        label-font = 3;
       };
       "module/battery" = {
         type = "internal/battery";
