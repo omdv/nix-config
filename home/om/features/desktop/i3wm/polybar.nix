@@ -139,7 +139,7 @@ in {
             "${harmonized.red}"
           ];
         };
-        interval = 60;
+        interval = 30;
         format = "<label>";
         label = "%output%";
         label-font = 3;
