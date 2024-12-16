@@ -11,7 +11,7 @@ COLOR_LOWR="$4"
 
 # If the wifi interface exists but no connection is active, "down" shall be displayed.
 if [[ "$(cat /sys/class/net/"$INTERFACE"/operstate)" = 'down' ]]; then
-    echo "%{F$COLOR_LOWR}󰖪 {F-}"
+    echo "%{F$COLOR_LOWR}󰖪%{F-}"
     exit
 fi
 
