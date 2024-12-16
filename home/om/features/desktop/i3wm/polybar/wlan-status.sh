@@ -24,14 +24,22 @@ QUALITY=$(iw dev "${INTERFACE}" link | grep 'dBm$' | grep -Eoe '-[0-9]{2}' | awk
 #------------------------------------------------------------------------
 
 # color
-if [[ $QUALITY -ge 75 ]]; then
+if [[ $QUALITY -ge 80 ]]; then
     COLOR=$COLOR_GE80
-elif [[ $QUALITY -ge 50 ]]; then
+elif [[ $QUALITY -ge 60 ]]; then
     COLOR=$COLOR_GE60
-elif [[ $QUALITY -ge 30 ]]; then
+elif [[ $QUALITY -ge 40 ]]; then
     COLOR=$COLOR_GE40
 else
     COLOR=$COLOR_LOWR
 fi
 
-echo "%{F$COLOR}󰖩 $QUALITY% %{F-}"
+if [[ $QUALITY -ge 80 ]]; then
+    echo "%{F$COLOR}󰤨 $QUALITY% %{F-}"
+elif [[ $QUALITY -ge 60 ]]; then
+    echo "%{F$COLOR}󰤥 $QUALITY% %{F-}"
+elif [[ $QUALITY -ge 40 ]]; then
+    echo "%{F$COLOR}󰤢 $QUALITY% %{F-}"
+else
+    echo "%{F$COLOR}󰤟 $QUALITY% %{F-}"
+fi
