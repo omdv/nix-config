@@ -38,3 +38,4 @@ It is my daily runner already, fully productive:
 ## homelab
 - backup scripts
 - monitoring scripts
+- headscale hosting (messing up the k8s ingress)
