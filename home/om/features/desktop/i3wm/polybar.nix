@@ -57,7 +57,7 @@ in {
         offset-y = 0;
         modules-left = "i3";
         modules-center = "date";
-        modules-right = "cpu mem temp xkeyboard audio wlan email battery";
+        modules-right = "cpu mem temp xkeyboard audio headscale wlan email battery";
       };
       "module/date" = {
         type = "internal/date";
@@ -128,6 +128,21 @@ in {
         format = "<label>";
         label = "%output%";
         label-font = 1;
+      };
+      "module/headscale" = {
+        type = "custom/script";
+        exec = mkScriptFromFile {
+          deps = [ pkgs.tailscale pkgs.jq ];
+          scriptFile = ./polybar/headscale-status.sh;
+          args = [
+            "${harmonized.green}"
+            "${harmonized.red}"
+          ];
+        };
+        interval = 60;
+        format = "<label>";
+        label = "%output%";
+        label-font = 3;
       };
       "module/systemd" = {
         type = "custom/script";
