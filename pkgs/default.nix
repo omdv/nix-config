@@ -1,11 +1,8 @@
 # Build them using 'nix build .#example'
 {pkgs ? import <nixpkgs> {}, ...}: rec {
-  # Packages with an actual source
   myjdk = pkgs.callPackage ./myjdk { };
-  hyprbars = pkgs.callPackage ./hyprbars {};
-  pass-wofi = pkgs.callPackage ./pass-wofi {};
 
-  # My wallpaper collection
+  # Mysterio wallpaper collection
   wallpapers = import ./wallpapers {inherit pkgs;};
   allWallpapers = pkgs.linkFarmFromDrvs "wallpapers" (pkgs.lib.attrValues wallpapers);
 
