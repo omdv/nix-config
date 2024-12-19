@@ -1,5 +1,41 @@
 { pkgs, config, lib, ... }: let
-  inherit (config.colorscheme) colors harmonized;
+  # inherit (config.colorscheme) colors harmonized;
+  colors = {
+    primary = "#1a73e8";
+    onPrimary = "#ffffff";
+    primary_container = "#d6e3ff";
+    onPrimaryContainer = "#001a41";
+    secondary = "#555f71";
+    onSecondary = "#ffffff";
+    secondary_container = "#d9e3f8";
+    onSecondaryContainer = "#121c2b";
+    surface = "#fdfbff";
+    onSurface = "#1b1b1f";
+    surface_container = "#fdfbff";
+    onSurfaceContainer = "#1b1b1f";
+    red = "#ba1a1a";
+    onRed = "#ffffff";
+    redContainer = "#ffdad6";
+    onRedContainer = "#410002";
+    green = "#008000";
+    yellow = "#ffff00";
+    orange = "#ffa500";
+    purple = "#800080";
+    pink = "#ffc0cb";
+    brown = "#a52a2a";
+    gray = "#808080";
+    onGreen = "#ffffff";
+    green_container = "#d0f4de";
+    on_green_container = "#003912";
+    tertiary = "#715573";
+    on_tertiary = "#ffffff";
+    tertiary_container = "#fbd7fb";
+    on_tertiary_container = "#29132d";
+    surface_bright = "#e6e6e6";
+    surface_container_bright = "#e6e6e6";
+    on_surface_container_bright = "#1b1b1f";
+  };
+  harmonized = colors;
 
   mapStrings = f: xs: lib.map (x: f x) xs;
   commonDeps = with pkgs; [coreutils gnugrep];

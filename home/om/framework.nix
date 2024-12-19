@@ -23,9 +23,9 @@
     inputs.sops-nix.homeManagerModules.sops
   ];
 
-  # colorscheme
-  colorscheme.source = "#2B3975";
-  colorscheme.type = "tonal-spot";
+  # # colorscheme
+  # colorscheme.source = "#2B3975";
+  # colorscheme.type = "tonal-spot";
 
   monitors = [
     {

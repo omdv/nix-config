@@ -11,6 +11,7 @@
     ./nvim-tree.nix
     ./statusline
     ./lazy.nix
+    ./web-devicons.nix
   ];
 
   programs.nixvim = {
