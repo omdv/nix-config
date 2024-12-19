@@ -1,5 +1,10 @@
 { config, ... }: let
-  inherit (config.colorscheme) colors;
+  # inherit (config.colorscheme) colors;
+  colors = {
+    primary = "#1a73e8";
+    primary_container = "#d6e3ff";
+    on_primary_container = "#001a41";
+  };
 in {
   services.dunst = {
     enable = true;

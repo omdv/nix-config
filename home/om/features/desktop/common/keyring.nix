@@ -1,7 +1,7 @@
 { pkgs, ... }: {
   home.packages = with pkgs; [
-    gnome.gnome-keyring
-    gnome.seahorse
+    gnome-keyring
+    seahorse
     libsecret
     libgnome-keyring
   ];
