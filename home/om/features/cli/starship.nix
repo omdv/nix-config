@@ -54,7 +54,10 @@ in {
       nix_shell = {
         format = "[($name \\(develop\\) <- )$symbol]($style) ";
         impure_msg = "";
-        symbol = " ";
+        style = "bold ${harmonized.blue}";
+      };
+      python = {
+        format = "[$symbol$virtual_env]($style) ";
         style = "bold ${harmonized.blue}";
       };
       character = {
@@ -108,6 +111,7 @@ in {
       shlvl.symbol = "";
       swift.symbol = "󰛥 ";
       terraform.symbol = "󱁢";
+      nix_shell.symbol = " ";
     };
   };
 }
