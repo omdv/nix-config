@@ -8,7 +8,7 @@
       # "--disable-ctrl-r"
     ];
     settings = {
-    enter_accept = "false";
+      enter_accept = "false";
     };
   };
 }
