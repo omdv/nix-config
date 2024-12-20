@@ -44,45 +44,45 @@ in {
       hostname = {
         format = "[@$hostname]($style) ";
         ssh_only = false;
-        style = "bold ${colors.base0E}";
+        style = "bold #${colors.base0E}";
       };
       localip = {
         format = "($address) ";
-        style = "bold ${colors.base0A}";
+        style = "bold #${colors.base0A}";
         ssh_only = true;
         display_host = false;
       };
       shlvl = {
         format = "[$shlvl]($style) ";
-        style = "bold ${colors.base0C}";
+        style = "bold #${colors.base0C}";
         threshold = 2;
         repeat = true;
         disabled = false;
       };
       cmd_duration = {
         format = "took [$duration]($style) ";
-        style = "bold ${colors.base0A}";
+        style = "bold #${colors.base0A}";
       };
       directory = {
         format = "[$path]($style)( [$read_only]($read_only_style)) ";
-        style = "bold ${colors.base0B}";
+        style = "bold #${colors.base0B}";
       };
       nix_shell = {
         format = "[($name \\(develop\\) <- )$symbol]($style) ";
         impure_msg = "";
-        style = "bold ${colors.base0C}";
+        style = "bold #${colors.base0C}";
       };
       python = {
         format = "[$symbol$virtual_env]($style) ";
-        style = "bold ${colors.base0C}";
+        style = "bold #${colors.base0C}";
       };
       character = {
-        error_symbol = "[~~>](bold ${colors.base08})";
-        success_symbol = "[->>](bold ${colors.base0B})";
-        vimcmd_symbol = "[<<-](bold ${colors.base0A})";
-        vimcmd_visual_symbol = "[<<-](bold ${colors.base0C})";
-        vimcmd_replace_symbol = "[<<-](bold ${colors.base0D})";
-        vimcmd_replace_one_symbol = "[<<-](bold ${colors.base0D})";
+        error_symbol = "[~~>](bold #${colors.base08})";
+        success_symbol = "[->>](bold #${colors.base0B})";
+        vimcmd_symbol = "[<<-](bold #${colors.base0A})";
+        vimcmd_visual_symbol = "[<<-](bold #${colors.base0C})";
+        vimcmd_replace_symbol = "[<<-](bold #${colors.base0D})";
+        vimcmd_replace_one_symbol = "[<<-](bold #${colors.base0D})";
       };
       time = {
         format = "\\\[[$time]($style)\\\]";
@@ -93,11 +93,11 @@ in {
       # Cloud
       gcloud = {
         format = "on [$symbol$active(/$project)(\\($region\\))]($style)";
-        style = "bold ${colors.base0A}";
+        style = "bold #${colors.base0A}";
       };
       aws = {
         format = "on [$symbol$profile(\\($region\\))]($style)";
-        style = "bold ${colors.base0A}";
+        style = "bold #${colors.base0A}";
       };
 
       # Icon changes only \/

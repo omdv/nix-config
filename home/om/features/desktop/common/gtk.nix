@@ -52,10 +52,10 @@
           HDR_BG=${colors.base02}
           MATERIA_SURFACE=${colors.base02}
           MATERIA_VIEW=${colors.base01}
-          MENU_BG=${colors.base02}
-          MENU_FG=${colors.base06}
-          SEL_BG=${colors.base0D}
-          SEL_FG=${colors.base0E}
+          MENU_BG=${colors.base00}
+          MENU_FG=${colors.base05}
+          SEL_BG=${colors.base02}
+          SEL_FG=${colors.base05}
           TXT_BG=${colors.base02}
           TXT_FG=${colors.base06}
           WM_BORDER_FOCUS=${colors.base05}

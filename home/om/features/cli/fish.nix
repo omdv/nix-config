@@ -49,10 +49,12 @@ in {
       pass = mkIf hasGopass "gopass";
       ya = mkIf hasYazi "yazi";
 
-      # Shortcuts
+      # Nix shortcuts
       snrs = "nh os switch .";
       hms = "nh home switch .";
+      nixgc = "nix-collect-garbage -d";
 
+      # Docker shortcuts
       dps = "docker ps -a --format 'table {{.Names}}\t{{.Image}}\t{{.Ports}}\t{{.Status}}'";
     };
 

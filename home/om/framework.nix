@@ -24,7 +24,7 @@
 
   # nix-colors colorscheme
   # https://github.com/tinted-theming/schemes
-  colorscheme = colors.colorSchemes.material;
+  colorscheme = colors.colorSchemes.dracula;
 
   # colors = {
   #   "background"= "#121318";
