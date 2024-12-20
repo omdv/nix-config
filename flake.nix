@@ -23,17 +23,9 @@
     hardware.url = "github:nixos/nixos-hardware";
 
     # Third party programs, packaged with nix
-    firefox-addons = {
-      url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    nixvim = {
-      url = "github:nix-community/nixvim/nixos-24.11";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    nix-colors = {
-      url = "github:misterio77/nix-colors";
-    };
+    firefox-addons.url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
+    nixvim.url = "github:nix-community/nixvim/nixos-24.11";
+    nix-colors.url = "github:misterio77/nix-colors";
   };
 
   outputs = {

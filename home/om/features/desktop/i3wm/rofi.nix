@@ -11,7 +11,7 @@ in {
   xdg.configFile."rofi/theme.rasi".source = ./rofi-theme.rasi;
   xdg.configFile."rofi/colors.rasi".text = ''
   * {
-      background: #${colors.base01};
+      background: #${colors.base02};
       background-alt: #${colors.base01};
       foreground: #${colors.base06};
       selected: #${colors.base06};
