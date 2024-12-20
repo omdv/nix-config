@@ -95,6 +95,8 @@
         modules = [
           ./home/om/framework.nix
           ./home/om/nixpkgs.nix
+          inputs.sops-nix.homeManagerModules.sops
+          inputs.nix-colors.homeManagerModules.default
         ];
         pkgs = pkgsFor.x86_64-linux;
         extraSpecialArgs = {
@@ -109,6 +111,8 @@
         modules = [
           ./home/om/homelab.nix
           ./home/om/nixpkgs.nix
+          inputs.sops-nix.homeManagerModules.sops
+          inputs.nix-colors.homeManagerModules.default
         ];
         pkgs = pkgsFor.x86_64-linux;
         extraSpecialArgs = {

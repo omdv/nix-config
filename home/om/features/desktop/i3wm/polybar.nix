@@ -1,42 +1,5 @@
 { pkgs, config, lib, ... }: let
-  # inherit (config.colorscheme) colors harmonized;
-  colors = {
-    primary = "#1a73e8";
-    onPrimary = "#ffffff";
-    primary_container = "#d6e3ff";
-    onPrimaryContainer = "#001a41";
-    secondary = "#555f71";
-    onSecondary = "#ffffff";
-    secondary_container = "#d9e3f8";
-    onSecondaryContainer = "#121c2b";
-    surface = "#fdfbff";
-    onSurface = "#1b1b1f";
-    surface_container = "#fdfbff";
-    onSurfaceContainer = "#1b1b1f";
-    red = "#ba1a1a";
-    onRed = "#ffffff";
-    redContainer = "#ffdad6";
-    onRedContainer = "#410002";
-    green = "#008000";
-    yellow = "#ffff00";
-    orange = "#ffa500";
-    purple = "#800080";
-    pink = "#ffc0cb";
-    brown = "#a52a2a";
-    gray = "#808080";
-    onGreen = "#ffffff";
-    green_container = "#d0f4de";
-    on_green_container = "#003912";
-    tertiary = "#715573";
-    on_tertiary = "#ffffff";
-    tertiary_container = "#fbd7fb";
-    on_tertiary_container = "#29132d";
-    surface_bright = "#e6e6e6";
-    surface_container_bright = "#e6e6e6";
-    on_surface_container_bright = "#1b1b1f";
-  };
-  harmonized = colors;
-
+  colors = config.colorscheme.palette;
   mapStrings = f: xs: lib.map (x: f x) xs;
   commonDeps = with pkgs; [coreutils gnugrep];
   mkScriptFromFile = {
@@ -73,10 +36,10 @@ in {
         radius = 0;
         bottom = false;
 
-        background = colors.surface_container;
-        foreground = colors.secondary;
+        background = colors.base00;
+        foreground = colors.base05;
         border-size = "1pt";
-        border-color = colors.surface_container;
+        border-color = colors.base00;
         padding-left = 0;
         padding-right = 3;
         module-margin-left = 1;
@@ -109,7 +72,7 @@ in {
         warn-percentage = 90;
         label-font = 1;
         format = "<label>";
-        format-warn = "%{F${harmonized.red}} <label-warn> %{F-}";
+        format-warn = "%{F${colors.base08}} <label-warn> %{F-}";
         label = "%{T3} %{T-}%percentage%%";
         label-warn = "%{T3} %{T-}%percentage%%";
       };
@@ -118,7 +81,7 @@ in {
         interval = 1;
         warn-percentage = 5;
         label = "%{T3} %{T-}%percentage_used%%";
-        format-warn-background = harmonized.red;
+        format-warn-background = colors.base08;
         label-font = 1;
       };
       "module/temp" = {
@@ -127,7 +90,7 @@ in {
         thermal-zone = 4;
         warn-temperature = 70;
         format = "<label>";
-        format-warn = "%{F${harmonized.red}} <label-warn> %{F-}";
+        format-warn = "%{F${colors.base08}} <label-warn> %{F-}";
         label = "%{T3}%{T-} %temperature%";
         label-warn = "%{T3}%{T-} %temperature%";
 
@@ -140,8 +103,8 @@ in {
           scriptFile = ./polybar/volume-status.sh;
           args = [
             "alsa_output.pci-0000_00_1f.3.analog-stereo"
-            "${colors.secondary}"
-            "${harmonized.red}"
+            "${colors.base05}"
+            "${colors.base08}"
             ];
         };
         interval = "once";
@@ -154,10 +117,10 @@ in {
           deps = [ pkgs.iw pkgs.gawk ];
           scriptFile = ./polybar/wlan-status.sh;
           args = [
-            "${harmonized.green}"
-            "${harmonized.yellow}"
-            "${harmonized.orange}"
-            "${harmonized.red}"
+            "${colors.base0B}"
+            "${colors.base0A}"
+            "${colors.base09}"
+            "${colors.base08}"
           ];
         };
         interval = 10;
@@ -171,8 +134,8 @@ in {
           deps = [ pkgs.tailscale pkgs.jq ];
           scriptFile = ./polybar/headscale-status.sh;
           args = [
-            "${harmonized.green}"
-            "${harmonized.red}"
+            "${colors.base0B}"
+            "${colors.base08}"
           ];
         };
         interval = 30;
@@ -186,8 +149,8 @@ in {
           deps = [ pkgs.systemdMinimal ];
           scriptFile = ./polybar/systemd-status.sh;
           args = [
-            "${harmonized.green}"
-            "${harmonized.red}"
+            "${colors.base0B}"
+            "${colors.base08}"
           ];
         };
         interval = 60;
@@ -201,10 +164,10 @@ in {
         format-padding = "5px";
         label-font = 1;
         label-layout-padding = "5px";
-        label-layout-background = "${colors.surface_bright}";
-        label-layout-foreground = "${colors.primary}";
-        label-indicator-background = "${colors.tertiary_container}";
-        label-indicator-foreground = "${colors.primary}";
+        label-layout-background = "${colors.base00}";
+        label-layout-foreground = "${colors.base05}";
+        label-indicator-background = "${colors.base00}";
+        label-indicator-foreground = "${colors.base05}";
         label-indicator-padding = "5px";
       };
       "module/email" = {
@@ -212,7 +175,7 @@ in {
         exec = mkScriptFromFile {
           deps = [pkgs.findutils pkgs.procps];
           scriptFile = ./polybar/email-status.sh;
-          args = [ "${colors.tertiary}" ];
+          args = [ "${colors.base05}" ];
         };
         interval = 60;
         format = "<label>";
@@ -227,7 +190,7 @@ in {
         low-at = 10;
         interval = 10;
 
-        format-discharging = "%{F${harmonized.red}}<ramp-capacity> <label-discharging>%{F-}";
+        format-discharging = "%{F${colors.base08}}<ramp-capacity> <label-discharging>%{F-}";
         ramp-capacity-0 = "%{T3} %{T-}";
         ramp-capacity-1 = "%{T3} %{T-}";
         ramp-capacity-2 = "%{T3} %{T-}";
@@ -235,7 +198,7 @@ in {
         ramp-capacity-4 = "%{T3} %{T-}";
         label-discharging = "%percentage%% %time%";
 
-        format-charging = "%{F${harmonized.green}}<animation-charging> <label-charging>%{F-}";
+        format-charging = "%{F${colors.base0B}}<animation-charging> <label-charging>%{F-}";
         animation-charging-0 = "%{T3} %{T-}";
         animation-charging-1 = "%{T3} %{T-}";
         animation-charging-2 = "%{T3} %{T-}";
@@ -265,7 +228,7 @@ in {
         ws-icon-8 = "9;󰎼";
         ws-icon-9 = "10;󰽽";
 
-        format-background = colors.surface;
+        format-background = colors.base00;
 
         label-mode = "%mode%";
         label-mode-padding = 2;
@@ -277,8 +240,8 @@ in {
         label-focused = "%icon%";
         label-focused-padding = 3;
         # label-focused-underline = colors.secondary;
-        label-focused-foreground = colors.primary;
-        label-focused-background = colors.primary_container;
+        label-focused-foreground = colors.base06;
+        label-focused-background = colors.base02;
 
         label-visible = "%icon%";
         label-visible-padding = 2;
