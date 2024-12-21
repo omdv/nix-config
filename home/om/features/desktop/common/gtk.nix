@@ -40,10 +40,12 @@
         sed -e 's/handle-horz-.*//' -e 's/handle-vert-.*//' -i ./src/gtk-2.0/assets.txt
 
         cat > /build/gtk-colors << EOF
-          BTN_BG=${colors.base02}
-          BTN_FG=${colors.base06}
-          FG=${colors.base05}
           BG=${colors.base00}
+          FG=${colors.base05}
+          BTN_BG=${colors.base01}
+          BTN_FG=${colors.base06}
+          SEL_BG=${colors.base02}
+          SEL_FG=${colors.base05}
           HDR_BTN_BG=${colors.base01}
           HDR_BTN_FG=${colors.base05}
           ACCENT_BG=${colors.base0B}
@@ -53,9 +55,7 @@
           MATERIA_SURFACE=${colors.base02}
           MATERIA_VIEW=${colors.base01}
           MENU_BG=${colors.base00}
-          MENU_FG=${colors.base05}
-          SEL_BG=${colors.base02}
-          SEL_FG=${colors.base05}
+          MENU_FG=${colors.base0D}
           TXT_BG=${colors.base02}
           TXT_FG=${colors.base06}
           WM_BORDER_FOCUS=${colors.base05}

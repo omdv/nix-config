@@ -24,6 +24,7 @@ in {
           { class = "Code"; }
           { class = "Cursor"; }
         ];
+        "5" = [{ class = "TelegramDesktop"; }];
       };
       bars = [];
       defaultWorkspace = "1";
