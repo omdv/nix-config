@@ -1,4 +1,4 @@
-{
+{ colors, ... }: {
   imports = [
     ./global
 
@@ -9,7 +9,7 @@
     ./backup/homelab.nix
   ];
 
-  # colorscheme
-  colorscheme.source = "#e05b18";
-  colorscheme.type = "tonal-spot";
+  # nix-colors colorscheme
+  # https://github.com/tinted-theming/schemes
+  colorscheme = colors.colorSchemes.solarized-dark;
 }
