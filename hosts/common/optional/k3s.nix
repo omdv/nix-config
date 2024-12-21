@@ -1,4 +1,4 @@
-{ pkgs, ... }: {
+{ pkgs, config, ... }: {
   environment.systemPackages = [
     pkgs.k3s
   ];
@@ -10,6 +10,9 @@
       "--disable traefik"
       "--disable metrics-server"
       "--flannel-backend=vxlan"
+      "--tls-san=${config.networking.hostName}.ts.hut.sh"
+      "--tls-san=${config.networking.interfaces.enp2s0.ipv4.addresses.0.address}"
+      "--tls-san=127.0.0.1"
     ];
   };
 
