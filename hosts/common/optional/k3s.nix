@@ -22,5 +22,10 @@
     443
     6443    # k3s
     32400   # plex
+    18289   # qbittorrent
+  ];
+
+  networking.firewall.allowedUDPPorts = [
+    18289   # qbittorrent
   ];
 }
