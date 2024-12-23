@@ -1,14 +1,16 @@
 {
   services.samba = {
     enable = true;
-    securityType = "user";
     openFirewall = true;
-    shares = {
+    settings = {
+      global = {
+        security = "user";
+      };
       "scanned_files" = {
         path = "/pool/documents/scanned_files";
-        writeable = true;
-        browsable = true;
-        guestOk = true;
+        "writeable" = "yes";
+        "browsable" = "yes";
+        "guest ok" = "yes";
       };
     };
   };
