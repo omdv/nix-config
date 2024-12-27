@@ -44,7 +44,8 @@
           FG=${colors.base05}
           BTN_BG=${colors.base01}
           BTN_FG=${colors.base06}
-          SEL_BG=${colors.base02}
+          # cursor background
+          SEL_BG=${colors.base03}
           SEL_FG=${colors.base05}
           HDR_BTN_BG=${colors.base01}
           HDR_BTN_FG=${colors.base05}
@@ -52,11 +53,13 @@
           ACCENT_FG=${colors.base00}
           HDR_FG=${colors.base05}
           HDR_BG=${colors.base02}
+          # whole search window in firefox
           MATERIA_SURFACE=${colors.base02}
           MATERIA_VIEW=${colors.base01}
           MENU_BG=${colors.base00}
           MENU_FG=${colors.base0D}
-          TXT_BG=${colors.base02}
+          # text background - no impact
+          TXT_BG=${colors.base00}
           TXT_FG=${colors.base06}
           WM_BORDER_FOCUS=${colors.base05}
           WM_BORDER_UNFOCUS=${colors.base03}
