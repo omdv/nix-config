@@ -7,11 +7,15 @@
       ff = "merge --ff-only";
       graph = "log --decorate --oneline --graph";
     };
+    signing = {
+      key = "C86CD9E2DCEB2452";
+      signByDefault = true;
+    };
     userName = "Oleg Medvedev";
     userEmail = lib.mkDefault "omdv@protonmail.com";
     extraConfig = {
       init.defaultBranch = "main";
-      user.signing.key = "C86CD9E2DCEB2452 ";
+      user.signing.key = "C86CD9E2DCEB2452";
       commit.gpgSign = lib.mkDefault true;
       gpg.program = "${config.programs.gpg.package}/bin/gpg2";
 
