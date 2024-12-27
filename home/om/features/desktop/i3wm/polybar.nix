@@ -164,9 +164,9 @@ in {
         format-padding = "5px";
         label-font = 1;
         label-layout-padding = "5px";
-        label-layout-background = "${colors.base00}";
+        label-layout-background = "${colors.base02}";
         label-layout-foreground = "${colors.base05}";
-        label-indicator-background = "${colors.base00}";
+        label-indicator-background = "${colors.base02}";
         label-indicator-foreground = "${colors.base05}";
         label-indicator-padding = "5px";
       };
