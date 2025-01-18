@@ -58,7 +58,7 @@
             "MEM"
             "%MEM/L"
             "IP"
-            "PORTS"
+            "AGE"
           ];
         };
       };

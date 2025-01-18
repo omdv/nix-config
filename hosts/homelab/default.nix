@@ -11,6 +11,7 @@
     ../common/users/om
 
     ../common/optional/samba.nix
+    ../common/optional/smartd.nix
     ../common/optional/zfs.nix
     ../common/optional/k3s.nix
   ];

@@ -20,6 +20,7 @@
     ../common/optional/light.nix
     ../common/optional/poweropts.nix
     ../common/optional/platformio.nix
+    ../common/optional/smartd.nix
     ../common/optional/steam.nix
     ../common/optional/quietboot.nix
     ../common/optional/vpn.nix
