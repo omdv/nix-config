@@ -1,5 +1,9 @@
-{ config, lib, ... }:
+{ pkgs, config, lib, ... }:
 {
+  environment.systemPackages = [
+    pkgs.smartmontools
+  ];
+
   services.smartd = {
     enable = true;
     devices = [
