@@ -70,6 +70,7 @@
     nix-diff # Differ, more detailed
     nix-tree # Nix tree
     nix-output-monitor # Nix build monitor
+    nix-inspect # Nix inspect
 
     # misc
     tldr # Simplified man
