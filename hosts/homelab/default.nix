@@ -62,6 +62,13 @@
       sopsFile = ./secrets.yaml;
       path = "/run/user-secrets/backup-passphrase";
     };
+    ntfy_system_topic = {
+      owner = "om";
+      group = "wheel";
+      mode = "0400";
+      sopsFile = ./secrets.yaml;
+      path = "/run/user-secrets/ntfy-system-topic";
+    };
   };
 
   system.stateVersion = "23.05";
