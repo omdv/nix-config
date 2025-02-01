@@ -19,6 +19,7 @@
 
     ./features/gaming/wesnoth.nix
     ./features/gaming/cdda.nix
+    ./features/gaming/discord.nix
 
     ./backup/framework.nix
   ];

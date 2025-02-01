@@ -24,7 +24,10 @@ in {
           { class = "Code"; }
           { class = "Cursor"; }
         ];
-        "5" = [{ class = "TelegramDesktop"; }];
+        "5" = [
+          { class = "TelegramDesktop"; }
+          { class = "discord"; }
+        ];
       };
       bars = [];
       defaultWorkspace = "1";
