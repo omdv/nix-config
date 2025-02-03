@@ -34,7 +34,7 @@ in {
       publicKeyFile = ../../${hostname}/ssh_host_ed25519_key.pub;
       extraHostNames =
         [
-          "${hostname}.hut.sh"
+          "${hostname}.x9.rs"
         ]
         ++
         # Alias for localhost if it's the same host

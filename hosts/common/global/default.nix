@@ -29,7 +29,7 @@
     };
   };
 
-  networking.domain = "hut.sh";
+  networking.domain = "x9.rs";
 
   # Increase open file limit for sudoers
   security.pam.loginLimits = [

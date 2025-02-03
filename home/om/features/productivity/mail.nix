@@ -9,7 +9,7 @@
       showSignature = "append";
       text = ''
         ${realName}
-        https://hut.sh
+        https://x9.rs
       '';
     };
   };

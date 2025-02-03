@@ -1,6 +1,6 @@
 { config, ... }:
   let
-    domain = "tailscale.hut.sh";
+    domain = "tailscale.x9.rs";
     port = 8000;
   in {
     services = {
