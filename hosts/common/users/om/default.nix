@@ -20,6 +20,8 @@ in {
       "video"
       "wheel"
       "wireshark"
+      "lp"
+      "lpadmin"
     ];
 
     packages = [pkgs.home-manager];
