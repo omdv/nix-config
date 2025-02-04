@@ -60,7 +60,7 @@
     nethogs # net top tool
     nmap # A utility for network discovery and security auditing
     socat # replacement of openbsd-netcat
-    jwhois # whois lookup
+    whois # whois lookup
 
     # nix -related
     alejandra # Nix formatter
