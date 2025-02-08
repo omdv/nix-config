@@ -43,6 +43,16 @@
           description = "View services";
           command = "service";
         };
+        shift-4 = {
+          shortCut = "Shift-4";
+          description = "View nodes";
+          command = "node";
+        };
+        shift-5 = {
+          shortCut = "Shift-5";
+          description = "View ingress";
+          command = "ingress";
+        };
       };
     };
     views = {
@@ -57,8 +67,17 @@
             "%CPU/L"
             "MEM"
             "%MEM/L"
-            "IP"
+            "NODE"
             "AGE"
+          ];
+        };
+        "v1/services" = {
+          columns = [
+            "NAMESPACE"
+            "NAME"
+            "TYPE"
+            "CLUSTER-IP"
+            "PORTS"
           ];
         };
       };
