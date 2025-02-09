@@ -34,6 +34,9 @@
         derp.server = {
           enable = false;
         };
+        noise = {
+          private_key_path = "/var/lib/headscale/noise_private.key";
+        };
       };
     };
 
