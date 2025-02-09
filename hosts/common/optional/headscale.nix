@@ -1,6 +1,6 @@
 { config, ... }:
   let
-    domain = "tailscale.x9.rs";
+    domain = "ts.x9.rs";
     port = 8000;
   in {
     services = {
@@ -9,12 +9,15 @@
       port = port;
       address = "0.0.0.0";
       settings = {
-        dns_config = {
-          override_local_dns = true;
-          nameservers = [
-            "1.1.1.1"
-            "1.0.0.1"
-          ];
+        dns = {
+          base_domain = domain;
+          magic_dns = true;
+          nameservers = {
+            global = [
+              "1.1.1.1"
+              "1.0.0.1"
+            ];
+          };
         };
         server_url = "https://${domain}";
         metrics_listen_addr = "127.0.0.1:9095";
