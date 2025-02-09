@@ -77,8 +77,8 @@
       path = "/run/user-secrets/ntfy-system-topic";
     };
     k3s_tailscale_auth = {
-      owner = "k3s";
-      group = "k3s";
+      owner = "om";
+      group = "wheel";
       mode = "0400";
       sopsFile = ./secrets.yaml;
       path = "/run/user-secrets/k3s_tailscale_auth";
