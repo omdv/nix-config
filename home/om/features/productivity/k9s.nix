@@ -63,6 +63,7 @@
             "NAME"
             "READY"
             "RESTARTS"
+            "IP"
             "CPU"
             "%CPU/L"
             "MEM"
