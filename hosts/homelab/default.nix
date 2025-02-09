@@ -26,7 +26,14 @@
         ipv4.addresses = [ {
           address = "192.168.1.98";
           prefixLength = 24;
-        } ];
+        }];
+      };
+      tailscale0 = {
+        useDHCP = true;
+        ipv4.addresses = [ {
+          address = "100.105.105.100";
+          prefixLength = 24;
+        }];
       };
     };
   };
