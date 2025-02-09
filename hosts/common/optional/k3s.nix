@@ -22,7 +22,7 @@ in {
       "--disable metrics-server"
       "--flannel-backend=wireguard-native"
       "--vpn-auth-file=/run/user-secrets/k3s_tailscale_auth"
-      "--token=/run/user-secrets/k3s_token"
+      "--token-auth-file=/run/user-secrets/k3s_token"
       "--node-external-ip=${tailscaleIP}"
       "--tls-san=${tailscaleIP}"
       "--tls-san=${lanIP}"
