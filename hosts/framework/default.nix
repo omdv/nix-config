@@ -16,6 +16,7 @@
     ../common/optional/docker.nix
     ../common/optional/java.nix
     ../common/optional/libvirt.nix
+    ../common/optional/ollama.nix
     ../common/optional/pipewire.nix
     ../common/optional/light.nix
     ../common/optional/poweropts.nix
