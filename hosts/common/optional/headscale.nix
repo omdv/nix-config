@@ -19,7 +19,7 @@
             ];
           };
         };
-        server_url = "https://${domain}";
+        server_url = "https://tailscale.x9.rs";
         metrics_listen_addr = "127.0.0.1:9095";
         logtail = {
           enabled = false;
