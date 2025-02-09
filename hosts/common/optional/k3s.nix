@@ -9,10 +9,12 @@
     extraFlags = toString [
       "--disable traefik"
       "--disable metrics-server"
-      "--flannel-backend=vxlan"
-      "--tls-san=100.105.86.80" # tailscale
-      "--tls-san=192.168.1.98"  # lan
-      "--tls-san=127.0.0.1"
+      # "--flannel-backend=vxlan"
+      # "--tls-san=100.105.86.80" # tailscale
+      # "--tls-san=192.168.1.98"  # lan
+      # "--tls-san=127.0.0.1"
+      "--vpn-auth-file=/run/user-secrets/k3s_tailscale_auth"
+      "--node-external-ip=100.105.100.100"
     ];
   };
 
