@@ -83,6 +83,13 @@
       sopsFile = ./secrets.yaml;
       path = "/run/user-secrets/k3s_tailscale_auth";
     };
+    k3s_token = {
+      owner = "om";
+      group = "wheel";
+      mode = "0400";
+      sopsFile = ./secrets.yaml;
+      path = "/run/user-secrets/k3s_token";
+    };
   };
 
   system.stateVersion = "23.05";

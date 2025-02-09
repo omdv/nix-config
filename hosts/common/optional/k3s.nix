@@ -20,11 +20,13 @@ in {
     extraFlags = toString [
       "--disable traefik"
       "--disable metrics-server"
+      "--flannel-backend=wireguard-native"
+      "--vpn-auth-file=/run/user-secrets/k3s_tailscale_auth"
+      "--token=/run/user-secrets/k3s_token"
+      "--node-external-ip=${tailscaleIP}"
       "--tls-san=${tailscaleIP}"
       "--tls-san=${lanIP}"
       "--tls-san=127.0.0.1"
-      "--vpn-auth-file=/run/user-secrets/k3s_tailscale_auth"
-      "--node-external-ip=${tailscaleIP}"
     ];
     environmentFile = pkgs.writeText "k3s-environment" ''
       PATH=${pkgs.tailscale}/bin:$PATH
@@ -37,11 +39,13 @@ in {
     80
     443
     6443    # k3s
+    10250   # kubelet metrics
     32400   # plex
-    18289   # qbittorrent
+    # 18289   # qbittorrent
   ];
 
   networking.firewall.allowedUDPPorts = [
-    18289   # qbittorrent
+    # 18289   # qbittorrent
+    51820   # flannel wireguard-native
   ];
 }
