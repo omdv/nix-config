@@ -1,7 +1,6 @@
-{ pkgs, ... }: {
+{
   services.openiscsi = {
-    packages = [ pkgs.openiscsi ];
     enable = true;
-    openPort = 3260;
+    name = "iqn.2025-02.rs.x9:homelab";
   };
 }
