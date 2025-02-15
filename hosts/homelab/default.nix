@@ -10,7 +10,6 @@
     ../common/global
     ../common/users/om
 
-    ../common/optional/iscsi.nix
     ../common/optional/k3s.nix
     ../common/optional/samba.nix
     ../common/optional/smartd.nix

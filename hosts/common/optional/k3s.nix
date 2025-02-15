@@ -39,13 +39,12 @@ in {
     80
     443
     6443    # k3s
+    8443    # ingress-nginx
     10250   # kubelet metrics
     32400   # plex
-    # 18289   # qbittorrent
   ];
 
   networking.firewall.allowedUDPPorts = [
-    # 18289   # qbittorrent
     51820   # flannel wireguard-native
   ];
 }

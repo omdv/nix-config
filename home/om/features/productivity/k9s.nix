@@ -45,13 +45,33 @@
         };
         shift-4 = {
           shortCut = "Shift-4";
-          description = "View nodes";
-          command = "node";
+          description = "View ingress";
+          command = "ingress";
         };
         shift-5 = {
           shortCut = "Shift-5";
-          description = "View ingress";
-          command = "ingress";
+          description = "View pvc";
+          command = "pvc";
+        };
+        shift-6 = {
+          shortCut = "Shift-6";
+          description = "View pv";
+          command = "pv";
+        };
+        shift-7 = {
+          shortCut = "Shift-7";
+          description = "View secrets";
+          command = "sec";
+        };
+        shift-8 = {
+          shortCut = "Shift-8";
+          description = "View namespaces";
+          command = "ns";
+        };
+        shift-9 = {
+          shortCut = "Shift-9";
+          description = "View nodes";
+          command = "node";
         };
       };
     };
