@@ -28,6 +28,7 @@ in {
           { class = "TelegramDesktop"; }
           { class = "discord"; }
         ];
+        "6" = [{ class = "net-sourceforge-kolmafia-KoLmafia"; }];
       };
       bars = [];
       defaultWorkspace = "1";
