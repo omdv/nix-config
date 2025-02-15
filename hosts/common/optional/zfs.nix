@@ -4,8 +4,22 @@
   ];
 
   services.zfs = {
-    autoScrub.enable = true;
-    autoSnapshot.enable = false;
+    # TODO: enable mail
+    zed = {
+      enableMail = false;
+    };
+    trim = {
+      enable = true;
+      interval = "weekly";
+    };
+    autoScrub = {
+      enable = true;
+      pools = [ "pool" ];
+      interval = "weekly";
+    };
+    autoSnapshot = {
+      enable = false;
+    };
   };
 
   # mount longhorn storage pool to zfs
