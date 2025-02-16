@@ -1,11 +1,12 @@
 #!/run/current-system/sw/bin/bash
 
 # Configuration variables
-HOMELAB_USER="om"
-HOMELAB_HOST="192.168.1.98"
+USER="om"
+HOST="192.168.1.98"
+PORT="22"
 
 # First, SSH to copy the root-owned file to user's home directory and change ownership
-ssh "$HOMELAB_USER@$HOMELAB_HOST" "
+ssh -p "$PORT" "$USER@$HOST" "
   sudo -S systemctl stop k3s || true
   sudo -S systemctl disable k3s || true
   sudo -S rm -f /etc/systemd/system/k3s.service
