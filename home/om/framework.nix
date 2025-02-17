@@ -17,10 +17,10 @@
     ./features/optional/zathura.nix
     ./features/optional/zotero.nix
 
-    ./features/gaming/bsdgames.nix
     ./features/gaming/cdda.nix
     ./features/gaming/discord.nix
     ./features/gaming/mudlet.nix
+    ./features/gaming/vcmi.nix
     ./features/gaming/wesnoth.nix
 
     ./backup/framework.nix
