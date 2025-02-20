@@ -13,17 +13,26 @@
           password-input-width = 24
           password-alignment = center
           show-sys-info = true
+          show-input-cursor = true
 
           [greeter-theme]
           background-image = ""
           background-color = "#121318"
           border-width = 1px
+          window-color = "#ffb4ab"
           border-color = "#38393f"
+          layout-space = 5
           password-border-color = "#38393f"
           password-border-width = 1px
+          password-background-color = "#1B1D1E"
           text-color = "#b8c3ff"
-          password-color = "#ffb4ab"
+          password-color = "#F8F8F0"
           font-size = 12px
+
+          sys-info-font = "Sans"
+          sys-info-font-size = 0.8em
+          sys-info-margin = -5px -5px -5px
+          sys-info-color = "#b8c3ff"
         '';
       };
     };
