@@ -48,6 +48,7 @@
     strace # system call monitoring
     sysz # fzf for systemd
     usbutils # lsusb
+    unzip # zip decompressor
 
     # network tools
     dnsutils  # `dig` + `nslookup`
