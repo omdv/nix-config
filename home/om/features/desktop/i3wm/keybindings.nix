@@ -39,12 +39,12 @@ in {
         "XF86MonBrightnessUp" = "exec ${mkScriptFromFile {
           deps = [];
           scriptFile = ./scripts/brightness-control.sh;
-          args = [ "up" "5"];
+          args = [ "up" "1"];
         }}";
         "XF86MonBrightnessDown" = "exec ${mkScriptFromFile {
           deps = [];
           scriptFile = ./scripts/brightness-control.sh;
-          args = [ "down" "5" ];
+          args = [ "down" "1" ];
         }}";
         "${mod}+XF86MonBrightnessUp" = "exec ${mkScriptFromFile {
           deps = [];
