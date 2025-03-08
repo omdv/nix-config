@@ -12,24 +12,24 @@ function get_brightness {
 }
 
 function send_notification {
+  local step=$1
   icon=""
   brightness=$(get_brightness)
-  # Make the bar with the special character ─ (it's not dash -)
-  # https://en.wikipedia.org/wiki/Box-drawing_character
-  bar=$(seq -s "─" 0 $((brightness / 5)) | sed 's/[0-9]//g')
+  # Divide by 10 to get a shorter bar (10 segments max instead of 100)
+  bar=$(seq -s "─" 0 $((brightness / step / 10)) | sed 's/[0-9]//g')
   # Send the notification
-  dunstify -r 5555 -u normal "$icon    $bar"
+  dunstify -r 5555 -u normal "$icon    $bar $brightness%"
 }
 
 case $1 in
   up)
-    # increase the backlight by 5%
+    # increase the backlight by x% amount
     light -A "$2"
-    send_notification
+    send_notification "$2"  # Pass $2 as an argument
     ;;
   down)
-    # decrease the backlight by 5%
+    # decrease the backlight by x% amount
     light -U "$2"
-    send_notification
+    send_notification "$2"  # Pass $2 as an argument
     ;;
 esac

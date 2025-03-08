@@ -11,6 +11,7 @@
     ./features/pass
 
     ./features/optional/chirp.nix
+    ./features/optional/discord.nix
     ./features/optional/mpv.nix
     ./features/optional/pyradio.nix
     ./features/optional/quickemu.nix
@@ -20,11 +21,7 @@
     ./features/optional/zathura.nix
     ./features/optional/zotero.nix
 
-    ./features/gaming/brogue.nix
-    ./features/gaming/cdda.nix
-    ./features/gaming/discord.nix
-    ./features/gaming/vcmi.nix
-    ./features/gaming/wesnoth.nix
+    ./features/gaming
 
     ./backup/framework.nix
   ];

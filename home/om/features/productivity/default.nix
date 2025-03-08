@@ -11,6 +11,7 @@
   ];
 
   home.packages = with pkgs; [
+    beancount # ledger alternative
     bruno # api tool
     pgcli # great postgres cli from Ukraine
     visidata # cli for data analysis

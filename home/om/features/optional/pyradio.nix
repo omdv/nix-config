@@ -1,3 +1,5 @@
 { pkgs, ... }: {
-  home.packages = [ pkgs.pyradio ];
+  home.packages = with pkgs; [
+    pyradio
+  ];
 }
