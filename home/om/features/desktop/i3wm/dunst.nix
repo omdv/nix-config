@@ -6,10 +6,10 @@ in {
     settings = {
       global = {
         width = 300;
-        height = 300;
-        offset = "30x60";
+        height = 100;
+        offset = "30x100";
         origin = "top-right";
-        transparency = 5;
+        transparency = 20;
         frame_color = "#${colors.base00}";
         font = "${config.fontProfiles.monospace.family} 16";
       };

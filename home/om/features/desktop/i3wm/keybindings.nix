@@ -29,13 +29,23 @@ in {
         "${mod}+d" = "exec ${pkgs.rofi}/bin/rofi -show drun";
 
         # volume control
-        "XF86AudioRaiseVolume" = "exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.05+ && dunstify 'Volume +5%'";
-        "XF86AudioLowerVolume" = "exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.05- && dunstify 'Volume -5%'";
-        "${mod}+XF86AudioRaiseVolume" = "exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.01+ && dunstify 'Volume +1%'";
-        "${mod}+XF86AudioLowerVolume" = "exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.01- && dunstify 'Volume -1%'";
-        "XF86AudioMute" = "exec wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle && dunstify 'Volume toggle'";
+        "XF86AudioRaiseVolume" = "exec ${mkScriptFromFile {
+          deps = [];
+          scriptFile = ./scripts/volume-control.sh;
+          args = [ "up" "0.01"];
+        }}";
+        "XF86AudioLowerVolume" = "exec ${mkScriptFromFile {
+          deps = [];
+          scriptFile = ./scripts/volume-control.sh;
+          args = [ "down" "0.01" ];
+        }}";
+        "XF86AudioMute" = "exec ${mkScriptFromFile {
+          deps = [];
+          scriptFile = ./scripts/volume-control.sh;
+          args = [ "mute" ];
+        }}";
 
-        # backlight control
+        # brightness control
         "XF86MonBrightnessUp" = "exec ${mkScriptFromFile {
           deps = [];
           scriptFile = ./scripts/brightness-control.sh;
