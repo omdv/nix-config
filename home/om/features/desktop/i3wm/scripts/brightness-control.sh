@@ -18,7 +18,7 @@ function send_notification {
   # Divide by 10 to get a shorter bar (10 segments max instead of 100)
   bar=$(seq -s "─" 0 $((brightness / step / 10)) | sed 's/[0-9]//g')
   # Send the notification
-  dunstify -r 5555 -u normal "$icon    $bar $brightness%"
+  dunstify -r 5555 -u normal "$icon  $brightness%  $bar"
 }
 
 case $1 in
