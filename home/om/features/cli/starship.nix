@@ -24,7 +24,7 @@ in {
       format = let
         git = "$git_branch$git_commit$git_state$git_status";
       in ''
-        $username$hostname($shlvl)($cmd_duration) $fill ($nix_shell)''${custom.nix_inspect}
+        $username$hostname($shlvl)($cmd_duration) $fill ($nix_shell)''${custom.nix_inspect} ($python)
         $directory(${git}) $fill $time
         $jobs$character
       '';
@@ -68,13 +68,13 @@ in {
         style = "bold #${colors.base0B}";
       };
       nix_shell = {
-        format = "[($name \\(develop\\) <- )$symbol]($style) ";
+        format = "[$symbol($name)]($style) ";
         impure_msg = "";
         style = "bold #${colors.base0C}";
       };
       python = {
-        format = "[$symbol$virtual_env]($style) ";
-        style = "bold #${colors.base0C}";
+        format = "[$symbol$version \\(($virtualenv)\\)]($style) ";
+        style = "bold #${colors.base0A}";
       };
       character = {
         error_symbol = "[~~>](bold #${colors.base08})";
