@@ -51,6 +51,7 @@
     unzip # zip decompressor
 
     # network tools
+    bandwhich # TUI bandwidth monitor
     dnsutils  # `dig` + `nslookup`
     iftop # network monitoring
     ipcalc  # it is a calculator for the IPv4/v6 addresses
@@ -59,6 +60,7 @@
     ldns # replacement of `dig`, it provide the command `drill`
     mtr # network diagnostic tool
     nethogs # net top tool
+    netscanner # tui network scanner
     nmap # A utility for network discovery and security auditing
     socat # replacement of openbsd-netcat
     whois # whois lookup
