@@ -8,14 +8,14 @@
       graph = "log --decorate --oneline --graph";
     };
     signing = {
-      key = "C86CD9E2DCEB2452";
+      key = "A125B037FB60B286";
       signByDefault = true;
     };
     userName = "Oleg Medvedev";
     userEmail = lib.mkDefault "omdv@protonmail.com";
     extraConfig = {
       init.defaultBranch = "main";
-      user.signing.key = "C86CD9E2DCEB2452";
+      user.signing.key = "A125B037FB60B286";
       commit.gpgSign = lib.mkDefault true;
       gpg.program = "${config.programs.gpg.package}/bin/gpg2";
 
@@ -25,9 +25,7 @@
       log.date = "iso";
       column.ui = "auto";
       branch.sort = "committerdate";
-      # Automatically track remote branch
       push.autoSetupRemote = true;
-      # Reuse merge conflict fixes when rebasing
       rerere.enabled = true;
     };
     lfs.enable = true;
