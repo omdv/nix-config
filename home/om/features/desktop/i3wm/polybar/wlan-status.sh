@@ -17,8 +17,7 @@ fi
 
 #------------------------------------------------------------------------
 
-# SSID=$(iw ${INTERFACE} info | grep -Po '(?<=ssid ).*')
-# SSID=$(nmcli -t -f active,ssid dev wifi | grep -E '^yes' | cut -d\: -f2)
+SSID=$(iw "${INTERFACE}" info | grep -Po '(?<=ssid ).*')
 QUALITY=$(iw dev "${INTERFACE}" link | grep 'dBm$' | grep -Eoe '-[0-9]{2}' | awk '{print  ($1 > -50 ? 100 :($1 < -100 ? 0 : ($1+100)*2))}')
 
 #------------------------------------------------------------------------
@@ -35,11 +34,11 @@ else
 fi
 
 if [[ $QUALITY -ge 80 ]]; then
-    echo "%{F$COLOR}󰤨 $QUALITY% %{F-}"
+    echo "%{F$COLOR}󰤨 $SSID $QUALITY% %{F-}"
 elif [[ $QUALITY -ge 60 ]]; then
-    echo "%{F$COLOR}󰤥 $QUALITY% %{F-}"
+    echo "%{F$COLOR}󰤥 $SSID $QUALITY% %{F-}"
 elif [[ $QUALITY -ge 40 ]]; then
-    echo "%{F$COLOR}󰤢 $QUALITY% %{F-}"
+    echo "%{F$COLOR}󰤢 $SSID $QUALITY% %{F-}"
 else
-    echo "%{F$COLOR}󰤟 $QUALITY% %{F-}"
+    echo "%{F$COLOR}󰤟 $SSID $QUALITY% %{F-}"
 fi

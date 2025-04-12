@@ -28,6 +28,13 @@ in {
         "${mod}+Return" = "exec ${lib.getExe config.programs.kitty.package}";
         "${mod}+d" = "exec ${pkgs.rofi}/bin/rofi -show drun";
 
+        # wifi control
+        "${mod}+n" = "exec ${mkScriptFromFile {
+          deps = [pkgs.networkmanager pkgs.iw];
+          scriptFile = ./scripts/wifi-menu.sh;
+          args = [ "${config.fontProfiles.monospace.family} 16" ];
+        }}";
+
         # volume control
         "XF86AudioRaiseVolume" = "exec ${mkScriptFromFile {
           deps = [];
