@@ -25,6 +25,9 @@
     wget
     feh
 
+    # llm tools
+    shell-gpt
+
     # better utils
     bc # Calculator
     comma # Install and run programs by sticking a , before them
