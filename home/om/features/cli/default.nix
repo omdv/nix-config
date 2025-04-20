@@ -10,7 +10,6 @@
     ./htop.nix
     ./mc.nix
     ./navi.nix
-    ./nnn.nix
     ./qutebrowser.nix
     ./ssh.nix
     ./starship.nix
@@ -26,6 +25,7 @@
     feh
 
     # llm tools
+    aichat
     shell-gpt
 
     # better utils
@@ -70,13 +70,10 @@
 
     # nix -related
     alejandra # Nix formatter
-    deadnix # Nix dead code finder
     manix # man pages for nix
     nh # Nice wrapper for NixOS and HM
     nil # Nix LSP
-    nix-diff # Differ, more detailed
     nix-tree # Nix tree
-    nix-output-monitor # Nix build monitor
     nix-inspect # Nix inspect
 
     # misc
