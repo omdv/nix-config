@@ -8,6 +8,7 @@
         ];
       })
       pkgs.font-awesome
+      pkgs.fontconfig
     ];
 
   fontProfiles = {

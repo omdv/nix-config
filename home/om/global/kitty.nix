@@ -5,24 +5,6 @@
   ...
 }: let
   colors = config.colorscheme.palette;
-  # name = "Gruvbox dark, soft";
-  # base00 = "#32302f"; # default background
-  # base01 = "#3c3836"; # lighter background (status bars, line numbers, folding marks)
-  # base02 = "#504945"; # selection background
-  # base03 = "#665c54"; # comments, invisibles, line highlighting
-  # base04 = "#bdae93"; # dark foreground (status bars)
-  # base05 = "#d5c4a1"; # default foreground, caret, delimiters, operators
-  # base06 = "#ebdbb2"; # light foreground (not often used)
-  # base07 = "#fbf1c7"; # light background (not often used)
-  # base08 = "#fb4934"; # variables, XML tags, markup link text, markup lists, diff deleted
-  # base09 = "#fe8019"; # integers, boolean, constants, XML attributes, markup link url
-  # base0A = "#fabd2f"; # classes, markup bold, search text background
-  # base0B = "#b8bb26"; # strings, inherited class, markup code, diff inserted
-  # base0C = "#8ec07c"; # support, regular expressions, escape characters, markup quotes
-  # base0D = "#83a598"; # functions, methods, attribute IDs, headings
-  # base0E = "#d3869b"; # keywords, storage, selector, markup italic, diff changed
-  # base0F = "#d65d0e"; # deprecated, opening/closing embedded language tags
-
   # name = "Material";
   # base00 = "#263238"; # default background
   # base01 = "#2E3C43"; # lighter background (status bars, line numbers, folding marks)
@@ -62,6 +44,9 @@ in {
   };
   programs.kitty = {
     enable = true;
+    environment = {
+      "TERM_PROGRAM" = "kitty";
+    };
     font = {
       name = config.fontProfiles.monospace.family;
       size = 16;
@@ -91,9 +76,9 @@ in {
       inactive_border_color = "#${colors.base01}";
       active_tab_background = "#${colors.base00}";
       active_tab_foreground = "#${colors.base05}";
-      inactive_tab_background = "#${colors.base01}";
+      inactive_tab_background = "#${colors.base03}"; # used to be base01
       inactive_tab_foreground = "#${colors.base04}";
-      tab_bar_background = "#${colors.base01}";
+      tab_bar_background = "#${colors.base02}"; # used to be base01
 
       # normal
       color0 = "#${colors.base00}";
@@ -106,14 +91,14 @@ in {
       color7 = "#${colors.base05}";
 
       # bright
-      color8 = "#${colors.base03}";
-      color9 = "#${colors.base09}";
-      color10 = "#${colors.base01}";
-      color11 = "#${colors.base02}";
-      color12 = "#${colors.base04}";
-      color13 = "#${colors.base06}";
-      color14 = "#${colors.base0F}";
-      color15 = "#${colors.base07}";
+      color8  = "#${colors.base03}";  # bright black = comments (visible)
+      color9  = "#${colors.base08}";  # red
+      color10 = "#${colors.base0B}";  # green
+      color11 = "#${colors.base0A}";  # yellow
+      color12 = "#${colors.base0D}";  # blue
+      color13 = "#${colors.base0E}";  # magenta
+      color14 = "#${colors.base0C}";  # cyan
+      color15 = "#${colors.base07}";  # white
     };
   };
 }
