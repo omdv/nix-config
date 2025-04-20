@@ -1,3 +1,4 @@
+# interactive cheatsheet
 {
   programs.navi = {
     enable = true;
