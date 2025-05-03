@@ -11,6 +11,10 @@
       pkgs.fontconfig
     ];
 
+  home.sessionVariables = {
+    LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:${pkgs.fontconfig.lib}/lib";
+  };
+
   fontProfiles = {
     enable = true;
     monospace = {

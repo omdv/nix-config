@@ -12,6 +12,7 @@
 
     ./features/optional/chirp.nix
     ./features/optional/discord.nix
+    ./features/optional/mpeg.nix
     ./features/optional/mpv.nix
     ./features/optional/pyradio.nix
     ./features/optional/quickemu.nix
