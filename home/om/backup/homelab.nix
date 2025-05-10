@@ -68,50 +68,6 @@ in {
     };
   };
 
-  # # custom service without inhibit
-  # systemd.user.services.borgmatic-backup = {
-  #   Unit = {
-  #     Description = "Borgmatic backup service";
-  #     ConditionACPower = true;
-  #   };
-
-  #   Service = {
-  #     Type = "oneshot";
-  #     Nice = 19;
-  #     IOSchedulingClass = "best-effort";
-  #     IOSchedulingPriority = 7;
-  #     IOWeight = 100;
-
-  #     Restart = "no";
-  #     LogRateLimitIntervalSec = 0;
-
-  #     ExecStartPre = "${pkgs.coreutils}/bin/sleep 3m";
-  #     ExecStart = ''
-  #       ${pkgs.borgmatic}/bin/borgmatic \
-  #         --stats \
-  #         --verbosity -1 \
-  #         --list \
-  #         --syslog-verbosity 1
-  #     '';
-  #   };
-  # };
-
-  # # Timer to run the backup every 3 hours
-  # systemd.user.timers.borgmatic-backup = {
-  #   Unit = {
-  #     Description = "Timer for borgmatic backup service";
-  #   };
-
-  #   Timer = {
-  #     OnCalendar = "*-*-* *:00/3:00";
-  #     Persistent = true;
-  #   };
-
-  #   Install = {
-  #     WantedBy = ["timers.target"];
-  #   };
-  # };
-
   # borgmatic service - run every 3 hours
   services.borgmatic = {
     enable = true;
