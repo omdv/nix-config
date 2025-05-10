@@ -49,8 +49,9 @@ in {
         storage = {
           encryptionPasscommand = mkScript {
             name = "borg-encryption-pass";
+            deps = [ pkgs.coreutils ];
             script = ''
-              cat ${backup_key}
+              ${pkgs.coreutils}/bin/cat ${backup_key}
             '';
           };
           extraConfig = {
