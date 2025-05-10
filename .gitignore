@@ -7,3 +7,6 @@ result*
 .secrets.baseline
 *.code-workspace
 *.code-workspace.lock
+.envrc
+.aider*
+.env
