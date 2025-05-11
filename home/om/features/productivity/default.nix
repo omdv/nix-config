@@ -11,6 +11,7 @@
   ];
 
   home.packages = with pkgs; [
+    aider-chat # AI coding assistant
     beancount # ledger alternative
     bruno # api tool
     pgcli # great postgres cli from Ukraine
