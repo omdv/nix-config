@@ -1,10 +1,10 @@
 { pkgs, ... }:
 let
   pname = "cursor";
-  version = "0.48.6";
+  version = "0.49.6";
   cursorAppImage = pkgs.fetchurl {
-    url = "https://downloader.cursor.sh/linux/appImage/x64";
-    sha256 = "sha256-5MGWJi8TP+13jZf6YMMUU5uYY/3OBTFxtGpirvgj8ZI=";
+    url = "https://www.cursor.com/download/stable/linux-x64";
+    sha256 = "sha256-WH4/Zw0VJmRGyRzMlkThkhZ4fGysMKBUSIPCTsyGS4w=";
     name = "${pname}-${version}.AppImage";
   };
 in
