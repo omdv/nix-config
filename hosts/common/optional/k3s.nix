@@ -1,7 +1,7 @@
 { pkgs, ... }:
 let
   # TODO: parameterize properly from config
-  tailscaleIP = "100.105.105.100";
+  tailscaleIP = "100.105.105.101";
   lanIP = "192.168.1.98";
 in {
   environment.systemPackages = [
@@ -20,10 +20,7 @@ in {
     extraFlags = toString [
       "--disable traefik"
       "--disable metrics-server"
-      "--flannel-backend=wireguard-native"
-      "--vpn-auth-file=/run/user-secrets/k3s_tailscale_auth"
-      "--token-file=/run/user-secrets/k3s_token"
-      "--node-external-ip=${tailscaleIP}"
+      "--flannel-backend=vxlan"
       "--tls-san=${tailscaleIP}"
       "--tls-san=${lanIP}"
       "--tls-san=127.0.0.1"
