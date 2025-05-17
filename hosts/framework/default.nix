@@ -6,6 +6,7 @@
   imports = [
     inputs.hardware.nixosModules.common-pc-ssd
     ./hardware-configuration.nix
+    ./networking.nix
 
     ../common/global
     ../common/users/om
@@ -27,11 +28,6 @@
     ../common/optional/steam.nix
     ../common/optional/vpn.nix
   ];
-
-  networking = {
-    hostName = "framework";
-    networkmanager.enable = true;
-  };
 
   boot = {
     loader.systemd-boot.enable = true;
