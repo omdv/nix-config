@@ -54,13 +54,6 @@
       sopsFile = ./secrets.yaml;
       path = "/run/user-secrets/ntfy-system-topic";
     };
-    tailscale_key = {
-      owner = "root";
-      group = "root";
-      mode = "0400";
-      sopsFile = ./secrets.yaml;
-      path = "/etc/tailscale/authkey";
-    };
   };
 
   hardware.graphics.enable = true;

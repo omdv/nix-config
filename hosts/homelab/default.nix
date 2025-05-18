@@ -6,6 +6,7 @@
   imports = [
     inputs.hardware.nixosModules.common-pc-ssd
     ./hardware-configuration.nix
+    ./networking.nix
 
     ../common/global
     ../common/users/om
@@ -15,28 +16,6 @@
     ../common/optional/smartd.nix
     ../common/optional/zfs.nix
   ];
-
-  networking = {
-    hostId = "c6589261";
-    hostName = "homelab";
-    useDHCP = true;
-    interfaces = {
-      enp2s0 = {
-        useDHCP = true;
-        ipv4.addresses = [{
-          address = "192.168.1.98";
-          prefixLength = 24;
-        }];
-      };
-      tailscale0 = {
-        useDHCP = true;
-        ipv4.addresses = [{
-          address = "100.105.105.100";
-          prefixLength = 24;
-        }];
-      };
-    };
-  };
 
   boot = {
     loader.systemd-boot.enable = true;
@@ -69,33 +48,12 @@
       sopsFile = ./secrets.yaml;
       path = "/run/user-secrets/backup-passphrase";
     };
-    tailscale_key = {
-      owner = "om";
-      group = "wheel";
-      mode = "0400";
-      sopsFile = ./secrets.yaml;
-      path = "/run/user-secrets/tailscale-key";
-    };
     ntfy_system_topic = {
       owner = "om";
       group = "wheel";
       mode = "0400";
       sopsFile = ./secrets.yaml;
       path = "/run/user-secrets/ntfy-system-topic";
-    };
-    k3s_tailscale_auth = {
-      owner = "om";
-      group = "wheel";
-      mode = "0400";
-      sopsFile = ./secrets.yaml;
-      path = "/run/user-secrets/k3s_tailscale_auth";
-    };
-    k3s_token = {
-      owner = "om";
-      group = "wheel";
-      mode = "0400";
-      sopsFile = ./secrets.yaml;
-      path = "/run/user-secrets/k3s_token";
     };
   };
 
