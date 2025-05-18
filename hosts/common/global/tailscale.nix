@@ -2,12 +2,15 @@
   services.tailscale = {
     enable = true;
     port = 41414;
-    useRoutingFeatures = "client";
-    extraUpFlags = [
-      "--accept-dns=false"
+    openFirewall = true;
+    extraSetFlags = [
+      "--accept-dns=true"
       "--accept-routes=false"
     ];
   };
 
-  networking.firewall.allowedUDPPorts = [41414];
+  systemd.services.tailscaled.serviceConfig = {
+    Restart = "on-failure";
+    RestartSec = "20s";
+  };
 }
