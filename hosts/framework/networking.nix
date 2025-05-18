@@ -20,4 +20,19 @@
       dns = lib.mkForce "none";
     };
   };
+
+  services.tailscale = {
+    enable = true;
+    port = 41414;
+    openFirewall = true;
+    extraSetFlags = [
+      "--accept-dns=true"
+      "--accept-routes=true"
+    ];
+  };
+
+  systemd.services.tailscaled.serviceConfig = {
+    Restart = "on-failure";
+    RestartSec = "20s";
+  };
 }
