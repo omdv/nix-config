@@ -23,8 +23,6 @@
     ];
   };
 
-  networking.firewall.trustedInterfaces = [ "tailscale0" ];
-
   services.resolved = {
     enable = true;
     fallbackDns = [
@@ -37,4 +35,24 @@
       DNSStubListener=yes
     '';
   };
+
+  services.tailscale = {
+    enable = true;
+    port = 41414;
+    openFirewall = true;
+    extraSetFlags = [
+      "--accept-dns=true"
+      "--accept-routes=true"
+      "--advertise-exit-node=true"
+      "--exit-node=nl-ams-wg-007.mullvad.net"
+      "--exit-node-allow-lan-access=true"
+    ];
+  };
+
+  systemd.services.tailscaled.serviceConfig = {
+    Restart = "on-failure";
+    RestartSec = "20s";
+  };
+
+  networking.firewall.trustedInterfaces = [ "tailscale0" ];
 }
