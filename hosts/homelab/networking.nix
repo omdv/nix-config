@@ -43,9 +43,6 @@
     extraSetFlags = [
       "--accept-dns=true"
       "--accept-routes=true"
-      "--advertise-exit-node=true"
-      "--exit-node=nl-ams-wg-007.mullvad.net"
-      "--exit-node-allow-lan-access=true"
     ];
   };
 
