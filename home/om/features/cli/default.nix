@@ -14,7 +14,6 @@
     ./ssh.nix
     ./starship.nix
     ./tmux.nix
-    ./w3m.nix
     ./yazi.nix
   ];
   home.packages = with pkgs; [
