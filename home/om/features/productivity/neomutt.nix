@@ -27,9 +27,14 @@
     };
   };
 
+  home.packages = with pkgs; [
+    w3m
+    feh
+  ];
+
   programs.neomutt = {
     enable = true;
-    vimKeys = true;
+    vimKeys = false;
     checkStatsInterval = 60;
     sidebar = {
       enable = true;
@@ -71,9 +76,7 @@
         ];
       }
     ];
-    macros = let
-      browserpipe = "cat /dev/stdin > /tmp/muttmail.qute && xdg-open /tmp/muttmail.qute";
-    in [
+    macros = [
       {
         action = "<sidebar-next><sidebar-open>";
         key = "J";
@@ -99,22 +102,9 @@
         ];
       }
       {
-        action = "<pipe-entry>${browserpipe}<enter><exit>";
-        key = "V";
-        map = ["attach"];
-      }
-      {
-        action = "<pipe-message>${pkgs.urlscan}/bin/urlscan<enter><exit>";
-        key = "F";
+        key = "H";
         map = ["pager"];
-      }
-      {
-        action = "<view-attachments><search>html<enter><pipe-entry>${browserpipe}<enter><exit>";
-        key = "V";
-        map = [
-          "index"
-          "pager"
-        ];
+        action = "<pipe-message>${pkgs.w3m}/bin/w3m -I UTF-8 -T text/html -dump<enter><exit>";
       }
     ];
     extraConfig = let
@@ -127,8 +117,11 @@
         alternates "${lib.concatStringsSep "|" addresses}"
       ''
       + ''
-        # For html
-        auto_view text/html
+        set mailcap_path = "${config.xdg.configHome}/neomutt/mailcap"
+
+        set implicit_autoview
+        alternative_order text/plain text/enriched text/html multipart/related multipart/alternative
+        set allow_ansi
 
         # From: https://github.com/dracula/mutt/blob/master/dracula.muttrc
         # general ------------ foreground ---- background -----------------------------
@@ -172,10 +165,12 @@
       '';
   };
 
-  # mailcap
-  home.file = {
-    ".mailcap".text = ''
-      text/html; w3m -dump %s; copiousoutput
-    '';
-  };
+  xdg.configFile."neomutt/mailcap".text = ''
+    text/html; ${pkgs.w3m}/bin/w3m -I %{charset} -T text/html -dump %s; copiousoutput
+    text/html; ${pkgs.w3m}/bin/w3m -I UTF-8 -T text/html -dump %s; copiousoutput
+    image/png; ${pkgs.feh}/bin/feh %s; copiousoutput
+    image/jpeg; ${pkgs.feh}/bin/feh %s; copiousoutput
+    image/gif; ${pkgs.feh}/bin/feh %s; copiousoutput
+  '';
+
 }
