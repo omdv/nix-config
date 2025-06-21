@@ -68,9 +68,9 @@ in {
     };
   };
 
-  # borgmatic service - run every 3 hours
+  # borgmatic service - run daily at 2 AM
   services.borgmatic = {
     enable = true;
-    frequency = "*-*-* *:00/3:00";
+    frequency = "0 2 * * *";
   };
 }
