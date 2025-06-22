@@ -1,12 +1,11 @@
 {pkgs, ...}: {
   fonts.fontconfig.enable = true;
     home.packages = [
-      (pkgs.nerdfonts.override {
-        fonts = [
-          "FiraCode"
-          "NerdFontsSymbolsOnly"
-        ];
-      })
+      pkgs.open-sans
+      pkgs.fira-sans
+      pkgs.nerd-fonts.fira-mono
+      pkgs.nerd-fonts.fira-code
+      pkgs.nerd-fonts.symbols-only
       pkgs.font-awesome
       pkgs.fontconfig
     ];
@@ -18,16 +17,16 @@
   fontProfiles = {
     enable = true;
     monospace = {
-      family = "FiraCode Nerd Font";
-      package = pkgs.nerdfonts.override {fonts = ["FiraCode"];};
+      family = "FiraCode Nerd Font Mono";
+      package = pkgs.nerd-fonts.fira-mono;
     };
     regular = {
       family = "Fira Sans";
-      package = pkgs.fira;
+      package = pkgs.fira-sans;
     };
     icons = {
       family = "Symbols Nerd Font";
-      package = pkgs.nerdfonts.override {fonts = ["NerdFontsSymbolsOnly"];};
+      package = pkgs.nerd-fonts.symbols-only;
     };
   };
 }

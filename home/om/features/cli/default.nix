@@ -8,6 +8,7 @@
     ./git.nix
     ./gpg.nix
     ./htop.nix
+    ./llm.nix
     ./mc.nix
     ./navi.nix
     ./qutebrowser.nix
@@ -22,10 +23,6 @@
     zip
     wget
     feh
-
-    # llm tools
-    aichat
-    shell-gpt
 
     # better utils
     bc # Calculator
@@ -69,7 +66,6 @@
 
     # nix -related
     alejandra # Nix formatter
-    manix # man pages for nix
     nh # Nice wrapper for NixOS and HM
     nil # Nix LSP
     nix-tree # Nix tree

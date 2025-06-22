@@ -5,16 +5,18 @@
     package = pkgs.unstable.firefox;
     profiles.omdv = {
       bookmarks = {};
-      extensions = with pkgs.inputs.firefox-addons; [
-        ublock-origin
-        browserpass
-        bitwarden
-        zotero-connector
-      ];
+      extensions = {
+        packages = with pkgs.inputs.firefox-addons; [
+          ublock-origin
+          browserpass
+          bitwarden
+          zotero-connector
+        ];
+      };
       search = {
         force = true;
-        default = "DuckDuckGo";
-        order = [ "DuckDuckGo" "Google" ];
+        default = "ddg";
+        order = [ "ddg" "google" ];
       };
       bookmarks = {};
       settings = {
