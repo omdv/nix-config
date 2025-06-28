@@ -71,6 +71,6 @@ in {
   # borgmatic service - run daily at 2 AM
   services.borgmatic = {
     enable = true;
-    frequency = "0 2 * * *";
+    frequency = "daily";
   };
 }

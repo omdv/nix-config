@@ -15,6 +15,7 @@
     ./features/optional/mpeg.nix
     ./features/optional/mpv.nix
     ./features/optional/pyradio.nix
+    ./features/optional/qbittorrent.nix
     ./features/optional/quickemu.nix
     ./features/optional/redismanager.nix
     ./features/optional/telegram.nix

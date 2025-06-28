@@ -2,7 +2,7 @@
   imports = [
     ./cursor.nix
     ./httpie.nix
-    ./devenv.nix
+    # ./devenv.nix
     ./k9s.nix
     ./khard.nix
     ./mail.nix
