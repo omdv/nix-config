@@ -60,11 +60,27 @@ in {
           keepWeekly = 4;
           keepMonthly = 2;
         };
+        consistency = {
+          checks = [
+            {
+              name = "repository";
+              frequency = "1 week";
+            }
+            {
+              name = "archives";
+              frequency = "2 days";
+            }
+            {
+              name = "data";
+              frequency = "1 month";
+            }
+          ];
+        };
       };
     };
   };
 
-  # borgmatic service - run every 3 hours
+  # borgmatic service - run every 6 hours
   services.borgmatic = {
     enable = true;
     frequency = "*-*-* *:00/6:00";
