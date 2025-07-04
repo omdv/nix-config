@@ -72,7 +72,7 @@ in {
             }
             {
               name = "data";
-              frequency = "1 month";
+              frequency = "6 weeks";
             }
           ];
         };

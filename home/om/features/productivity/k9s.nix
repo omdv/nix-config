@@ -158,8 +158,6 @@
               lockFavorites = false;
               favorites = [
                 "apps"
-                "ibkr"
-                "nocodb"
                 "all"
                 "default"
               ];
