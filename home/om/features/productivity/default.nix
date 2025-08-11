@@ -1,8 +1,6 @@
 { pkgs, ... }: {
   imports = [
     ./cursor.nix
-    ./httpie.nix
-    # ./devenv.nix
     ./k9s.nix
     ./khard.nix
     ./mail.nix
@@ -11,7 +9,7 @@
   ];
 
   home.packages = with pkgs; [
-    aider-chat # AI coding assistant
+    claude-code # up-to-date claude code
     beancount # ledger alternative
     bruno # api tool
     pgcli # great postgres cli from Ukraine

@@ -26,6 +26,9 @@
     firefox-addons.url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
     nixvim.url = "github:nix-community/nixvim/nixos-25.05";
     nix-colors.url = "github:misterio77/nix-colors";
+
+    # Claude-code
+    claude-code.url = "github:sadjow/claude-code-nix";
   };
 
   outputs = {
@@ -33,17 +36,31 @@
     nixpkgs,
     home-manager,
     systems,
+    claude-code,
     ...
   } @ inputs: let
     inherit (self) outputs;
     lib = nixpkgs.lib // home-manager.lib;
-    forEachSystem = f: lib.genAttrs (import systems) (system: f pkgsFor.${system});
+
+    # Function to create a pkgs set with specific overlays for a given system
+    mkPkgsWithOverlays = system: overlays:
+      import nixpkgs {
+        inherit system;
+        inherit overlays;
+        config.allowUnfree = true;
+      };
+
+    # Define common overlays that Home Manager might want to use
+    homeManagerCommonOverlays = [
+      claude-code.overlays.default
+    ];
+
+    # pkgsFor is for general package building across different systems.
+    # It *should* also apply overlays if you expect your 'packages' or 'devShells'
+    # to use the overlaid versions. If not, remove homeManagerCommonOverlays here.
+    forEachSystem = f: lib.genAttrs (import systems) (system: f (mkPkgsWithOverlays system homeManagerCommonOverlays));
     pkgsFor = lib.genAttrs (import systems) (
-      system:
-        import nixpkgs {
-          inherit system;
-          config.allowUnfree = true;
-        }
+      system: mkPkgsWithOverlays system homeManagerCommonOverlays
     );
   in {
     inherit lib;
@@ -63,14 +80,21 @@
       framework = lib.nixosSystem {
         modules = [
           ./hosts/framework
+          {
+            nix.settings = {
+              substituters = [
+                "https://claude-code.cachix.org"
+              ];
+              trusted-public-keys = [
+                "claude-code.cachix.org-1:YeXf2aNu7UTX8Vwrze0za1WEDS+4DuI2kVeWEE4fsRk="
+              ];
+            };
+          }
         ];
         specialArgs = {
           inherit inputs outputs;
         };
       };
-    };
-
-    nixosConfigurations = {
       homelab = lib.nixosSystem {
         modules = [
           ./hosts/homelab
@@ -84,21 +108,18 @@
     # Home configurations
     homeConfigurations = {
       "om@framework" = lib.homeManagerConfiguration {
+        pkgs = mkPkgsWithOverlays "x86_64-linux" homeManagerCommonOverlays;
         modules = [
           ./home/om/framework.nix
           ./home/om/nixpkgs.nix
           inputs.sops-nix.homeManagerModules.sops
           inputs.nix-colors.homeManagerModules.default
         ];
-        pkgs = pkgsFor.x86_64-linux;
         extraSpecialArgs = {
           inherit inputs outputs;
           colors = inputs.nix-colors;
         };
       };
-    };
-
-    homeConfigurations = {
       "om@homelab" = lib.homeManagerConfiguration {
         modules = [
           ./home/om/homelab.nix
@@ -113,6 +134,5 @@
         };
       };
     };
-
   };
 }

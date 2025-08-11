@@ -18,8 +18,8 @@
         "explorer.compactFolders" = false;
         # Copilot
         "github.copilot.enable"= {
-          "*" = true;
-          "yaml" = true;
+          "*" = false;
+          "yaml" = false;
           "plaintext" = false;
           "markdown" = false;
         };
