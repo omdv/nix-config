@@ -26,9 +26,6 @@
     firefox-addons.url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
     nixvim.url = "github:nix-community/nixvim/nixos-25.05";
     nix-colors.url = "github:misterio77/nix-colors";
-
-    # Claude-code
-    claude-code.url = "github:sadjow/claude-code-nix";
   };
 
   outputs = {
@@ -36,7 +33,6 @@
     nixpkgs,
     home-manager,
     systems,
-    claude-code,
     ...
   } @ inputs: let
     inherit (self) outputs;
@@ -52,7 +48,6 @@
 
     # Define common overlays that Home Manager might want to use
     homeManagerCommonOverlays = [
-      claude-code.overlays.default
     ];
 
     # pkgsFor is for general package building across different systems.
@@ -80,16 +75,6 @@
       framework = lib.nixosSystem {
         modules = [
           ./hosts/framework
-          {
-            nix.settings = {
-              substituters = [
-                "https://claude-code.cachix.org"
-              ];
-              trusted-public-keys = [
-                "claude-code.cachix.org-1:YeXf2aNu7UTX8Vwrze0za1WEDS+4DuI2kVeWEE4fsRk="
-              ];
-            };
-          }
         ];
         specialArgs = {
           inherit inputs outputs;
@@ -118,6 +103,10 @@
         extraSpecialArgs = {
           inherit inputs outputs;
           colors = inputs.nix-colors;
+          pkgs-unstable = import inputs.nixpkgs-unstable {
+            system = "x86_64-linux";
+            config.allowUnfree = true;
+          };
         };
       };
       "om@homelab" = lib.homeManagerConfiguration {

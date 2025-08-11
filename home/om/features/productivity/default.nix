@@ -1,4 +1,4 @@
-{ pkgs, ... }: {
+{ pkgs, pkgs-unstable, ... }: {
   imports = [
     ./cursor.nix
     ./k9s.nix
@@ -8,11 +8,12 @@
     ./vscode.nix
   ];
 
-  home.packages = with pkgs; [
-    claude-code # up-to-date claude code
-    beancount # ledger alternative
-    bruno # api tool
-    pgcli # great postgres cli from Ukraine
-    visidata # cli for data analysis
+  home.packages = [
+    pkgs.beancount # ledger alternative
+    pkgs.bruno # api tool
+    pkgs.pgcli # great postgres cli from Ukraine
+    pkgs.visidata # cli for data analysis
+    pkgs-unstable.claude-code # up-to-date claude code
   ];
+
 }
