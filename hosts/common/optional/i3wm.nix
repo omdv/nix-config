@@ -2,6 +2,11 @@
   services.xserver = {
     enable = true;
 
+    xkb = {
+      layout = "us,ru";
+      options = "grp:win_space_toggle";
+    };
+
     displayManager.lightdm = {
       enable = true;
       greeters.mini = {

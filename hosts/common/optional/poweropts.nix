@@ -1,4 +1,4 @@
-{
+{ pkgs, ... }: {
   powerManagement.enable = true;
 
   systemd.sleep.extraConfig = ''
@@ -26,4 +26,9 @@
       };
     };
   };
+
+  environment.systemPackages = with pkgs; [
+    powertop
+    powerstat
+  ];
 }
