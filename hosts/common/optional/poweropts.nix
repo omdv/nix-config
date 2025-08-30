@@ -31,4 +31,15 @@
     powertop
     powerstat
   ];
+
+  # powertop recommended settings
+  boot = {
+    kernel.sysctl = {
+      "vm.dirty_writeback_centisecs" = 1500;
+    };
+    kernelParams = [
+      "nowatchdog"
+    ];
+  };
+
 }
