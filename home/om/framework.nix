@@ -66,7 +66,13 @@
     defaultSopsFile = ./secrets.yaml;
     secrets.fastmail_password = { sopsFile = ./secrets.yaml; };
     secrets.gmail_password = { sopsFile = ./secrets.yaml; };
+    secrets.google_ai_api_key = { sopsFile = ./secrets.yaml; };
     age.keyFile = "${config.xdg.configHome}/sops/age/keys.txt";
+  };
+
+  # Set session variables from sops secrets
+  home.sessionVariables = {
+    GOOGLE_AI_API_KEY = "$(cat ${config.sops.secrets.google_ai_api_key.path})";
   };
 
   i3scaling = {

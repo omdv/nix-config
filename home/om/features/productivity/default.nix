@@ -6,6 +6,7 @@
     ./mail.nix
     ./neomutt.nix
     ./vscode.nix
+    ./zed.nix
   ];
 
   home.packages = [
