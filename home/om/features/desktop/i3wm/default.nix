@@ -23,6 +23,7 @@ in {
         "3" = [
           { class = "Code"; }
           { class = "Cursor"; }
+          { class = "dev.zed.Zed"; }
         ];
         "5" = [
           { class = "TelegramDesktop"; }
