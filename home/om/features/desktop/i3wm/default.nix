@@ -55,11 +55,6 @@ in {
         { command = "firefox"; notification = false; }
         { command = "i3-msg workspace 1"; notification = false; }
         {
-          command = "setxkbmap -layout us,ua -variant ,, -option grp:win_space_toggle";
-          always = true;
-          notification = false;
-        }
-        {
           command = "systemctl --user restart polybar.service";
           always = true;
           notification = false;

@@ -2,6 +2,7 @@
   services.xserver = {
     enable = true;
 
+    # keyboard input settings
     xkb = {
       layout = "us,ru";
       options = "grp:win_space_toggle";
