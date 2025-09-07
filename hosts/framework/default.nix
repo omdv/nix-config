@@ -14,7 +14,6 @@
     ../common/optional/i3wm.nix
 
     ../common/optional/btrfs.nix
-    ../common/optional/docker.nix
     ../common/optional/java.nix
     ../common/optional/libvirt.nix
     ../common/optional/light.nix
@@ -26,6 +25,7 @@
     ../common/optional/quietboot.nix
     ../common/optional/smartd.nix
     ../common/optional/steam.nix
+    ../common/optional/virtualisation.nix
     ../common/optional/vpn.nix
   ];
 
