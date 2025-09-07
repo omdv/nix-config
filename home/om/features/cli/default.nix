@@ -32,6 +32,7 @@
     eza # Better ls
     fd # Better find
     jq # A lightweight and flexible command-line JSON processor
+    maim # Screenshot tool
     ripgrep # Better grep
     yq-go # yaml processor https://github.com/mikefarah/yq
 
@@ -77,7 +78,6 @@
 
     # misc
     tldr # Simplified man
-    dive # Docker image explorer
     simplescreenrecorder # record screen
   ];
 }

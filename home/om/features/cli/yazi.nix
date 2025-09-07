@@ -4,7 +4,7 @@
     enable = true;
     enableFishIntegration = true;
     settings = {
-      manager = {
+      mgr = {
         ratio = [1 3 4];
         sort_by = "natural";
         sort_dir_first = true;

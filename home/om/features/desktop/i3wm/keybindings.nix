@@ -28,6 +28,10 @@ in {
         "${mod}+Return" = "exec ${lib.getExe config.programs.kitty.package}";
         "${mod}+d" = "exec ${pkgs.rofi}/bin/rofi -show drun";
 
+        # screenshot
+        "${mod}+Print" = "exec ${pkgs.maim}/bin/maim -s ${config.home.homeDirectory}/Pictures/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png";
+        "${mod}+Shift+Print" = "exec ${pkgs.maim}/bin/maim -s ${config.home.homeDirectory}/Pictures/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png";
+
         # wifi control
         "${mod}+n" = "exec ${mkScriptFromFile {
           deps = [pkgs.networkmanager pkgs.iw];
