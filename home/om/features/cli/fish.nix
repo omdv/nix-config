@@ -55,6 +55,8 @@ in {
       nixgc = "nix-collect-garbage -d";
 
       # Docker shortcuts
+      docker = "podman";
+      docker-compose = "podman-compose";
       dps = "docker ps -a --format 'table {{.Names}}\t{{.Image}}\t{{.Ports}}\t{{.Status}}'";
     };
 
