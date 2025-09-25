@@ -77,6 +77,7 @@
     nvd # Nix version diff
 
     # misc
+    qgis # Great qt-based GIS
     tldr # Simplified man
     simplescreenrecorder # record screen
   ];
