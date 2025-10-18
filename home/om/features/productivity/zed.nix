@@ -1,6 +1,20 @@
-{
+{ pkgs-unstable, ... }: {
+  # Temporarily disable programs.zed-editor to allow manual settings management
+  # Just install the package without managing config
+  home.packages = [ pkgs-unstable.zed-editor ];
+
+# TODO
+# Add claude support
+# Improve prediction model
+# Add support for other languages
+# Add support for more file types
+
+  # Old home-manager config preserved below for reference:
+  /*
   programs.zed-editor = {
+    package = pkgs-unstable.zed-editor;
     enable = true;
+    extensions = [ "nix" "toml" "python" ];
     userSettings = {
       load_direnv = "shell_hook";
       base_keymap = "VSCode";
@@ -16,11 +30,11 @@
       };
       show_whitespaces = "selection";
       ui_font_family = "FiraCode Nerd Font";
-      ui_font_size = 22;
+      ui_font_size = 12;
       buffer_font_family = "FiraCode Nerd Font";
-      buffer_font_size = 22;
+      buffer_font_size = 12;
       agent_font_family = "FiraCode Nerd Font";
-      agent_font_size = 22;
+      agent_font_size = 12;
       agent = {
         enabled = true;
         version = "2";
@@ -45,4 +59,5 @@
       auto_update = false;
     };
   };
+  */
 }
