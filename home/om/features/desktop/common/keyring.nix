@@ -6,11 +6,15 @@
     libgnome-keyring
   ];
   services.gnome-keyring = {
-    enable = true;
+    enable = false;
     components = [
       "pkcs11"
       "secrets"
     ];
+  };
+  services.pass-secret-service = {
+    enable = true;
+    storePath = "%h/.password-store";
   };
 
   xdg = {
