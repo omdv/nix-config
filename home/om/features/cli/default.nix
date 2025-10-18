@@ -68,7 +68,8 @@
     # nix -related
     alejandra # Nix formatter
     nh # Nice wrapper for NixOS and HM
-    nixd # Nix LSP for zed
+    nil # Nix language server
+    nixd # Nix language server
     nix-tree # Nix tree
     nix-inspect # Nix inspect
     nix-du # Nix du
