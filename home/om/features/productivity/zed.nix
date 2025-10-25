@@ -1,6 +1,4 @@
 { pkgs-unstable, ... }: {
-  # Temporarily disable programs.zed-editor to allow manual settings management
-  # Just install the package without managing config
   home.packages = [ pkgs-unstable.zed-editor ];
 
 # TODO

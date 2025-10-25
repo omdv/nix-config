@@ -10,16 +10,13 @@
     ./features/productivity
     ./features/pass
 
-    ./features/optional/chirp.nix
     ./features/optional/discord.nix
     ./features/optional/mpeg.nix
     ./features/optional/mpv.nix
     ./features/optional/pyradio.nix
     ./features/optional/quickemu.nix
-    ./features/optional/redismanager.nix
     ./features/optional/telegram.nix
     ./features/optional/torrent.nix
-    ./features/optional/wine.nix
     ./features/optional/zathura.nix
     ./features/optional/zotero.nix
 
@@ -48,7 +45,7 @@
   # base0D = "#82AAFF"; # functions, methods, attribute IDs, headings
   # base0E = "#C792EA"; # keywords, storage, selector, markup italic, diff changed
   # base0F = "#FF5370"; # deprecated, opening/closing embedded language tags
-  colorscheme = colors.colorSchemes.material;
+  colorscheme = colors.colorSchemes.catppuccin-mocha;
 
   monitors = [
     {
@@ -66,13 +63,7 @@
     defaultSopsFile = ./secrets.yaml;
     secrets.fastmail_password = { sopsFile = ./secrets.yaml; };
     secrets.gmail_password = { sopsFile = ./secrets.yaml; };
-    secrets.google_ai_api_key = { sopsFile = ./secrets.yaml; };
     age.keyFile = "${config.xdg.configHome}/sops/age/keys.txt";
-  };
-
-  # Set session variables from sops secrets
-  home.sessionVariables = {
-    GOOGLE_AI_API_KEY = "$(cat ${config.sops.secrets.google_ai_api_key.path})";
   };
 
   i3scaling = {
