@@ -4,6 +4,5 @@
     llm
     litellm
     shell-gpt
-
   ];
 }
