@@ -48,6 +48,13 @@
       sopsFile = ./secrets.yaml;
       path = "/run/user-secrets/backup-passphrase";
     };
+    samba_password = {
+      owner = "om";
+      group = "wheel";
+      mode = "0400";
+      sopsFile = ./secrets.yaml;
+      path = "/run/user-secrets/samba-password";
+    };
     ntfy_system_topic = {
       owner = "om";
       group = "wheel";
