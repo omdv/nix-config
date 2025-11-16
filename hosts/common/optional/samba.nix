@@ -1,12 +1,14 @@
 {
+  users.users.samba = {
+    isSystemUser = true;
+    group = "samba";
+    description = "Samba user";
+  };
+  users.groups.samba = {};
+
   services.samba = {
     enable = true;
     openFirewall = true;
-    users = {
-      "samba" = {
-        passwordFile = "/run/user-secrets/samba-password";
-      };
-    };
     settings = {
       global = {
         security = "user";
@@ -22,7 +24,7 @@
         "writeable" = "yes";
         "browsable" = "yes";
         "guest ok" = "no";
-        "valid users" = [ "samba" ];
+        "valid users" = "samba";
       };
     };
   };
