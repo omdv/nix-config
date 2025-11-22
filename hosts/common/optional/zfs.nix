@@ -9,13 +9,12 @@
       enableMail = false;
     };
     trim = {
-      enable = true;
-      interval = "weekly";
+      enable = false;
     };
     autoScrub = {
       enable = true;
       pools = [ "pool" ];
-      interval = "weekly";
+      interval = "monthly";
     };
     autoSnapshot = {
       enable = false;
