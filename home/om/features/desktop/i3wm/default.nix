@@ -19,7 +19,10 @@ in {
     package = pkgs.i3-gaps;
     config = {
       assigns = {
-        "2" = [{ class = "firefox"; }];
+        "2" = [
+          { class = "firefox"; }
+          { class = "Brave-browser"; }
+        ];
         "3" = [
           { class = "Code"; }
           { class = "Cursor"; }
@@ -52,7 +55,7 @@ in {
         bottom = 5;
       };
       startup = [
-        { command = "firefox"; notification = false; }
+        { command = "brave"; notification = false; }
         { command = "i3-msg workspace 1"; notification = false; }
         {
           command = "systemctl --user restart polybar.service";

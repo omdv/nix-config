@@ -1,5 +1,6 @@
 {
   imports = [
+    ./brave.nix
     ./cursor.nix
     ./firefox.nix
     ./gtk.nix
