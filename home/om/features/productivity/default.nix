@@ -17,6 +17,6 @@
     pkgs.pgcli # great postgres cli from Ukraine
     pkgs.visidata # cli for data analysis
     pkgs-unstable.claude-code # up-to-date claude code
+    pkgs-unstable.claude-monitor # up-to-date claude cost monitor
   ];
-
 }

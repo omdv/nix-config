@@ -21,11 +21,19 @@
 
     systems.url = "github:nix-systems/default-linux";
     hardware.url = "github:nixos/nixos-hardware";
+    flake-utils.url = "github:numtide/flake-utils";
 
     # Third party programs, packaged with nix
     firefox-addons.url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
     nixvim.url = "github:nix-community/nixvim/nixos-25.05";
     nix-colors.url = "github:misterio77/nix-colors";
+
+    # Claude Desktop flake
+    claude-desktop = {
+      url = "github:k3d3/claude-desktop-linux-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-utils.follows = "flake-utils";
+    };
   };
 
   outputs = {
