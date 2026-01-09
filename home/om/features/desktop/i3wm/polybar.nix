@@ -1,4 +1,4 @@
-{ pkgs, config, lib, ... }: let
+{ pkgs, pkgs-unstable, config, lib, ... }: let
   colors = config.colorscheme.palette;
   mapStrings = f: xs: lib.map (x: f x) xs;
   commonDeps = with pkgs; [coreutils gnugrep];
@@ -131,7 +131,7 @@ in {
       "module/headscale" = {
         type = "custom/script";
         exec = mkScriptFromFile {
-          deps = [ pkgs.tailscale pkgs.jq ];
+          deps = [ pkgs-unstable.tailscale pkgs.jq ];
           scriptFile = ./polybar/headscale-status.sh;
           args = [
             "${colors.base0B}"

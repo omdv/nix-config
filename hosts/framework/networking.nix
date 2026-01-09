@@ -1,4 +1,4 @@
-{ lib, ... }: {
+{ lib, pkgs-unstable, ... }: {
   services.resolved = {
     enable = true;
     fallbackDns = [
@@ -23,6 +23,7 @@
 
   services.tailscale = {
     enable = true;
+    package = pkgs-unstable.tailscale;
     port = 41414;
     openFirewall = true;
     extraSetFlags = [
