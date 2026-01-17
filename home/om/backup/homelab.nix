@@ -64,6 +64,18 @@ in {
           keepWeekly = 4;
           keepMonthly = 2;
         };
+        consistency = {
+          checks = [
+            {
+              name = "repository";
+              frequency = "1 month";
+            }
+            {
+              name = "archives";
+              frequency = "2 months";
+            }
+          ];
+        };
       };
     };
   };

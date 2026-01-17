@@ -64,15 +64,11 @@ in {
           checks = [
             {
               name = "repository";
-              frequency = "1 week";
+              frequency = "1 month";
             }
             {
               name = "archives";
-              frequency = "2 days";
-            }
-            {
-              name = "data";
-              frequency = "6 weeks";
+              frequency = "2 months";
             }
           ];
         };
