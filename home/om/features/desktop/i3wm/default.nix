@@ -2,7 +2,8 @@
   colors = config.colorscheme.palette;
 in {
   imports = [
-    ./rofi.nix
+    ../common/rofi.nix
+
     ./keybindings.nix
     ./picom.nix
     ./polybar.nix
