@@ -1,5 +1,5 @@
 { pkgs, ... }: {
-  services.displayManager.defaultSession = "none+awesome";
+  services.displayManager.defaultSession = "none+i3";
 
   services.xserver = {
     enable = true;
@@ -9,13 +9,6 @@
       layout = "us,ru";
       options = "grp:win_space_toggle";
     };
-
-    # displayManager.lightdm = {
-    #   enable = true;
-    #   greeters.slick = {
-    #     enable = true;
-    #   };
-    # };
 
     displayManager.lightdm = {
       enable = true;
