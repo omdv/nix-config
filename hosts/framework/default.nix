@@ -12,8 +12,7 @@
     ../common/users/om
 
     ../common/optional/xserver.nix
-    # ../common/optional/i3wm.nix
-    ../common/optional/awesomewm.nix
+    ../common/optional/i3wm.nix
 
     ../common/optional/btrfs.nix
     ../common/optional/java.nix

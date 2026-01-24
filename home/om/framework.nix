@@ -3,8 +3,7 @@
     ./global
 
     ./features/desktop/common
-    # ./features/desktop/i3wm
-    ./features/desktop/awesomewm
+    ./features/desktop/i3wm
 
     ./features/cli
     ./features/nixvim
