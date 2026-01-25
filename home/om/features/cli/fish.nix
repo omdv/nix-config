@@ -14,6 +14,7 @@
   hasFd = hasPackage "fd";
   hasKubecolor = hasPackage "kubecolor";
   hasGopass = hasPackage "gopass";
+  hasClaude = hasPackage "claude-code";
 
   hasBat = config.programs.bat.enable;
   hasNnn = config.programs.nnn.enable;
@@ -63,6 +64,9 @@ in {
     shellAliases = {
       # Clear screen and scrollback
       clear = "printf '\\033[2J\\033[3J\\033[1;1H'";
+
+      # Claude code loading direnv
+      cl = mkIf hasClaude "direnv exec . claude";
 
       # Better tools
       kubectl = mkIf hasKubecolor "kubecolor";
@@ -185,7 +189,7 @@ in {
       # fzf.fish and settings
       fzf_configure_bindings --git_status=\cg --variables=\cv --directory=\cf --git_log=\cl --processes=\ct
       set -gx fzf_fd_opts --hidden --no-ignore --exclude=.git --max-depth 5
-      set -gx fzf_preview_dir_cmd eza --all --color=always
+      set -gx fzf_preview_dir_cmd eza --tree --level=2 --color=always
       set -gx fzf_diff_highlighter diff-so-fancy
 
       # sgpt integration
