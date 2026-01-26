@@ -27,6 +27,7 @@ in {
         "${mod}+f" = "fullscreen toggle";
         "${mod}+Return" = "exec ${lib.getExe config.programs.kitty.package}";
         "${mod}+d" = "exec ${pkgs.rofi}/bin/rofi -show drun";
+        "${mod}+p" = "exec tp";
 
         # screenshot
         "${mod}+Print" = "exec ${pkgs.maim}/bin/maim -s ${config.home.homeDirectory}/Pictures/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png";

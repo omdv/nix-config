@@ -24,7 +24,7 @@ in {
       format = let
         git = "$git_branch$git_commit$git_state$git_status";
       in ''
-        $username$hostname($shlvl)($cmd_duration) $fill ($nix_shell)''${custom.nix_inspect} ($python)
+        $username$hostname($shlvl)( $cmd_duration) $fill ($nix_shell)''${custom.nix_inspect} ($python)
         $directory(${git}) $fill $time
         $jobs$character
       '';
@@ -53,11 +53,13 @@ in {
         display_host = false;
       };
       shlvl = {
-        format = "[$shlvl]($style) ";
-        style = "bold #${colors.base0C}";
-        threshold = 2;
-        repeat = true;
         disabled = false;
+        format = "[$symbol]($style)";
+        style = "bold #${colors.base0C}";
+        symbol = "❯";
+        repeat = true;
+        repeat_offset = 0;
+        threshold = 1;
       };
       cmd_duration = {
         format = "took [$duration]($style) ";
@@ -124,7 +126,6 @@ in {
       ruby.symbol = " ";
       rust.symbol = " ";
       scala.symbol = " ";
-      shlvl.symbol = "";
       swift.symbol = "󰛥 ";
       terraform.symbol = "󱁢";
       nix_shell.symbol = " ";
