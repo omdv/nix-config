@@ -30,8 +30,6 @@ in {
       set -g status-right '#{?client_prefix,PREFIX,}'
       set -g status-justify centre
 
-      # Bind 'Prefix + f' to switch projects in a popup
-      bind-key -r f display-popup -E "t"
     '';
     plugins = with pkgs.tmuxPlugins; [
       {
@@ -54,29 +52,7 @@ in {
   };
 
   home.packages = [
-    # t: fzf-based project switcher (for use inside terminal/tmux)
-    (pkgs.writeShellScriptBin "t" ''
-      # Shows directories that have a flake.nix or devenv.nix file
-      selected=$( ${pkgs.fd}/bin/fd '^(flake|devenv)\.nix$' ~/projects ~/nix-config --type f --exec echo '{//}' \
-        | sort -u \
-        | ${pkgs.fzf}/bin/fzf )
-
-      if [[ -z $selected ]]; then exit 0; fi
-
-      selected_name=$(basename "$selected" | tr . _)
-
-      if ! tmux has-session -t="$selected_name" 2> /dev/null; then
-          tmux new-session -ds "$selected_name" -c "$selected"
-      fi
-
-      if [[ -z $TMUX ]]; then
-          tmux attach-session -t "$selected_name"
-      else
-          tmux switch-client -t "$selected_name"
-      fi
-    '')
-
-    # tp: rofi script mode for projects (can be used as rofi tab)
+    # tp: rofi script mode for tmux projects
     (pkgs.writeShellScriptBin "tp" ''
       if [[ -z "$1" ]]; then
         # No argument: list projects
@@ -86,11 +62,11 @@ in {
         selected="$1"
         selected_name=$(basename "$selected" | tr . _)
 
-        if ! ${pkgs.tmux}/bin/tmux has-session -t="$selected_name" 2> /dev/null; then
-            ${pkgs.tmux}/bin/tmux new-session -ds "$selected_name" -c "$selected"
+        if ! ${pkgs.tmux}/bin/tmux -L main has-session -t="$selected_name" 2> /dev/null; then
+            ${pkgs.tmux}/bin/tmux -L main new-session -ds "$selected_name" -c "$selected"
         fi
 
-        ${pkgs.util-linux}/bin/setsid -f ${pkgs.kitty}/bin/kitty -e ${pkgs.tmux}/bin/tmux attach-session -t "$selected_name" >/dev/null 2>&1
+        ${pkgs.util-linux}/bin/setsid -f ${pkgs.kitty}/bin/kitty -e ${pkgs.tmux}/bin/tmux -L main attach-session -t "$selected_name" >/dev/null 2>&1
       fi
     '')
   ];
