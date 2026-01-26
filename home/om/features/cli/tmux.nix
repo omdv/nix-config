@@ -1,23 +1,6 @@
 { pkgs, config, ... }: let
   colors = config.colorscheme.palette;
 in {
-  # Auto-start tmux server at login for session persistence
-  systemd.user.services.tmux-server = {
-    Unit = {
-      Description = "tmux server";
-      After = [ "graphical-session.target" ];
-    };
-    Service = {
-      Type = "forking";
-      ExecStart = "${pkgs.tmux}/bin/tmux new-session -d -s main";
-      ExecStop = "${pkgs.tmux}/bin/tmux kill-server";
-      Restart = "on-failure";
-    };
-    Install = {
-      WantedBy = [ "default.target" ];
-    };
-  };
-
   programs.tmux = {
     enable = true;
     package = pkgs.tmux;
@@ -71,6 +54,7 @@ in {
   };
 
   home.packages = [
+    # t: fzf-based project switcher (for use inside terminal/tmux)
     (pkgs.writeShellScriptBin "t" ''
       # Shows directories that have a flake.nix or devenv.nix file
       selected=$( ${pkgs.fd}/bin/fd '^(flake|devenv)\.nix$' ~/projects ~/nix-config --type f --exec echo '{//}' \
@@ -89,6 +73,24 @@ in {
           tmux attach-session -t "$selected_name"
       else
           tmux switch-client -t "$selected_name"
+      fi
+    '')
+
+    # tp: rofi script mode for projects (can be used as rofi tab)
+    (pkgs.writeShellScriptBin "tp" ''
+      if [[ -z "$1" ]]; then
+        # No argument: list projects
+        ${pkgs.fd}/bin/fd '^(flake|devenv)\.nix$' ~/projects ~/nix-config --type f --exec echo '{//}' | sort -u
+      else
+        # Argument provided: open the selected project
+        selected="$1"
+        selected_name=$(basename "$selected" | tr . _)
+
+        if ! ${pkgs.tmux}/bin/tmux has-session -t="$selected_name" 2> /dev/null; then
+            ${pkgs.tmux}/bin/tmux new-session -ds "$selected_name" -c "$selected"
+        fi
+
+        ${pkgs.util-linux}/bin/setsid -f ${pkgs.kitty}/bin/kitty -e ${pkgs.tmux}/bin/tmux attach-session -t "$selected_name" >/dev/null 2>&1
       fi
     '')
   ];
