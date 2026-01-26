@@ -1,4 +1,23 @@
-{ pkgs, ... }: {
+{ pkgs, config, ... }: let
+  colors = config.colorscheme.palette;
+in {
+  # Auto-start tmux server at login for session persistence
+  systemd.user.services.tmux-server = {
+    Unit = {
+      Description = "tmux server";
+      After = [ "graphical-session.target" ];
+    };
+    Service = {
+      Type = "forking";
+      ExecStart = "${pkgs.tmux}/bin/tmux new-session -d -s main";
+      ExecStop = "${pkgs.tmux}/bin/tmux kill-server";
+      Restart = "on-failure";
+    };
+    Install = {
+      WantedBy = [ "default.target" ];
+    };
+  };
+
   programs.tmux = {
     enable = true;
     package = pkgs.tmux;
@@ -16,8 +35,20 @@
       set -g base-index 1
       setw -g pane-base-index 1
 
-      # Bind 'Prefix + f' to switch projects inside tmux
-      bind-key -r f run-shell "tmux neww t"
+      # Auto-rename windows to current directory
+      set -g automatic-rename on
+      set -g automatic-rename-format '#{b:pane_current_path}'
+
+      # Status bar
+      set -g status-style 'bg=#${colors.base03} fg=#${colors.base0E}'
+      set -g status-left-length 40
+      set -g status-right-length 20
+      set -g status-left '#{b:pane_current_path} '
+      set -g status-right '#{?client_prefix,PREFIX,}'
+      set -g status-justify centre
+
+      # Bind 'Prefix + f' to switch projects in a popup
+      bind-key -r f display-popup -E "t"
     '';
     plugins = with pkgs.tmuxPlugins; [
       {
@@ -42,7 +73,7 @@
   home.packages = [
     (pkgs.writeShellScriptBin "t" ''
       # Shows directories that have a flake.nix or devenv.nix file
-      selected=$( ${pkgs.fd}/bin/fd '^(flake|devenv)\.nix$' ~/projects --type f --exec echo '{//}' \
+      selected=$( ${pkgs.fd}/bin/fd '^(flake|devenv)\.nix$' ~/projects ~/nix-config --type f --exec echo '{//}' \
         | sort -u \
         | ${pkgs.fzf}/bin/fzf )
 
