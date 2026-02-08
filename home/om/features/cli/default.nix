@@ -8,7 +8,6 @@
     ./git.nix
     ./gpg.nix
     ./htop.nix
-    ./llm.nix
     ./mc.nix
     ./navi.nix
     ./qutebrowser.nix
