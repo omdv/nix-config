@@ -4,6 +4,7 @@
     ./cursor.nix
     ./k9s.nix
     ./khard.nix
+    ./llm.nix
     ./mail.nix
     ./neomutt.nix
     ./vscode.nix
