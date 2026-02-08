@@ -54,16 +54,22 @@ in {
   home.packages = [
     # tp: rofi script mode for tmux projects
     (pkgs.writeShellScriptBin "tp" ''
+    # Define paths
+      PROJECTS_DIR="$HOME/projects"
+      NIX_CONFIG="$HOME/nix-config"
+
       if [[ -z "$1" ]]; then
-        # No argument: list projects
-        ${pkgs.fd}/bin/fd '^(flake|devenv)\.nix$' ~/projects ~/nix-config --type f --exec echo '{//}' | sort -u
+      {
+        echo "$NIX_CONFIG"
+        ${pkgs.fd}/bin/fd . "$PROJECTS_DIR" --type d --max-depth 1 | sort -u
+      } | sort -u
       else
         # Argument provided: open the selected project
         selected="$1"
         selected_name=$(basename "$selected" | tr . _)
 
         if ! ${pkgs.tmux}/bin/tmux -L main has-session -t="$selected_name" 2> /dev/null; then
-            ${pkgs.tmux}/bin/tmux -L main new-session -ds "$selected_name" -c "$selected"
+          ${pkgs.tmux}/bin/tmux -L main new-session -ds "$selected_name" -c "$selected"
         fi
 
         ${pkgs.util-linux}/bin/setsid -f ${pkgs.kitty}/bin/kitty -e ${pkgs.tmux}/bin/tmux -L main attach-session -t "$selected_name" >/dev/null 2>&1
