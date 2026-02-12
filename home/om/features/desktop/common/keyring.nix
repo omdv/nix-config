@@ -1,4 +1,4 @@
-{ pkgs, ... }: {
+{ pkgs, config, lib, ... }: {
   home.packages = with pkgs; [
     gnome-keyring
     seahorse
@@ -14,7 +14,7 @@
   };
   services.pass-secret-service = {
     enable = true;
-    storePath = "%h/.password-store";
+    storePath = lib.mkForce "${config.home.homeDirectory}/.password-store";
   };
 
   xdg = {

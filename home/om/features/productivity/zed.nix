@@ -1,5 +1,5 @@
-{ pkgs-unstable, ... }: {
-  home.packages = [ pkgs-unstable.zed-editor ];
+{ pkgs, ... }: {
+  home.packages = [ pkgs.unstable.zed-editor ];
 
 # TODO
 # Add claude support
@@ -10,7 +10,7 @@
   # Old home-manager config preserved below for reference:
   /*
   programs.zed-editor = {
-    package = pkgs-unstable.zed-editor;
+    package = pkgs.unstable.zed-editor;
     enable = true;
     extensions = [ "nix" "toml" "python" ];
     userSettings = {

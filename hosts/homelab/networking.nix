@@ -1,4 +1,4 @@
-{ pkgs-unstable, ... }: {
+{ pkgs, ... }: {
   networking = {
     hostId = "c6589261";
     hostName = "homelab";
@@ -38,7 +38,7 @@
 
   services.tailscale = {
     enable = true;
-    package = pkgs-unstable.tailscale;
+    package = pkgs.unstable.tailscale;
     port = 41414;
     openFirewall = true;
     extraSetFlags = [

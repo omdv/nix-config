@@ -16,9 +16,15 @@
       inputs;
   };
 
-  # Adds pkgs.unstable == inputs.nixpkgs-unstable.legacyPackages.${pkgs.system}
+  # Adds pkgs.unstable with allowUnfree enabled
   unstable = final: _: {
-    unstable = inputs.nixpkgs-unstable.legacyPackages.${final.system};
+    unstable = import inputs.nixpkgs-unstable {
+      system = final.system;
+      config = {
+        allowUnfree = true;
+        allowUnfreePredicate = _: true;
+      };
+    };
   };
 
   # Adds custom packages here

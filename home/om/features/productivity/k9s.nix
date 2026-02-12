@@ -21,7 +21,7 @@
         np = "networkpolicies";
       };
     };
-    hotkey = {
+    hotKeys = {
       hotKeys = {
         shift-0 = {
           shortCut = "Shift-0";
@@ -103,7 +103,7 @@
         };
       };
     };
-    plugin = {
+    plugins = {
       plugins = {
         dive = {
           shortCut = "d";
