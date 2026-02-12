@@ -3,11 +3,11 @@
 
   inputs = {
     # Nix ecosystem
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
 
     home-manager = {
-      url = "github:nix-community/home-manager/release-25.05";
+      url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     sops-nix = {
@@ -25,7 +25,7 @@
 
     # Third party programs, packaged with nix
     firefox-addons.url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
-    nixvim.url = "github:nix-community/nixvim/nixos-25.05";
+    nixvim.url = "github:nix-community/nixvim/nixos-25.11";
     nix-colors.url = "github:misterio77/nix-colors";
 
     # Claude Desktop flake
@@ -51,7 +51,10 @@
       import nixpkgs {
         inherit system;
         inherit overlays;
-        config.allowUnfree = true;
+        config = {
+          allowUnfree = true;
+          allowUnfreePredicate = _: true;
+        };
       };
 
     # Define common overlays that Home Manager might want to use
@@ -86,10 +89,6 @@
         ];
         specialArgs = {
           inherit inputs outputs;
-          pkgs-unstable = import inputs.nixpkgs-unstable {
-            system = "x86_64-linux";
-            config.allowUnfree = true;
-          };
         };
       };
       homelab = lib.nixosSystem {
@@ -98,10 +97,6 @@
         ];
         specialArgs = {
           inherit inputs outputs;
-          pkgs-unstable = import inputs.nixpkgs-unstable {
-            system = "x86_64-linux";
-            config.allowUnfree = true;
-          };
         };
       };
     };
@@ -119,10 +114,6 @@
         extraSpecialArgs = {
           inherit inputs outputs;
           colors = inputs.nix-colors;
-          pkgs-unstable = import inputs.nixpkgs-unstable {
-            system = "x86_64-linux";
-            config.allowUnfree = true;
-          };
         };
       };
       "om@homelab" = lib.homeManagerConfiguration {

@@ -1,10 +1,8 @@
-{ pkgs, pkgs-unstable, ... }: {
+{ pkgs, ... }: {
   imports = [
-    ./cloud.nix
     ./cursor.nix
     ./k9s.nix
     ./khard.nix
-    ./llm.nix
     ./mail.nix
     ./neomutt.nix
     ./vscode.nix
@@ -12,12 +10,21 @@
   ];
 
   home.packages = [
+    pkgs.unstable.awscli2 # aws cloud cli
     pkgs.beancount # ledger alternative
     pkgs.bruno # api tool
     pkgs.unstable.devenv # dev environment manager
     pkgs.pgcli # great postgres cli from Ukraine
     pkgs.visidata # cli for data analysis
-    pkgs-unstable.claude-code # up-to-date claude code
-    pkgs-unstable.claude-monitor # up-to-date claude cost monitor
+
+    pkgs.unstable.antigravity # google antigravity
+    pkgs.claude-code # up-to-date claude code
+    pkgs.unstable.claude-monitor # up-to-date claude cost monitor
+
+    # llm tools
+    pkgs.unstable.aichat
+    pkgs.unstable.llm
+    pkgs.unstable.litellm
+    pkgs.unstable.shell-gpt
   ];
 }
