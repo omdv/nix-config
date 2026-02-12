@@ -1,5 +1,5 @@
 { pkgs, ... }: {
-  programs.chromium = {
+  programs.brave = {
     enable = true;
     package = pkgs.unstable.brave;
     extensions = [
