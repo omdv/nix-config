@@ -1,6 +1,8 @@
-{ pkgs, config, ... }: let
+{ pkgs, config, ... }:
+let
   colors = config.colorscheme.palette;
-in {
+in
+{
   programs.tmux = {
     enable = true;
     package = pkgs.tmux;
@@ -54,13 +56,14 @@ in {
   home.packages = [
     # tp: rofi script mode for tmux projects
     (pkgs.writeShellScriptBin "tp" ''
-    # Define paths
       PROJECTS_DIR="$HOME/projects"
       NIX_CONFIG="$HOME/nix-config"
+      ACCOUNTING_DIR="$HOME/accounting"
 
       if [[ -z "$1" ]]; then
       {
         echo "$NIX_CONFIG"
+        echo "$ACCOUNTING_DIR"
         ${pkgs.fd}/bin/fd . "$PROJECTS_DIR" --type d --max-depth 1 | sort -u
       } | sort -u
       else
