@@ -10,114 +10,106 @@
   programs.k9s = {
     enable = true;
     aliases = {
-      aliases = {
-        dp = "deployments";
-        sec = "v1/secrets";
-        jo = "jobs";
-        cr = "clusterroles";
-        crb = "clusterrolebindings";
-        ro = "roles";
-        rb = "rolebindings";
-        np = "networkpolicies";
-      };
+      dp = "deployments";
+      sec = "v1/secrets";
+      jo = "jobs";
+      cr = "clusterroles";
+      crb = "clusterrolebindings";
+      ro = "roles";
+      rb = "rolebindings";
+      np = "networkpolicies";
     };
     hotKeys = {
-      hotKeys = {
-        shift-0 = {
-          shortCut = "Shift-0";
-          description = "Viewing pods";
-          command = "pods";
-        };
-        shift-1 = {
-          shortCut = "Shift-1";
-          description = "View deployments";
-          command = "dp";
-        };
-        shift-2 = {
-          shortCut = "Shift-2";
-          description = "View statefulsets";
-          command = "statefulset";
-        };
-        shift-3 = {
-          shortCut = "Shift-3";
-          description = "View services";
-          command = "service";
-        };
-        shift-4 = {
-          shortCut = "Shift-4";
-          description = "View ingress";
-          command = "ingress";
-        };
-        shift-5 = {
-          shortCut = "Shift-5";
-          description = "View pvc";
-          command = "pvc";
-        };
-        shift-6 = {
-          shortCut = "Shift-6";
-          description = "View pv";
-          command = "pv";
-        };
-        shift-7 = {
-          shortCut = "Shift-7";
-          description = "View secrets";
-          command = "sec";
-        };
-        shift-8 = {
-          shortCut = "Shift-8";
-          description = "View namespaces";
-          command = "ns";
-        };
-        shift-9 = {
-          shortCut = "Shift-9";
-          description = "View nodes";
-          command = "node";
-        };
+      shift-0 = {
+        shortCut = "Shift-0";
+        description = "Viewing pods";
+        command = "pods";
+      };
+      shift-1 = {
+        shortCut = "Shift-1";
+        description = "View deployments";
+        command = "dp";
+      };
+      shift-2 = {
+        shortCut = "Shift-2";
+        description = "View statefulsets";
+        command = "statefulset";
+      };
+      shift-3 = {
+        shortCut = "Shift-3";
+        description = "View services";
+        command = "service";
+      };
+      shift-4 = {
+        shortCut = "Shift-4";
+        description = "View ingress";
+        command = "ingress";
+      };
+      shift-5 = {
+        shortCut = "Shift-5";
+        description = "View pvc";
+        command = "pvc";
+      };
+      shift-6 = {
+        shortCut = "Shift-6";
+        description = "View pv";
+        command = "pv";
+      };
+      shift-7 = {
+        shortCut = "Shift-7";
+        description = "View secrets";
+        command = "sec";
+      };
+      shift-8 = {
+        shortCut = "Shift-8";
+        description = "View namespaces";
+        command = "ns";
+      };
+      shift-9 = {
+        shortCut = "Shift-9";
+        description = "View nodes";
+        command = "node";
       };
     };
     views = {
-      views = {
-        "v1/pods" = {
-          columns = [
-            "NAMESPACE"
-            "NAME"
-            "READY"
-            "RESTARTS"
-            "IP"
-            "CPU"
-            "%CPU/L"
-            "MEM"
-            "%MEM/L"
-            "NODE"
-            "AGE"
-          ];
-        };
-        "v1/services" = {
-          columns = [
-            "NAMESPACE"
-            "NAME"
-            "TYPE"
-            "CLUSTER-IP"
-            "PORTS"
-          ];
-        };
+      "v1/pods" = {
+        columns = [
+          "NAMESPACE"
+          "NAME"
+          "READY"
+          "RESTARTS"
+          "IP"
+          "CPU"
+          "%CPU/L"
+          "MEM"
+          "%MEM/L"
+          "NODE"
+          "AGE"
+        ];
+      };
+      "v1/services" = {
+        columns = [
+          "NAMESPACE"
+          "NAME"
+          "TYPE"
+          "CLUSTER-IP"
+          "PORTS"
+        ];
       };
     };
     plugins = {
-      plugins = {
-        dive = {
-          shortCut = "d";
-          confirm = false;
-          description = "Dive image";
-          scopes = [
-            "containers"
-          ];
-          command = "dive";
-          background = false;
-          args = [
-            "$COL-IMAGE"
-          ];
-        };
+      dive = {
+        shortCut = "d";
+        confirm = false;
+        description = "Dive image";
+        scopes = [
+          "containers"
+        ];
+        command = "dive";
+        background = false;
+        args = [
+          "$COL-IMAGE"
+        ];
       };
     };
 
