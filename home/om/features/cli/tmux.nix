@@ -57,13 +57,15 @@ in
     # tp: rofi script mode for tmux projects
     (pkgs.writeShellScriptBin "tp" ''
       PROJECTS_DIR="$HOME/projects"
-      NIX_CONFIG="$HOME/nix-config"
+      NIXOS_DIR="$HOME/nix-config"
       ACCOUNTING_DIR="$HOME/accounting"
+      HOMELAB_DIR="$HOME/homelab"
 
       if [[ -z "$1" ]]; then
       {
-        echo "$NIX_CONFIG"
+        echo "$NIXOS_DIR"
         echo "$ACCOUNTING_DIR"
+        echo "$HOMELAB_DIR"
         ${pkgs.fd}/bin/fd . "$PROJECTS_DIR" --type d --max-depth 1 | sort -u
       } | sort -u
       else
