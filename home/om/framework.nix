@@ -61,8 +61,8 @@
   # sops-nix
   sops = {
     defaultSopsFile = ./secrets.yaml;
-    secrets.fastmail_password = { sopsFile = ./secrets.yaml; };
-    secrets.gmail_password = { sopsFile = ./secrets.yaml; };
+    secrets.fastmail_password = {};
+    secrets.gmail_password = {};
     age.keyFile = "${config.xdg.configHome}/sops/age/keys.txt";
   };
 
