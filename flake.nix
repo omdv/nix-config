@@ -73,6 +73,9 @@
       pkgsFor = lib.genAttrs (import systems) (
         system: mkPkgsWithOverlays system homeManagerCommonOverlays
       );
+
+      mkHost = import ./lib/mkHost.nix { inherit lib inputs outputs; };
+      mkHome = import ./lib/mkHome.nix { inherit lib inputs outputs pkgsFor; };
     in
     {
       inherit lib;
@@ -88,52 +91,14 @@
 
       # Host configurations
       nixosConfigurations = {
-        framework = lib.nixosSystem {
-          modules = [
-            ./hosts/framework
-          ];
-          specialArgs = {
-            inherit inputs outputs;
-          };
-        };
-        homelab = lib.nixosSystem {
-          modules = [
-            ./hosts/homelab
-          ];
-          specialArgs = {
-            inherit inputs outputs;
-          };
-        };
+        framework = mkHost "framework";
+        homelab = mkHost "homelab";
       };
 
       # Home configurations
       homeConfigurations = {
-        "om@framework" = lib.homeManagerConfiguration {
-          pkgs = mkPkgsWithOverlays "x86_64-linux" homeManagerCommonOverlays;
-          modules = [
-            ./home/om/framework.nix
-            ./home/om/nixpkgs.nix
-            inputs.sops-nix.homeManagerModules.sops
-            inputs.nix-colors.homeManagerModules.default
-          ];
-          extraSpecialArgs = {
-            inherit inputs outputs;
-            colors = inputs.nix-colors;
-          };
-        };
-        "om@homelab" = lib.homeManagerConfiguration {
-          modules = [
-            ./home/om/homelab.nix
-            ./home/om/nixpkgs.nix
-            inputs.sops-nix.homeManagerModules.sops
-            inputs.nix-colors.homeManagerModules.default
-          ];
-          pkgs = pkgsFor.x86_64-linux;
-          extraSpecialArgs = {
-            inherit inputs outputs;
-            colors = inputs.nix-colors;
-          };
-        };
+        "om@framework" = mkHome "om" "framework";
+        "om@homelab" = mkHome "om" "homelab";
       };
     };
 }
