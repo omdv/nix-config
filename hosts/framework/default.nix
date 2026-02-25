@@ -1,8 +1,11 @@
 {
   pkgs,
+  lib,
   inputs,
   ...
-}: {
+}: let
+  mkSecret = import ../../lib/mkSecret.nix { inherit lib; };
+in {
   imports = [
     inputs.hardware.nixosModules.common-pc-ssd
     ./hardware-configuration.nix
@@ -40,20 +43,8 @@
   };
 
   sops.secrets = {
-    backup_passphrase = {
-      owner = "om";
-      group = "wheel";
-      mode = "0400";
-      sopsFile = ./secrets.yaml;
-      path = "/run/user-secrets/backup-passphrase";
-    };
-    ntfy_system_topic = {
-      owner = "om";
-      group = "wheel";
-      mode = "0400";
-      sopsFile = ./secrets.yaml;
-      path = "/run/user-secrets/ntfy-system-topic";
-    };
+    backup_passphrase = mkSecret { name = "backup_passphrase"; sopsFile = ./secrets.yaml; };
+    ntfy_system_topic = mkSecret { name = "ntfy_system_topic"; sopsFile = ./secrets.yaml; };
   };
 
   hardware.graphics.enable = true;
