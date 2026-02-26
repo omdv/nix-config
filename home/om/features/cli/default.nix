@@ -67,7 +67,6 @@
     # nix -related
     alejandra # Nix formatter
     nh # Nice wrapper for NixOS and HM
-    nil # Nix language server
     nixd # Nix language server
     nix-tree # Nix tree
     nix-inspect # Nix inspect
