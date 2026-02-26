@@ -65,6 +65,9 @@ in {
       # Clear screen and scrollback
       clear = "printf '\\033[2J\\033[3J\\033[1;1H'";
 
+      # AI tools
+      ai = "aichat";
+
       # Claude code loading direnv
       cl = mkIf hasClaude "direnv exec . claude";
 
