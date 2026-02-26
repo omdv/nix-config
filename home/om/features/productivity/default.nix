@@ -23,8 +23,6 @@
 
     # llm tools
     pkgs.unstable.aichat
-    pkgs.unstable.llm
     pkgs.unstable.litellm
-    pkgs.unstable.shell-gpt
   ];
 }

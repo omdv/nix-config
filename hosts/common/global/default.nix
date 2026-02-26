@@ -10,6 +10,7 @@
       ./fish.nix
       ./locale.nix
       ./nix.nix
+      ./nix-index.nix
       ./nix-ld.nix
       ./openssh.nix
       ./sops.nix
