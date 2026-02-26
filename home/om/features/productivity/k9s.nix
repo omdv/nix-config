@@ -114,89 +114,84 @@
     };
 
     settings = {
-      k9s = {
-        liveViewAutoRefresh = false;
-        refreshRate = 2;
-        maxConnRetry = 5;
-        enableMouse = false;
-        enableImageScan = false;
-        headless = false;
-        logoless = false;
-        crumbsless = false;
-        readOnly = false;
-        noExitOnCtrlC = false;
-        shellPod = {
-          image = "busybox:1.35.0";
-          namespace = "default";
-          limits = {
-        cpu = "100m";
-        memory = "100Mi";
-          };
+      ui.skin = "dracula";
+      liveViewAutoRefresh = false;
+      refreshRate = 2;
+      maxConnRetry = 5;
+      enableMouse = false;
+      enableImageScan = false;
+      headless = false;
+      logoless = false;
+      crumbsless = false;
+      readOnly = false;
+      noExitOnCtrlC = false;
+      shellPod = {
+        image = "busybox:1.35.0";
+        namespace = "default";
+        limits = {
+          cpu = "100m";
+          memory = "100Mi";
         };
-        skipLatestRevCheck = false;
-        logger = {
-          tail = 100;
-          buffer = 5000;
-          sinceSeconds = 60;
-          fullScreenLogs = false;
-          textWrap = false;
-          showTime = false;
-        };
-        keepMissingClusters = false;
-        clusters = {
-          default = {
-            namespace = {
-              active = "all";
-              lockFavorites = false;
-              favorites = [
-                "apps"
-                "all"
-                "default"
-              ];
-            };
-            view = {
-              active = "portforward";
-            };
-            featureGates = {
-              nodeShell = false;
-            };
-            portForwardAddress = "localhost";
-          };
-        };
-        thresholds = {
-          cpu = {
-            critical = 90;
-            warn = 70;
-          };
-          memory = {
-            critical = 90;
-            warn = 70;
-          };
-        };
-        screenDumpDir = "/tmp/k9s-screens-om";
-        disablePodCounting = false;
       };
+      skipLatestRevCheck = false;
+      logger = {
+        tail = 100;
+        buffer = 5000;
+        sinceSeconds = 60;
+        fullScreenLogs = false;
+        textWrap = false;
+        showTime = false;
+      };
+      keepMissingClusters = false;
+      clusters = {
+        default = {
+          namespace = {
+            active = "all";
+            lockFavorites = false;
+            favorites = [
+              "apps"
+              "all"
+              "default"
+            ];
+          };
+          view = {
+            active = "portforward";
+          };
+          featureGates = {
+            nodeShell = false;
+          };
+          portForwardAddress = "localhost";
+        };
+      };
+      thresholds = {
+        cpu = {
+          critical = 90;
+          warn = 70;
+        };
+        memory = {
+          critical = 90;
+          warn = 70;
+        };
+      };
+      screenDumpDir = "/tmp/k9s-screens-om";
+      disablePodCounting = false;
     };
     skins = {
-      k9s = {
-        # General K9s styles
+      dracula = {
         body = {
           fgColor = "#f8f8f2";
           bgColor = "#282a36";
           logoColor = "#bd93f9";
         };
-        # Command prompt styles
         prompt = {
           fgColor = "#f8f8f2";
           bgColor = "#282a36";
           suggestColor = "#bd93f9";
         };
-        # ClusterInfoView styles.
         info = {
           fgColor = "#ff79c6";
           sectionColor = "#f8f8f2";
         };
-        # Dialog styles.
         dialog = {
           fgColor = "#f8f8f2";
           bgColor = "#282a36";
@@ -208,7 +203,6 @@
           fieldFgColor = "#f8f8f2";
         };
         frame = {
-          # Borders styles.
           border = {
             fgColor = "#44475a";
             focusColor = "#44475a";
@@ -216,16 +210,13 @@
           menu = {
             fgColor = "#f8f8f2";
             keyColor = "#ff79c6";
-            # Used for favorite namespaces
             numKeyColor = "#ff79c6";
           };
-          # CrumbView attributes for history navigation.
           crumbs = {
             fgColor = "#f8f8f2";
             bgColor = "#44475a";
             activeColor = "#44475a";
           };
-          # Resource status and update styles
           status = {
             newColor = "#8be9fd";
             modifyColor = "#bd93f9";
@@ -235,7 +226,6 @@
             killColor = "#6272a4";
             completedColor = "#6272a4";
           };
-          # Border title styles.
           title = {
             fgColor = "#f8f8f2";
             bgColor = "#44475a";
@@ -245,30 +235,20 @@
           };
         };
         views = {
-          # Charts skins...
           charts = {
             bgColor = "default";
-            defaultDialColors = [
-              "#bd93f9"
-              "#ff5555"
-            ];
-            defaultChartColors = [
-              "#bd93f9"
-              "#ff5555"
-            ];
+            defaultDialColors = [ "#bd93f9" "#ff5555" ];
+            defaultChartColors = [ "#bd93f9" "#ff5555" ];
           };
-          # TableView attributes.
           table = {
             fgColor = "#f8f8f2";
             bgColor = "#282a36";
-            # Header row styles.
             header = {
               fgColor = "#f8f8f2";
               bgColor = "#282a36";
               sorterColor = "#8be9fd";
             };
           };
-          # Xray view attributes.
           xray = {
             fgColor = "#f8f8f2";
             bgColor = "#282a36";
@@ -276,13 +256,11 @@
             graphicColor = "#bd93f9";
             showIcons = false;
           };
-          # YAML info styles.
           yaml = {
             keyColor = "#ff79c6";
             colonColor = "#bd93f9";
             valueColor = "#f8f8f2";
           };
-          # Logs styles.
           logs = {
             fgColor = "#f8f8f2";
             bgColor = "#282a36";
