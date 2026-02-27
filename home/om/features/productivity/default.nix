@@ -27,7 +27,6 @@
     pkgs.pi-coding-agent # pi wrapper with nodejs
 
     pkgs.rustledger # rust ledger (binary)
-    pkgs.rustfava # rust fava (AppImage)
 
   ];
 }
