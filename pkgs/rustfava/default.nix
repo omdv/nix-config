@@ -1,4 +1,4 @@
-{ appimageTools, fetchurl }:
+{ appimageTools, fetchurl, lib }:
 let
   pname = "rustfava";
   version = "0.1.8";
@@ -10,8 +10,19 @@ in
 appimageTools.wrapType2 {
   inherit pname version src;
 
+  extraPkgs = pkgs: with pkgs; [
+    libGL
+    libglvnd
+    xorg.libX11
+    xorg.libXext
+    xorg.libXrender
+    xorg.libxcb
+    mesa
+  ];
+
   meta = {
     description = "Rust implementation of Fava for Beancount";
     homepage = "https://github.com/rustledger/rustfava";
+    platforms = lib.platforms.linux;
   };
 }
