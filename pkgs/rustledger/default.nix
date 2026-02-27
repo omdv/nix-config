@@ -14,8 +14,8 @@ stdenv.mkDerivation rec {
 
   installPhase = ''
     mkdir -p $out/bin
-    cp rustledger $out/bin/
-    chmod +x $out/bin/rustledger
+    cp rledger rledger-lsp $out/bin/
+    chmod +x $out/bin/*
   '';
 
   meta = {
