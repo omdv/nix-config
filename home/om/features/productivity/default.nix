@@ -1,4 +1,4 @@
-{ pkgs, ... }: {
+{ pkgs, inputs, ... }: {
   imports = [
     ./cursor.nix
     ./k9s.nix
@@ -24,5 +24,8 @@
     # llm tools
     pkgs.unstable.aichat
     pkgs.unstable.litellm
+
+    inputs.rustledger.packages.${pkgs.system}.default # rust ledger
+
   ];
 }
