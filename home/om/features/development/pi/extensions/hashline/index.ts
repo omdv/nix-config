@@ -4,6 +4,7 @@ import {
   mkdir,
   readFile,
   rename,
+  stat,
   unlink,
   writeFile,
 } from "node:fs/promises";
@@ -17,7 +18,7 @@ import * as Diff from "diff";
 // Types
 // ---------------------------------------------------------------------------
 
-type AnchorRef = { line: number; id: string };
+type AnchorRef = { line: number; id: string; content?: string };
 type ResolvedAnchor = { line: number; moved: boolean };
 
 type HashlineEdit =
@@ -59,7 +60,79 @@ interface FileAnchorState {
 const ANCHOR_ALPHABET = "ZPMQVRWSNKTXJBYH";
 const ANCHOR_BASE = ANCHOR_ALPHABET.length;
 
-const anchorStateByFile = new Map<string, FileAnchorState>();
+const STRICT_ANCHOR_RESOLUTION = true;
+const REQUIRE_ANCHOR_CONTENT = true;
+const MAX_TRACKED_TASKS = 64;
+const MAX_TRACKED_FILES_PER_TASK = 1024;
+const MAX_TRACKED_LINES = 50000;
+const MAX_FULL_READ_BYTES = 50 * 1024;
+
+const anchorStateByTask = new Map<string, Map<string, FileAnchorState>>();
+const lastReadHashByTask = new Map<string, Map<string, string>>();
+
+function getTaskId(ctx: any): string {
+  const sessionFile = ctx?.sessionManager?.getSessionFile?.();
+  if (typeof sessionFile === "string" && sessionFile.length > 0) {
+    return `session:${sessionFile}`;
+  }
+
+  const leafId = ctx?.sessionManager?.getLeafId?.();
+  if (typeof leafId === "string" && leafId.length > 0) {
+    return `leaf:${leafId}`;
+  }
+
+  return "default";
+}
+
+function touchLruMap<V>(map: Map<string, V>, key: string, value: V) {
+  map.delete(key);
+  map.set(key, value);
+}
+
+function getTaskState(taskId: string): Map<string, FileAnchorState> {
+  let state = anchorStateByTask.get(taskId);
+  if (!state) {
+    state = new Map<string, FileAnchorState>();
+    touchLruMap(anchorStateByTask, taskId, state);
+    while (anchorStateByTask.size > MAX_TRACKED_TASKS) {
+      const oldestTaskId = anchorStateByTask.keys().next().value;
+      if (oldestTaskId === undefined) break;
+      anchorStateByTask.delete(oldestTaskId);
+      lastReadHashByTask.delete(oldestTaskId);
+    }
+    return state;
+  }
+
+  touchLruMap(anchorStateByTask, taskId, state);
+  return state;
+}
+
+function getTaskReadHashes(taskId: string): Map<string, string> {
+  let hashes = lastReadHashByTask.get(taskId);
+  if (!hashes) {
+    hashes = new Map<string, string>();
+    lastReadHashByTask.set(taskId, hashes);
+  }
+  return hashes;
+}
+
+function setTaskReadHash(taskId: string, absolutePath: string, hash: string) {
+  const hashes = getTaskReadHashes(taskId);
+  touchLruMap(hashes, absolutePath, hash);
+  while (hashes.size > MAX_TRACKED_FILES_PER_TASK) {
+    const oldestPath = hashes.keys().next().value;
+    if (oldestPath === undefined) break;
+    hashes.delete(oldestPath);
+  }
+}
+
+function contentHash(content: string): string {
+  let h = 2166136261;
+  for (let i = 0; i < content.length; i++) {
+    h = Math.imul(h ^ content.charCodeAt(i), 16777619);
+  }
+  return (h >>> 0).toString(16).padStart(8, "0");
+}
 
 function encodeAnchorId(n: number): string {
   let out = "";
@@ -83,17 +156,30 @@ function normalizeLineForAnchor(line: string): string {
 function reconcileAnchors(
   absolutePath: string,
   currentLinesRaw: string[],
+  taskId = "default",
 ): string[] {
   const currentLines = currentLinesRaw.map(normalizeLineForAnchor);
-  const prev = anchorStateByFile.get(absolutePath);
+
+  if (currentLines.length > MAX_TRACKED_LINES) {
+    return currentLines.map((_, i) => `L${i + 1}`);
+  }
+
+  const taskState = getTaskState(taskId);
+  const prev = taskState.get(absolutePath);
 
   if (!prev) {
     const anchors = currentLines.map((_, i) => encodeAnchorId(i));
-    anchorStateByFile.set(absolutePath, {
+    const next: FileAnchorState = {
       lines: currentLines,
       anchors,
       nextId: currentLines.length,
-    });
+    };
+    touchLruMap(taskState, absolutePath, next);
+    while (taskState.size > MAX_TRACKED_FILES_PER_TASK) {
+      const oldestPath = taskState.keys().next().value;
+      if (oldestPath === undefined) break;
+      taskState.delete(oldestPath);
+    }
     return anchors;
   }
 
@@ -125,17 +211,24 @@ function reconcileAnchors(
     if (!newAnchors[i]) newAnchors[i] = encodeAnchorId(nextId++);
   }
 
-  anchorStateByFile.set(absolutePath, {
+  const next: FileAnchorState = {
     lines: currentLines,
     anchors: newAnchors,
     nextId,
-  });
+  };
+  touchLruMap(taskState, absolutePath, next);
+  while (taskState.size > MAX_TRACKED_FILES_PER_TASK) {
+    const oldestPath = taskState.keys().next().value;
+    if (oldestPath === undefined) break;
+    taskState.delete(oldestPath);
+  }
 
   return newAnchors;
 }
 
-function dropAnchorState(absolutePath: string) {
-  anchorStateByFile.delete(absolutePath);
+function dropAnchorState(absolutePath: string, taskId = "default") {
+  anchorStateByTask.get(taskId)?.delete(absolutePath);
+  lastReadHashByTask.get(taskId)?.delete(absolutePath);
 }
 
 // ---------------------------------------------------------------------------
@@ -236,9 +329,9 @@ const hashlineEditSchema = Type.Object(
 // ---------------------------------------------------------------------------
 
 const HASHLINE_PREFIX_RE =
-  /^\s*(?:>>>|>>)?\s*(?:\+?\s*(?:\d+\s*#\s*|#\s*)|\+)\s*[ZPMQVRWSNKTXJBYH]+:/;
+  /^\s*(?:>>>|>>)?\s*(?:\+?\s*(?:\d+\s*#\s*|#\s*)|\+)\s*(?:[ZPMQVRWSNKTXJBYH]{2,}|L\d+):/;
 const HASHLINE_PREFIX_PLUS_RE =
-  /^\s*(?:>>>|>>)?\s*\+\s*(?:\d+\s*#\s*|#\s*)?[ZPMQVRWSNKTXJBYH]+:/;
+  /^\s*(?:>>>|>>)?\s*\+\s*(?:\d+\s*#\s*|#\s*)?(?:[ZPMQVRWSNKTXJBYH]{2,}|L\d+):/;
 const DIFF_PLUS_RE = /^[+](?![+])/;
 
 function stripNewLinePrefixes(lines: string[]): string[] {
@@ -283,17 +376,20 @@ function parseContent(content: string[] | string | null): string[] {
 }
 
 function parseAnchorRef(raw: string): AnchorRef {
-  const m = raw.match(/^\s*[>+-]*\s*(\d+)\s*#\s*([ZPMQVRWSNKTXJBYH]{2,})/);
+  const m = raw.match(
+    /^\s*[>+-]*\s*(\d+)\s*#\s*((?:[ZPMQVRWSNKTXJBYH]{2,})|(?:L\d+))(?::([\s\S]*))?\s*$/,
+  );
   if (!m) {
     throw new Error(
-      `Invalid line reference "${raw}". Expected format "LINE#ID" (e.g. "305#YW").`,
+      `Invalid line reference "${raw}". Expected format "LINE#ID:TEXT" (e.g. "305#YW:const x = 1").`,
     );
   }
   const line = Number.parseInt(m[1], 10);
   if (!Number.isFinite(line) || line < 1) {
     throw new Error(`Line number must be >= 1 in "${raw}".`);
   }
-  return { line, id: m[2] };
+  const content = m[3] === undefined ? undefined : m[3].replace(/\r/g, "");
+  return { line, id: m[2], content };
 }
 
 function tryParseAnchorRef(raw: unknown): AnchorRef | undefined {
@@ -338,14 +434,14 @@ function resolveEditPayload(
 
     if ("append" in loc) {
       const a = tryParseAnchorRef(loc.append);
-      if (!a) throw new Error("append requires a valid LINE#ID anchor.");
+      if (!a) throw new Error("append requires a valid LINE#ID:TEXT anchor.");
       out.push({ op: "append_at", pos: a, lines });
       continue;
     }
 
     if ("prepend" in loc) {
       const a = tryParseAnchorRef(loc.prepend);
-      if (!a) throw new Error("prepend requires a valid LINE#ID anchor.");
+      if (!a) throw new Error("prepend requires a valid LINE#ID:TEXT anchor.");
       out.push({ op: "prepend_at", pos: a, lines });
       continue;
     }
@@ -355,7 +451,7 @@ function resolveEditPayload(
       const end = tryParseAnchorRef(loc.range.end);
       if (!pos || !end) {
         throw new Error(
-          "range requires valid pos and end anchors in LINE#ID format.",
+          "range requires valid pos and end anchors in LINE#ID:TEXT format.",
         );
       }
       out.push({ op: "replace_range", pos, end, lines });
@@ -389,6 +485,7 @@ function buildAnchorIndex(anchors: string[]): Map<string, number[]> {
 function resolveAnchor(
   ref: AnchorRef,
   anchorIndex: Map<string, number[]>,
+  lines: string[],
 ): ResolvedAnchor {
   const candidates = anchorIndex.get(ref.id);
   if (!candidates || candidates.length === 0) {
@@ -396,7 +493,48 @@ function resolveAnchor(
       `Anchor ${ref.line}#${ref.id} was not found in current file state. The line may have changed or been deleted. Re-read the file.`,
     );
   }
-  if (candidates.includes(ref.line)) return { line: ref.line, moved: false };
+
+  if (REQUIRE_ANCHOR_CONTENT && ref.content === undefined) {
+    throw new Error(
+      `Anchor ${ref.line}#${ref.id} is missing line content proof. Use LINE#ID:TEXT from the latest read output.`,
+    );
+  }
+
+  const exactMatch = candidates.includes(ref.line)
+    ? ref.line
+    : undefined;
+
+  if (STRICT_ANCHOR_RESOLUTION) {
+    if (exactMatch === undefined) {
+      throw new Error(
+        `Anchor ${ref.line}#${ref.id} no longer resolves to the same line. Re-read the file and use current anchors.`,
+      );
+    }
+
+    if (ref.content !== undefined) {
+      const actual = normalizeLineForAnchor(lines[exactMatch - 1] ?? "");
+      if (actual !== ref.content) {
+        throw new Error(
+          `Anchor ${ref.line}#${ref.id} content mismatch. Expected line: "${actual}", provided: "${ref.content}". Re-read and retry.`,
+        );
+      }
+    }
+
+    return { line: exactMatch, moved: false };
+  }
+
+  if (exactMatch !== undefined) {
+    if (ref.content !== undefined) {
+      const actual = normalizeLineForAnchor(lines[exactMatch - 1] ?? "");
+      if (actual !== ref.content) {
+        throw new Error(
+          `Anchor ${ref.line}#${ref.id} content mismatch. Expected line: "${actual}", provided: "${ref.content}". Re-read and retry.`,
+        );
+      }
+    }
+    return { line: exactMatch, moved: false };
+  }
+
   if (candidates.length === 1) return { line: candidates[0], moved: true };
 
   let best = candidates[0];
@@ -428,10 +566,18 @@ function applyHashlineEdits(
   source: string,
   edits: HashlineEdit[],
   anchorIndex: Map<string, number[]>,
-): { content: string; warnings: string[]; firstChangedLine?: number } {
-  if (edits.length === 0) return { content: source, warnings: [] };
+): {
+  content: string;
+  warnings: string[];
+  failedEdits: string[];
+  appliedEdits: number;
+  firstChangedLine?: number;
+} {
+  if (edits.length === 0)
+    return { content: source, warnings: [], failedEdits: [], appliedEdits: 0 };
 
   const warnings: string[] = [];
+  const failedEdits: string[] = [];
   const lines = source.split("\n");
   let firstChangedLine: number | undefined;
 
@@ -447,102 +593,135 @@ function applyHashlineEdits(
   const resolved: ResolvedEdit[] = [];
   const replaceRanges: Array<{ start: number; end: number }> = [];
 
-  for (const edit of edits) {
+  const describeEdit = (edit: HashlineEdit): string => {
     switch (edit.op) {
-      case "replace_range": {
-        const start = resolveAnchor(edit.pos, anchorIndex);
-        const end = resolveAnchor(edit.end, anchorIndex);
-        if (start.moved) {
-          warnings.push(
-            `Anchor ${edit.pos.line}#${edit.pos.id} moved to line ${start.line}.`,
-          );
-        }
-        if (end.moved) {
-          warnings.push(
-            `Anchor ${edit.end.line}#${edit.end.id} moved to line ${end.line}.`,
-          );
-        }
-        if (start.line > end.line) {
-          throw new Error(
-            `Range start line ${start.line} must be <= end line ${end.line}.`,
-          );
-        }
-        replaceRanges.push({ start: start.line, end: end.line });
-        resolved.push({
-          edit,
-          start: start.line,
-          end: end.line,
-          insert: edit.lines,
-          sortLine: end.line,
-          precedence: 0,
-        });
-        break;
-      }
-      case "append_at": {
-        const pos = resolveAnchor(edit.pos, anchorIndex);
-        if (pos.moved) {
-          warnings.push(
-            `Anchor ${edit.pos.line}#${edit.pos.id} moved to line ${pos.line}.`,
-          );
-        }
-        resolved.push({
-          edit,
-          start: pos.line,
-          end: pos.line,
-          insert: edit.lines,
-          sortLine: pos.line,
-          precedence: 1,
-        });
-        break;
-      }
-      case "prepend_at": {
-        const pos = resolveAnchor(edit.pos, anchorIndex);
-        if (pos.moved) {
-          warnings.push(
-            `Anchor ${edit.pos.line}#${edit.pos.id} moved to line ${pos.line}.`,
-          );
-        }
-        resolved.push({
-          edit,
-          start: pos.line,
-          end: pos.line,
-          insert: edit.lines,
-          sortLine: pos.line,
-          precedence: 2,
-        });
-        break;
-      }
+      case "replace_range":
+        return `replace_range ${edit.pos.line}#${edit.pos.id}..${edit.end.line}#${edit.end.id}`;
+      case "append_at":
+        return `append_at ${edit.pos.line}#${edit.pos.id}`;
+      case "prepend_at":
+        return `prepend_at ${edit.pos.line}#${edit.pos.id}`;
       case "append_file":
-        resolved.push({
-          edit,
-          start: lines.length + 1,
-          end: lines.length + 1,
-          insert: edit.lines,
-          sortLine: lines.length + 1,
-          precedence: 1,
-        });
-        break;
+        return "append_file";
       case "prepend_file":
-        resolved.push({
-          edit,
-          start: 0,
-          end: 0,
-          insert: edit.lines,
-          sortLine: 0,
-          precedence: 2,
-        });
-        break;
+        return "prepend_file";
+    }
+  };
+
+  for (const edit of edits) {
+    try {
+      switch (edit.op) {
+        case "replace_range": {
+          const start = resolveAnchor(edit.pos, anchorIndex, lines);
+          const end = resolveAnchor(edit.end, anchorIndex, lines);
+          if (start.moved) {
+            warnings.push(
+              `Anchor ${edit.pos.line}#${edit.pos.id} moved to line ${start.line}.`,
+            );
+          }
+          if (end.moved) {
+            warnings.push(
+              `Anchor ${edit.end.line}#${edit.end.id} moved to line ${end.line}.`,
+            );
+          }
+          if (start.line > end.line) {
+            throw new Error(
+              `Range start line ${start.line} must be <= end line ${end.line}.`,
+            );
+          }
+          replaceRanges.push({ start: start.line, end: end.line });
+          resolved.push({
+            edit,
+            start: start.line,
+            end: end.line,
+            insert: edit.lines,
+            sortLine: end.line,
+            precedence: 0,
+          });
+          break;
+        }
+        case "append_at": {
+          const pos = resolveAnchor(edit.pos, anchorIndex, lines);
+          if (pos.moved) {
+            warnings.push(
+              `Anchor ${edit.pos.line}#${edit.pos.id} moved to line ${pos.line}.`,
+            );
+          }
+          resolved.push({
+            edit,
+            start: pos.line,
+            end: pos.line,
+            insert: edit.lines,
+            sortLine: pos.line,
+            precedence: 1,
+          });
+          break;
+        }
+        case "prepend_at": {
+          const pos = resolveAnchor(edit.pos, anchorIndex, lines);
+          if (pos.moved) {
+            warnings.push(
+              `Anchor ${edit.pos.line}#${edit.pos.id} moved to line ${pos.line}.`,
+            );
+          }
+          resolved.push({
+            edit,
+            start: pos.line,
+            end: pos.line,
+            insert: edit.lines,
+            sortLine: pos.line,
+            precedence: 2,
+          });
+          break;
+        }
+        case "append_file":
+          resolved.push({
+            edit,
+            start: lines.length + 1,
+            end: lines.length + 1,
+            insert: edit.lines,
+            sortLine: lines.length + 1,
+            precedence: 1,
+          });
+          break;
+        case "prepend_file":
+          resolved.push({
+            edit,
+            start: 0,
+            end: 0,
+            insert: edit.lines,
+            sortLine: 0,
+            precedence: 2,
+          });
+          break;
+      }
+    } catch (error: any) {
+      failedEdits.push(
+        `${describeEdit(edit)} failed: ${error?.message ?? String(error)}`,
+      );
     }
   }
 
-  validateNoOverlappingRanges(replaceRanges);
+  try {
+    validateNoOverlappingRanges(replaceRanges);
+  } catch (error: any) {
+    failedEdits.push(`range validation failed: ${error?.message ?? String(error)}`);
+    return {
+      content: source,
+      warnings,
+      failedEdits,
+      appliedEdits: 0,
+      firstChangedLine,
+    };
+  }
 
   resolved.sort(
     (a, b) => b.sortLine - a.sortLine || a.precedence - b.precedence,
   );
 
+  let appliedEdits = 0;
   for (const item of resolved) {
-    const insert = item.insert.length === 0 ? [""] : item.insert;
+    const insert = item.insert;
     switch (item.edit.op) {
       case "replace_range": {
         const removeCount = item.end - item.start + 1;
@@ -551,6 +730,7 @@ function applyHashlineEdits(
           firstChangedLine === undefined
             ? item.start
             : Math.min(firstChangedLine, item.start);
+        appliedEdits++;
         break;
       }
       case "append_at": {
@@ -560,6 +740,7 @@ function applyHashlineEdits(
           firstChangedLine === undefined
             ? changed
             : Math.min(firstChangedLine, changed);
+        appliedEdits++;
         break;
       }
       case "prepend_at": {
@@ -568,6 +749,7 @@ function applyHashlineEdits(
           firstChangedLine === undefined
             ? item.start
             : Math.min(firstChangedLine, item.start);
+        appliedEdits++;
         break;
       }
       case "append_file": {
@@ -584,6 +766,7 @@ function applyHashlineEdits(
               ? changed
               : Math.min(firstChangedLine, changed);
         }
+        appliedEdits++;
         break;
       }
       case "prepend_file": {
@@ -594,12 +777,19 @@ function applyHashlineEdits(
         }
         firstChangedLine =
           firstChangedLine === undefined ? 1 : Math.min(firstChangedLine, 1);
+        appliedEdits++;
         break;
       }
     }
   }
 
-  return { content: lines.join("\n"), warnings, firstChangedLine };
+  return {
+    content: lines.join("\n"),
+    warnings,
+    failedEdits,
+    appliedEdits,
+    firstChangedLine,
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -739,13 +929,43 @@ export default function (pi: ExtensionAPI) {
     description:
       "Read file content formatted as LINE#ID:TEXT. Line anchors are stable across reads for unchanged lines.",
     promptSnippet:
-      "Read the file first, then use LINE#ID anchors for edit. Anchors are stable across reads for unchanged lines.",
+      "Read the file first, then use LINE#ID:TEXT anchors for edit. Anchors are stable across reads for unchanged lines.",
     parameters: hashlineReadSchema,
     async execute(_toolCallId, params, _signal, _onUpdate, ctx) {
+      const taskId = getTaskId(ctx);
       const absolutePath = resolveAbsolute(ctx.cwd, params.path);
+
+      const fullReadRequested = params.offset === undefined && params.limit === undefined;
+      if (fullReadRequested) {
+        const fileStat = await stat(absolutePath);
+        if (fileStat.isFile() && fileStat.size > MAX_FULL_READ_BYTES) {
+          return {
+            content: [
+              {
+                type: "text" as const,
+                text: `File is ${Math.round(fileStat.size / 1024)}KB, exceeding ${Math.round(MAX_FULL_READ_BYTES / 1024)}KB full-read limit. Use offset/limit for a targeted read.`,
+              },
+            ],
+          };
+        }
+      }
+
       const content = await readFile(absolutePath, "utf8");
+      const currentHash = contentHash(content);
+      const previousHash = getTaskReadHashes(taskId).get(absolutePath);
       const allLines = content.split("\n");
-      const allAnchors = reconcileAnchors(absolutePath, allLines);
+      const allAnchors = reconcileAnchors(absolutePath, allLines, taskId);
+
+      if (fullReadRequested && previousHash === currentHash) {
+        return {
+          content: [
+            {
+              type: "text" as const,
+              text: `no changes have been made to the file since your last read (Hash: ${currentHash})`,
+            },
+          ],
+        };
+      }
 
       const startIdx = Math.max(0, (params.offset ?? 1) - 1);
       const limit = Math.max(1, params.limit ?? 200);
@@ -764,11 +984,13 @@ export default function (pi: ExtensionAPI) {
 
       const sliceLines = allLines.slice(startIdx, endIdx);
       const sliceAnchors = allAnchors.slice(startIdx, endIdx);
-      let out = formatHashLines(sliceLines, sliceAnchors, startIdx + 1);
+      let out = `[File Hash: ${currentHash}]\n${formatHashLines(sliceLines, sliceAnchors, startIdx + 1)}`;
 
       if (endIdx < allLines.length) {
         out += `\n\n[${allLines.length - endIdx} more lines in file. Use offset=${endIdx + 1} to continue]`;
       }
+
+      setTaskReadHash(taskId, absolutePath, currentHash);
 
       return {
         content: [{ type: "text" as const, text: out }],
@@ -780,12 +1002,12 @@ export default function (pi: ExtensionAPI) {
     name: "edit",
     label: "edit",
     description:
-      "Apply precise file edits using LINE#ID anchors. Anchors are stable across reads for unchanged lines.",
+      "Apply precise file edits using LINE#ID:TEXT anchors. Anchors are stable across reads for unchanged lines.",
     promptSnippet:
-      "Batch related edits in one call. Use files[] for multi-file edits. Use LINE#ID anchors from prior read output.",
+      "Batch related edits in one call. Use files[] for multi-file edits. Use LINE#ID:TEXT anchors from prior read output.",
     promptGuidelines: [
       "Prefer one edit call with multiple edits (or files[]) instead of many small calls.",
-      "Use anchors from any prior read output — unchanged lines keep IDs.",
+      "Use exact LINE#ID:TEXT anchors from prior read output.",
       "range requires both pos and end; ranges must not overlap.",
     ],
     parameters: hashlineEditSchema,
@@ -801,6 +1023,7 @@ export default function (pi: ExtensionAPI) {
       return undefined;
     },
     async execute(_toolCallId, params, _signal, _onUpdate, ctx) {
+      const taskId = getTaskId(ctx);
       const requests: Array<{
         path: string;
         edits?: Array<{ loc: any; content: string[] | string | null }>;
@@ -889,7 +1112,7 @@ export default function (pi: ExtensionAPI) {
         }
 
         const sourceLines = sourceContent.split("\n");
-        const anchors = reconcileAnchors(absolutePath, sourceLines);
+        const anchors = reconcileAnchors(absolutePath, sourceLines, taskId);
         const anchorIndex = buildAnchorIndex(anchors);
 
         const parsedEdits = resolveEditPayload(edits);
@@ -898,6 +1121,15 @@ export default function (pi: ExtensionAPI) {
           parsedEdits,
           anchorIndex,
         );
+
+        if (applied.appliedEdits === 0 && !moveTo) {
+          const diagnostics = applied.failedEdits.length
+            ? ` Diagnostics:\n${applied.failedEdits.join("\n")}`
+            : "";
+          throw new Error(
+            `No valid edits could be applied to ${req.path}.${diagnostics}`,
+          );
+        }
 
         if (applied.content === sourceContent && !moveTo) {
           throw new Error(
@@ -908,7 +1140,15 @@ export default function (pi: ExtensionAPI) {
         const diffInfo = generateDiffString(sourceContent, applied.content);
 
         // keep state in sync with expected post-edit content
-        reconcileAnchors(absolutePath, applied.content.split("\n"));
+        reconcileAnchors(absolutePath, applied.content.split("\n"), taskId);
+
+        const warnings = [...applied.warnings];
+        if (applied.failedEdits.length > 0) {
+          warnings.push(
+            `Skipped ${applied.failedEdits.length} invalid edit(s):`,
+            ...applied.failedEdits,
+          );
+        }
 
         plan.push({
           kind: "write",
@@ -918,8 +1158,8 @@ export default function (pi: ExtensionAPI) {
           content: applied.content,
           summary: moveTo
             ? `Moved ${req.path} to ${req.move}`
-            : `Updated ${req.path}`,
-          warnings: applied.warnings,
+            : `Updated ${req.path} (applied ${applied.appliedEdits}/${parsedEdits.length} edits)`,
+          warnings,
           diff: diffInfo.diff,
           firstChangedLine:
             applied.firstChangedLine ?? diffInfo.firstChangedLine,
@@ -941,7 +1181,7 @@ export default function (pi: ExtensionAPI) {
         for (const op of plan) {
           if (op.kind === "delete") {
             await unlink(op.absolutePath);
-            dropAnchorState(op.absolutePath);
+            dropAnchorState(op.absolutePath, taskId);
             continue;
           }
           await ensureParentDir(op.absolutePath);
@@ -949,10 +1189,18 @@ export default function (pi: ExtensionAPI) {
           if (op.moveTo) {
             await ensureParentDir(op.moveTo.absolute);
             await rename(op.absolutePath, op.moveTo.absolute);
-            const state = anchorStateByFile.get(op.absolutePath);
+            const taskState = getTaskState(taskId);
+            const state = taskState.get(op.absolutePath);
             if (state) {
-              anchorStateByFile.set(op.moveTo.absolute, state);
-              anchorStateByFile.delete(op.absolutePath);
+              taskState.set(op.moveTo.absolute, state);
+              taskState.delete(op.absolutePath);
+            }
+
+            const readHashes = getTaskReadHashes(taskId);
+            const hash = readHashes.get(op.absolutePath);
+            if (hash) {
+              readHashes.set(op.moveTo.absolute, hash);
+              readHashes.delete(op.absolutePath);
             }
           }
         }
@@ -961,11 +1209,11 @@ export default function (pi: ExtensionAPI) {
           try {
             if (previous === null) {
               await unlink(file).catch(() => undefined);
-              dropAnchorState(file);
+              dropAnchorState(file, taskId);
             } else {
               await ensureParentDir(file);
               await writeFile(file, previous, "utf8");
-              reconcileAnchors(file, previous.split("\n"));
+              reconcileAnchors(file, previous.split("\n"), taskId);
             }
           } catch {
             // best effort

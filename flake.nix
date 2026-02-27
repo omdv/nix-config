@@ -96,14 +96,12 @@
     nixosConfigurations = {
       framework = mkHost "framework";
       homelab = mkHost "homelab";
-      hadron = mkHost "hadron";
     };
 
     # Home configurations
     homeConfigurations = {
       "om@framework" = mkHome "om" "framework";
       "om@homelab" = mkHome "om" "homelab";
-      "om@hadron" = mkHome "om" "hadron";
     };
   };
 }
