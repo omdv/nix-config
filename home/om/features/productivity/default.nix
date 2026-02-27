@@ -25,6 +25,7 @@
     pkgs.unstable.aichat
     pkgs.unstable.litellm
     pkgs.pi-coding-agent # pi wrapper with nodejs
+    pkgs.oh-my-pi # oh-my-pi fork with extended features
 
     pkgs.rustledger # rust ledger (binary)
 
