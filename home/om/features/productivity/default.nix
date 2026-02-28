@@ -5,6 +5,7 @@
     ./khard.nix
     ./mail.nix
     ./neomutt.nix
+    ./oh-my-pi
     ./vscode.nix
     ./zed.nix
   ];
