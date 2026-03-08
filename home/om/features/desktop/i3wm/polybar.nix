@@ -56,7 +56,7 @@ in {
         offset-y = 0;
         modules-left = "i3";
         modules-center = "date";
-        modules-right = "email cpu mem temp xkeyboard audio headscale wlan battery";
+        modules-right = "email cpu mem temp systemd xkeyboard audio headscale wlan battery";
       };
       "module/date" = {
         type = "internal/date";
@@ -149,7 +149,6 @@ in {
           deps = [ pkgs.systemdMinimal ];
           scriptFile = ./polybar/systemd-status.sh;
           args = [
-            "${colors.base0B}"
             "${colors.base08}"
           ];
         };
