@@ -24,7 +24,7 @@ in {
       format = let
         git = "$git_branch$git_commit$git_state$git_status";
       in ''
-        $username$hostname($shlvl)( $cmd_duration) $fill ($nix_shell)''${custom.nix_inspect} ($python)
+        $username$hostname($shlvl)( $cmd_duration) $fill ($nix_shell)''${custom.nix_inspect} ($python)($rust)($nodejs)
         $directory(${git}) $fill $time
         $jobs$character
       '';
@@ -77,6 +77,14 @@ in {
       python = {
         format = "[$symbol$version \\(($virtualenv)\\)]($style) ";
         style = "bold #${colors.base0A}";
+      };
+      rust = {
+        format = "[$symbol$version]($style) ";
+        style = "bold #${colors.base09}";
+      };
+      nodejs = {
+        format = "[$symbol$version]($style) ";
+        style = "bold #${colors.base0B}";
       };
       character = {
         error_symbol = "[~~>](bold #${colors.base08})";
