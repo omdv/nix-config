@@ -32,6 +32,10 @@ export default function approvalGate(pi: ExtensionAPI) {
   const approvedTools = new Set<string>();
   let syncStatus: () => void = () => {};
 
+  let compacting = false;
+  pi.on("session_before_compact", async () => { compacting = true; });
+  pi.on("session_compact", async () => { compacting = false; });
+
   async function revokeGrant(ctx: ExtensionContext): Promise<void> {
     if (!ctx.ui) return;
 
@@ -83,6 +87,8 @@ export default function approvalGate(pi: ExtensionAPI) {
 
     if (!GUARDED_TOOLS.has(toolName)) return;
 
+    // Pass through during compaction — internal operation, no user approval needed.
+    if (compacting) return;
     // Already granted for the session — pass through.
     if (approvedTools.has(toolName)) return;
 
