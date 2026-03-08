@@ -7,4 +7,6 @@ COUNT=$(( USER_FAILED + SYSTEM_FAILED ))
 
 if [ "$COUNT" -gt 0 ]; then
     echo "%{F$COLOR_FOREGROUND_BAD} $COUNT failed%{F-}"
+else
+    echo ""
 fi
