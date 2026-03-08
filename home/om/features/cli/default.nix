@@ -7,6 +7,7 @@
     ./fzf.nix
     ./git.nix
     ./gpg.nix
+    ./btop.nix
     ./htop.nix
     ./mc.nix
     ./navi.nix
