@@ -1,10 +1,10 @@
-COLOR_FOREGROUND_GOOD="$1"
-COLOR_FOREGROUND_BAD="$2"
+COLOR_FOREGROUND_BAD="$1"
 
-COUNT=$(systemctl --user list-units -all | grep -c "failed" | tr -d \\n)
+USER_FAILED=$(systemctl --user list-units --state=failed --no-legend 2>/dev/null | wc -l)
+SYSTEM_FAILED=$(systemctl --system list-units --state=failed --no-legend 2>/dev/null | wc -l)
 
-if [ "$COUNT" == "0" ]; then
-    echo "%{F$COLOR_FOREGROUND_GOOD}SYS $COUNT%{F-}"
-else
-    echo "%{F$COLOR_FOREGROUND_BAD}SYS $COUNT%{F-}"
+COUNT=$(( USER_FAILED + SYSTEM_FAILED ))
+
+if [ "$COUNT" -gt 0 ]; then
+    echo "%{F$COLOR_FOREGROUND_BAD} $COUNT failed%{F-}"
 fi
