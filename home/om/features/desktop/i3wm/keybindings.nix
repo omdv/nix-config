@@ -33,6 +33,12 @@ in {
         "${mod}+Print" = "exec ${pkgs.maim}/bin/maim -s ${config.home.homeDirectory}/Pictures/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png";
         "${mod}+Shift+Print" = "exec ${pkgs.maim}/bin/maim -s ${config.home.homeDirectory}/Pictures/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png";
 
+        # open localhost port in qutebrowser
+        "${mod}+o" = "exec ${mkScriptFromFile {
+          deps = [pkgs.iproute2 pkgs.rofi pkgs.qutebrowser];
+          scriptFile = ./scripts/open-port.sh;
+          args = [ "${config.fontProfiles.monospace.family} 16" ];
+        }}";
         # wifi control
         "${mod}+n" = "exec ${mkScriptFromFile {
           deps = [pkgs.networkmanager pkgs.iw];
