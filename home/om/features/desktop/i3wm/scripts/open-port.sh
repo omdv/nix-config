@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # List listening localhost TCP ports and open the selected one in qutebrowser.
+# Sources: ss (host sockets) + podman ps (container-published ports).
 
 FONT="$1"
 
@@ -40,31 +41,56 @@ label_for_port() {
   echo ""
 }
 
-entries=$(ss -tlnp | tail -n +2 | while IFS= read -r line; do
-  addr=$(echo "$line" | awk '{ print $4 }')
-  proc=$(echo "$line" | awk '{ print $6 }')
-  port="${addr##*:}"
-  host="${addr%:*}"
+gather_ss_ports() {
+  ss -tlnp | tail -n +2 | while IFS= read -r line; do
+    addr=$(echo "$line" | awk '{ print $4 }')
+    proc=$(echo "$line" | awk '{ print $6 }')
+    port="${addr##*:}"
+    host="${addr%:*}"
 
-  case "$host" in
-    0.0.0.0|127.0.0.1|"[::]"|"[::1]") ;;
-    *) continue ;;
-  esac
+    case "$host" in
+      0.0.0.0|127.0.0.1|"[::]"|"[::1]") ;;
+      *) continue ;;
+    esac
 
-  # shellcheck disable=SC2076  # literal match intentional
-  [[ " $BLOCKLIST " =~ " $port " ]] && continue
-  # extract process name if ss can see it (own processes)
-  name=""
-  [[ "$proc" =~ \(\(\"([^\"]+)\" ]] && name="${BASH_REMATCH[1]}"
+    # shellcheck disable=SC2076  # literal match intentional
+    [[ " $BLOCKLIST " =~ " $port " ]] && continue
 
-  label=$(label_for_port "$port" "$name")
+    # extract process name if ss can see it (own processes)
+    name=""
+    [[ "$proc" =~ \(\(\"([^\"]+)\" ]] && name="${BASH_REMATCH[1]}"
 
-  if [ -n "$label" ]; then
-    echo "$port — $label"
-  else
-    echo "$port"
-  fi
-done | sort -un)
+    label=$(label_for_port "$port" "$name")
+
+    if [ -n "$label" ]; then
+      echo "$port — $label"
+    else
+      echo "$port"
+    fi
+  done
+}
+
+# Podman publishes ports via kernel NAT (rootful) or pasta/slirp (rootless).
+# Rootful ports never appear in ss on the host; read them from podman directly.
+gather_podman_ports() {
+  command -v podman >/dev/null 2>&1 || return 0
+  podman ps --format '{{.Names}}\t{{.Ports}}' 2>/dev/null | while IFS=$'\t' read -r cname ports; do
+    [ -z "$ports" ] && continue
+    while IFS= read -r mapping; do
+      mapping="${mapping// /}"
+      [ -z "$mapping" ] && continue
+      # "0.0.0.0:8080->80/tcp" -> host portion -> port
+      host_part="${mapping%%->*}"
+      host_port="${host_part##*:}"
+      [[ "$host_port" =~ ^[0-9]+$ ]] || continue
+      # shellcheck disable=SC2076  # literal match intentional
+      [[ " $BLOCKLIST " =~ " $host_port " ]] && continue
+      echo "$host_port — $cname"
+    done < <(tr ',' '\n' <<< "$ports")
+  done
+}
+
+entries=$({ gather_ss_ports; gather_podman_ports; } | sort -un)
 
 if [ -z "$entries" ]; then
   rofi -e "No listening ports found on localhost."

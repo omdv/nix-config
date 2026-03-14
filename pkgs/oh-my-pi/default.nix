@@ -6,13 +6,13 @@
 
 let
   pname = "oh-my-pi";
-  version = "13.3.6";
+  version = "13.11.1";
 
   # Platform-specific download URLs
   sources = {
     x86_64-linux = {
       url = "https://github.com/can1357/oh-my-pi/releases/download/v${version}/omp-linux-x64";
-      hash = "sha256-lMZ/LlLE36CLiiwG90Yfsf/sFRJGWjTxNoWyMI8y4Hw=";
+      hash = "sha256-4dyzhBDNh6U/oaU1q2rrGmPDuuh5hhsecGZcMGkW6UM=";
     };
     aarch64-linux = {
       url = "https://github.com/can1357/oh-my-pi/releases/download/v${version}/omp-linux-arm64";
