@@ -27,6 +27,7 @@ in {
         "${mod}+f" = "fullscreen toggle";
         "${mod}+Return" = "exec ${lib.getExe config.programs.kitty.package}";
         "${mod}+d" = "exec ${pkgs.rofi}/bin/rofi -show drun";
+        "${mod}+l" = "exec ${pkgs.i3lock}/bin/i3lock -c ${config.colorscheme.palette.base00}";
         "${mod}+p" = "exec tp";
 
         # screenshot

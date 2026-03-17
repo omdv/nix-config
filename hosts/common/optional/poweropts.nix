@@ -8,8 +8,6 @@
     AllowSuspendThenHibernate=no
     HandleLidSwitch=suspend
     HandleLidSwitchExternalPower=ignore
-    IdleAction=suspend
-    IdleActionSec=30min
   '';
 
   services.auto-cpufreq = {
