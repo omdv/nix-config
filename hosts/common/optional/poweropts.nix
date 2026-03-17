@@ -3,13 +3,12 @@
 
   systemd.sleep.extraConfig = ''
     AllowSuspend=yes
-    AllowHibernation=yes
+    AllowHibernation=no
     AllowHybridSleep=no
-    AllowSuspendThenHibernate=yes
-    HibernateDelaySec=1h
-    HandleLidSwitch=suspend-then-hibernate
+    AllowSuspendThenHibernate=no
+    HandleLidSwitch=suspend
     HandleLidSwitchExternalPower=ignore
-    IdleAction=hibernate
+    IdleAction=suspend
     IdleActionSec=30min
   '';
 
