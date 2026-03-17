@@ -21,7 +21,6 @@ in {
     ../common/optional/java.nix
     ../common/optional/libvirt.nix
     ../common/optional/light.nix
-    ../common/optional/ollama.nix
     ../common/optional/pipewire.nix
     ../common/optional/poweropts.nix
     ../common/optional/printers.nix
@@ -48,6 +47,8 @@ in {
   };
 
   hardware.graphics.enable = true;
+
+  zramSwap.enable = true;
 
   system.stateVersion = "23.05";
 }
