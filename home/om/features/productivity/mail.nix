@@ -103,6 +103,8 @@ in {
   systemd.user.services.mbsync = {
     Unit = {
       Description = "mbsync synchronization";
+      After = [ "network-online.target" ];
+      Wants = [ "network-online.target" ];
     };
     Service = {
       Type = "oneshot";

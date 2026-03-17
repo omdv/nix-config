@@ -9,6 +9,7 @@
     domains = [ "~." ];
     extraConfig = ''
       DNSStubListener=yes
+      MulticastDNS=yes
     '';
   };
 
