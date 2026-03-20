@@ -17,6 +17,7 @@
     ./conform.nix
     ./completion.nix
     ./gitsigns.nix
+    ./indent-blankline.nix
   ];
 
   programs.nixvim = {
