@@ -10,8 +10,13 @@
     ./fzf.nix
     ./nvim-tree.nix
     ./statusline
-    ./lazy.nix
     ./web-devicons.nix
+    ./which-key.nix
+    ./treesitter.nix
+    ./lsp.nix
+    ./conform.nix
+    ./completion.nix
+    ./gitsigns.nix
   ];
 
   programs.nixvim = {

@@ -8,8 +8,8 @@
             separatorStyle = "thick";
             offsets = [
               {
-                filetype = "neo-tree";
-                text = "Neo-tree";
+                filetype = "NvimTree";
+                text = "Files";
                 highlight = "Directory";
                 text_align = "left";
               }
