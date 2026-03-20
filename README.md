@@ -1,41 +1,65 @@
-## DONE
-It is my daily runner already, fully productive:
-- flakes with home-manager, following [outstanding example](https://github.com/Misterio77/nix-starter-configs)
-- lightdm with plymouth and greeter
-- i3wm, almost r/unixporn quality
-- neomutt, nvim, vscode, etc
-- working java
-- virtualization
-- dynamic colorschemes, inspired by [misterio77](https://github.com/misterio77/nix-config)
+## NixOS configuration
 
-![Screenshot](https://github.com/omdv/nix-config/blob/8cf74c44e5a5b11e70f779128a2a87287c1f2685/screenshot.png)
+Personal NixOS + home-manager configuration as a flake. Two machines: `framework` (laptop) and `homelab` (headless server).
 
+## Structure
 
-## TODO
+```
+flake.nix          -- inputs, outputs, wiring
+hosts/             -- NixOS system configs per machine
+home/om/           -- home-manager config for user om
+  global/          -- always loaded (git, kitty, fonts)
+  features/        -- opt-in feature bundles
+modules/           -- custom NixOS and HM modules
+pkgs/              -- custom package derivations
+overlays/          -- nixpkgs overlays
+lib/               -- mkHost, mkHome, mkSecret helpers
+```
 
-### eyecandy
-- prettify grub
-- shellcolord
+## Machines
 
-### cli
-- vim config and plugins
-- separate monitoring tools
+**framework** -- Framework 13 laptop
+- xanmod kernel, systemd-boot
+- i3wm, picom, polybar, rofi, dunst
+- catppuccin-mocha colorscheme
+- pipewire, lightdm
+- Mullvad VPN, Tailscale
+- libvirt, Steam, Java
+- zram swap, btrfs with monthly scrub
+- auto-cpufreq, xss-lock + i3lock
 
-### system
-- persistence and erasing /root
-- prometheus node exporter via tailscale
-- lock screen
-- auto-cpufreq daemon vs tlp?
-- respect XDG_folders
-- fontpreview with config
-- hydra auto-upgrades and remote CI/CD
-- xdg-mime defaults - qutebrowser, neomutt, vim, etc
-- virtualization, nixvirt for declarative VMs
+**homelab** -- headless server
+- k3s, Tailscale
+- sops-nix secrets
 
-### devops
-- popeye integration
+## Key tools
 
-## homelab
-- backup scripts
-- monitoring scripts
-- headscale hosting (messing up the k8s ingress)
+| Tool | Config |
+|---|---|
+| shell | fish |
+| terminal | kitty + tmux |
+| editor | neovim (nixvim) with LSP, treesitter, catppuccin |
+| mail | neomutt + mbsync + msmtp |
+| browser | Brave |
+| passwords | pass |
+| backups | restic |
+
+## Commands
+
+```bash
+# rebuild system
+sudo nixos-rebuild switch --flake .#framework
+
+# apply home-manager
+home-manager switch --flake .#om@framework
+
+# format
+nix fmt
+
+# edit secrets
+sops home/om/secrets.yaml
+```
+
+## Secrets
+
+Encrypted with sops + age. Three secret files: `hosts/framework/secrets.yaml`, `hosts/homelab/secrets.yaml`, `home/om/secrets.yaml`. Each encrypted for the host age key and the user age key per `.sops.yaml`.
