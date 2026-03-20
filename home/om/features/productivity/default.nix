@@ -24,6 +24,7 @@
 
     # llm tools
     pkgs.unstable.aichat
+    pkgs.unstable.opencode # open source AI coding agent
     pkgs.unstable.litellm
     pkgs.pi-coding-agent # pi wrapper with nodejs
     pkgs.oh-my-pi # oh-my-pi fork with extended features
