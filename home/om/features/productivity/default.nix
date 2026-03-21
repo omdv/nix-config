@@ -5,7 +5,8 @@
     ./khard.nix
     ./mail.nix
     ./neomutt.nix
-    ./oh-my-pi
+    ./oh-my-pi  # oh-my-pi extensions
+    ./pi        # pi agent extensions
     ./vscode.nix
     ./zed.nix
   ];
