@@ -37,6 +37,12 @@
     ];
   };
 
+  # Low priority scheduling for Nix daemon (responsive system, slower builds)
+  nix = {
+    daemonCPUSchedPolicy = "idle";
+    daemonIOSchedClass = "idle";
+  };
+
   sops.secrets = {
     backup_passphrase = mkSecret { name = "backup_passphrase"; sopsFile = ./secrets.yaml; };
     ntfy_system_topic = mkSecret { name = "ntfy_system_topic"; sopsFile = ./secrets.yaml; };
