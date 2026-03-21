@@ -9,7 +9,6 @@
     ./gpg.nix
     ./btop.nix
     ./htop.nix
-    ./mc.nix
     ./navi.nix
     ./qutebrowser.nix
     ./ssh.nix
