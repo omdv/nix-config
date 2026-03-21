@@ -16,6 +16,7 @@ in
       set -as terminal-overrides ',xterm-kitty:RGB'
       set -as terminal-overrides ",xterm-kitty:Ms=\\E]52;c;%p2%s\\7"
 
+      set -g extended-keys on
       set -g mouse on
       set -g base-index 1
       setw -g pane-base-index 1

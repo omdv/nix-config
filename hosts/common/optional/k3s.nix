@@ -1,6 +1,5 @@
 { pkgs, ... }:
 let
-  # TODO: parameterize properly from config
   tailscaleIP = "100.105.105.101";
   lanIP = "192.168.1.98";
 in {
@@ -31,7 +30,6 @@ in {
   };
 
   # open the k3s ports for the cluster
-  # TODO: check if qbittorrent is needed
   networking.firewall.allowedTCPPorts = [
     80
     443
