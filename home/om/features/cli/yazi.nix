@@ -1,4 +1,3 @@
-# TODO: add flavors, once they are available in stable home-manager
 {
   programs.yazi = {
     enable = true;
