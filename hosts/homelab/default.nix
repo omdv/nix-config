@@ -1,11 +1,9 @@
 {
-  lib,
   inputs,
   config,
+  mkSecret,
   ...
-}: let
-  mkSecret = import ../../lib/mkSecret.nix { inherit lib; };
-in {
+}: {
   imports = [
     inputs.hardware.nixosModules.common-pc-ssd
     ./hardware-configuration.nix
@@ -19,11 +17,6 @@ in {
     ../common/optional/smartd.nix
     ../common/optional/zfs.nix
   ];
-
-  boot = {
-    loader.systemd-boot.enable = true;
-    loader.efi.canTouchEfiVariables = true;
-  };
 
   # enable lingering for systemd services
   users.users.om.linger = true;
