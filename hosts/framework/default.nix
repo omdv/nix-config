@@ -1,11 +1,9 @@
 {
   pkgs,
-  lib,
   inputs,
+  mkSecret,
   ...
-}: let
-  mkSecret = import ../../lib/mkSecret.nix { inherit lib; };
-in {
+}: {
   imports = [
     inputs.hardware.nixosModules.common-pc-ssd
     ./hardware-configuration.nix
@@ -32,8 +30,6 @@ in {
   ];
 
   boot = {
-    loader.systemd-boot.enable = true;
-    loader.efi.canTouchEfiVariables = true;
     kernelPackages = pkgs.linuxKernel.packages.linux_xanmod_latest;
     binfmt.emulatedSystems = [
       "aarch64-linux"

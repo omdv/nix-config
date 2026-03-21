@@ -9,7 +9,8 @@ name: host: lib.homeManagerConfiguration {
     inputs.nix-colors.homeManagerModules.default
   ];
   extraSpecialArgs = {
-    inherit inputs outputs;
+    inherit inputs outputs lib;
+    mkSecret = import ./mkSecret.nix { inherit lib; };
     colors = inputs.nix-colors;
   };
 }
