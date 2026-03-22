@@ -31,6 +31,9 @@ Last Updated: 2026-03-22
 
 **P3 (Nice-to-Have):**
 
+- ✅ #13 - Add per-directory READMEs
+- ✅ #14 - Document custom modules
+- ✅ #15 - Add architecture diagram
 - ✅ #18 - Enable Nix daemon optimizations (framework only)
 - ⏭️ #4 - Add flake-parts (too much effort for value)
 - ⏭️ #16 - Pin inputs (current approach better)
@@ -40,12 +43,6 @@ Last Updated: 2026-03-22
 
 ## 📊 Remaining Items
 
-**P3 - Documentation:**
-
-- #13 - Add per-directory READMEs
-- #14 - Document custom modules
-- #15 - Add architecture diagram
-
 **P3 - Deferred (to revisit later):**
 
 - #23 - Add per-project devShells
@@ -53,70 +50,14 @@ Last Updated: 2026-03-22
 
 ---
 
-## 📚 P3 Documentation Items
+## 🎉 All Priority Tasks Complete
 
-### 13. **Add per-directory READMEs**
-
-Add `README.md` in key directories:
-
-- `hosts/` - explain host architecture
-- `home/om/features/` - explain feature organization
-- `pkgs/` - document packaging patterns
-
-**Files to create:**
-
-- `hosts/README.md`
-- `home/om/features/README.md`
-- `pkgs/README.md`
+All P0, P1, P2, and P3 documentation tasks have been completed. The remaining items
+(#23, #24) are deferred for future consideration when needed.
 
 ---
 
-### 14. **Document custom modules**
-
-Your custom modules lack documentation:
-
-```nix
-# modules/home-manager/i3scaling.nix
-{ lib, ... }:
-{
-  meta.maintainers = [ "om" ];
-  meta.doc = ''
-    Sets DPI, font sizes, and cursor size for HiDPI displays in i3wm.
-  '';
-
-  options.i3scaling = { ... };
-}
-```
-
-**Files to modify:**
-
-- `modules/home-manager/fonts.nix`
-- `modules/home-manager/i3scaling.nix`
-- `modules/home-manager/monitors.nix`
-- `modules/home-manager/wallpaper.nix`
-- `modules/nixos/smartd.nix`
-
----
-
-### 15. **Add architecture diagram**
-
-Your AGENTS.md has a text diagram. Consider a Mermaid diagram:
-
-```mermaid
-graph TD
-    flake[flake.nix] --> hosts
-    flake --> home
-    hosts --> common-global
-    hosts --> common-optional
-```
-
-**Files to modify:**
-
-- `AGENTS.md`
-
----
-
-## 🎨 P3 Deferred Items
+## 🎨 Deferred Items
 
 ### 23. **Add per-project devShells**
 
