@@ -1,0 +1,68 @@
+# Pre-commit hooks configuration
+# Install: pre-commit install
+# Run manually: pre-commit run --all-files
+# Update: pre-commit autoupdate
+
+repos:
+  # Nix formatting with alejandra (using local system binary)
+  - repo: local
+    hooks:
+      - id: alejandra
+        name: Format Nix files with alejandra
+        entry: alejandra
+        language: system
+        files: \.nix$
+        pass_filenames: true
+
+  # Secret detection
+  # Note: Disabled for now due to environment issues. Run manually with:
+  # nix develop -c detect-secrets scan --baseline .secrets.baseline
+  # - repo: local
+  #   hooks:
+  #     - id: detect-secrets
+  #       name: Detect secrets
+  #       entry: detect-secrets-hook
+  #       language: system
+  #       args:
+  #         - --baseline
+  #         - .secrets.baseline
+  #       exclude: |
+  #         (?x)^(
+  #           .*secrets\.yaml$|
+  #           .*\.sops\.yaml$
+  #         )
+
+  # General pre-commit hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+        name: Trim trailing whitespace
+      - id: end-of-file-fixer
+        name: Fix end of files
+      - id: check-yaml
+        name: Check YAML syntax
+        exclude: .*secrets\.yaml$  # Exclude encrypted SOPS files
+      - id: check-added-large-files
+        name: Check for large files
+        args: ['--maxkb=1024']
+      - id: check-merge-conflict
+        name: Check for merge conflicts
+      - id: mixed-line-ending
+        name: Fix mixed line endings
+        args: ['--fix=lf']
+
+  # Markdown linting
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.41.0
+    hooks:
+      - id: markdownlint
+        name: Lint Markdown files
+        args: ['--fix']
+
+# Global file exclusions (in addition to .gitignore)
+exclude: |
+  (?x)^(
+    result/.*|
+    \.direnv/.*
+  )

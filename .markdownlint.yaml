@@ -1,0 +1,19 @@
+# Markdownlint configuration
+# See: https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md
+
+# MD013: Line length - disabled (too strict for documentation)
+MD013: false
+
+# MD033: Inline HTML - allowed (useful for complex tables/formatting)
+MD033: false
+
+# MD041: First line in file should be a top level heading - disabled
+MD041: false
+
+# MD046: Code block style - use fenced (```)
+MD046:
+  style: fenced
+
+# MD024: Multiple headings with the same content - allowed in different sections
+MD024:
+  siblings_only: true
