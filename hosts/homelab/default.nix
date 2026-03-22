@@ -14,8 +14,12 @@
 
     ../common/optional/k3s.nix
     ../common/optional/samba.nix
-    ../common/optional/smartd.nix
-    ../common/optional/zfs.nix
+    ../common/optional/zfs-base.nix
+
+    # Monitoring
+    ../common/monitoring/system-notifications.nix
+    ../common/monitoring/smartd.nix
+    ../common/monitoring/zfs-scrub.nix
   ];
 
   # enable lingering for systemd services
