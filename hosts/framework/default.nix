@@ -15,7 +15,6 @@
     ../common/optional/xserver.nix
     ../common/optional/i3wm.nix
 
-    ../common/optional/btrfs.nix
     ../common/optional/java.nix
     ../common/optional/libvirt.nix
     ../common/optional/light.nix
@@ -23,10 +22,14 @@
     ../common/optional/poweropts.nix
     ../common/optional/printers.nix
     ../common/optional/quietboot.nix
-    ../common/optional/smartd.nix
     ../common/optional/steam.nix
     ../common/optional/virtualisation.nix
     ../common/optional/vpn.nix
+
+    # Monitoring
+    ../common/monitoring/system-notifications.nix
+    ../common/monitoring/smartd.nix
+    ../common/monitoring/btrfs-scrub.nix
   ];
 
   boot = {
