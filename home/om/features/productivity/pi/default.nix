@@ -1,12 +1,21 @@
-{ ... }: {
-  # Deploy extensions to PI agent (standard pi-coding-agent)
-  # Extensions directory: ~/.config/pi/extensions/
-  
-  # Security extension - blocks dangerous commands and protects sensitive files
-  home.file.".config/pi/extensions/security/index.ts".source =
+{ config, ... }:
+let
+  piAgentDir = "${config.home.homeDirectory}/.pi/agent";
+
+  piSettings = {
+    defaultProvider = "anthropic";
+    defaultModel = "claude-sonnet-4-5";
+    theme = "dark";
+    hideThinkingBlock = true;
+
+    extensions = [
+      "${piAgentDir}/extensions/security"
+    ];
+  };
+
+in {
+  home.file.".pi/agent/settings.json".text = builtins.toJSON piSettings;
+
+  home.file.".pi/agent/extensions/security/index.ts".source =
     ./extensions/security/index.ts;
-  
-  # Add more extensions here:
-  # home.file.".config/pi/extensions/another/index.ts".source =
-  #   ./extensions/another/index.ts;
 }
