@@ -12,6 +12,7 @@ let
       "${piAgentDir}/extensions/security"
       "${piAgentDir}/extensions/files"
       "${piAgentDir}/extensions/context"
+      "${piAgentDir}/extensions/notify"
     ];
   };
 
@@ -26,4 +27,7 @@ in {
 
   home.file.".pi/agent/extensions/context/index.ts".source =
     ./extensions/context/index.ts;
+
+  home.file.".pi/agent/extensions/notify/index.ts".source =
+    ./extensions/notify/index.ts;
 }
