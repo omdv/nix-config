@@ -51,9 +51,9 @@
 
     # network tools
     bandwhich # TUI bandwidth monitor
-    dnsutils  # `dig` + `nslookup`
+    dnsutils # `dig` + `nslookup`
     iftop # network monitoring
-    ipcalc  # it is a calculator for the IPv4/v6 addresses
+    ipcalc # it is a calculator for the IPv4/v6 addresses
     iperf3 # determine max bandwidth
     httpstat # http request metrics
     ldns # replacement of `dig`, it provide the command `drill`

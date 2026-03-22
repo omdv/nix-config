@@ -1,11 +1,11 @@
-{ config, lib, ... }:
-
-with lib;
-
-let
-  cfg = config.services.smartd;
-in
 {
+  config,
+  lib,
+  ...
+}:
+with lib; let
+  cfg = config.services.smartd;
+in {
   options.services.smartd.notifications = {
     customScript = mkOption {
       type = types.nullOr types.path;
@@ -16,7 +16,8 @@ in
   };
 
   config = mkIf cfg.enable {
-    services.smartd.defaults.monitored = mkIf (cfg.notifications.customScript != null)
+    services.smartd.defaults.monitored =
+      mkIf (cfg.notifications.customScript != null)
       "-m ${cfg.notifications.customScript}";
   };
 }

@@ -20,8 +20,8 @@ in {
     backups = {
       borgbase = {
         location = {
-          sourceDirectories = [ "/home/om" ];
-          repositories = [ "ssh://ylc5axw6@ylc5axw6.repo.borgbase.com/./repo" ];
+          sourceDirectories = ["/home/om"];
+          repositories = ["ssh://ylc5axw6@ylc5axw6.repo.borgbase.com/./repo"];
           extraConfig = {
             remote_path = "borg1";
             exclude_patterns = [
@@ -38,14 +38,14 @@ in {
               "/home/om/.nix-profile"
               "/home/om/.nix-defexpr"
             ];
-            exclude_if_present = [ ".nobackup" ];
+            exclude_if_present = [".nobackup"];
             exclude_caches = true;
           };
         };
         storage = {
           encryptionPasscommand = mkScript {
             name = "borg-encryption-pass";
-            deps = [ pkgs.coreutils ];
+            deps = [pkgs.coreutils];
             script = ''
               ${pkgs.coreutils}/bin/cat ${backup_key}
             '';

@@ -1,4 +1,8 @@
-{ config, colors, ... }: {
+{
+  config,
+  colors,
+  ...
+}: {
   imports = [
     ./global
 

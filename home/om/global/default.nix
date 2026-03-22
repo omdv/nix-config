@@ -5,10 +5,11 @@
   outputs,
   ...
 }: {
-  imports = [
-    ./fonts.nix
-    ./kitty.nix
-  ]
+  imports =
+    [
+      ./fonts.nix
+      ./kitty.nix
+    ]
     ++ (builtins.attrValues outputs.homeManagerModules);
 
   systemd.user.startServices = "sd-switch";

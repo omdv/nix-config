@@ -91,14 +91,14 @@ in {
       color7 = "#${colors.base05}";
 
       # bright
-      color8  = "#${colors.base03}";  # bright black = comments (visible)
-      color9  = "#${colors.base08}";  # red
-      color10 = "#${colors.base0B}";  # green
-      color11 = "#${colors.base0A}";  # yellow
-      color12 = "#${colors.base0D}";  # blue
-      color13 = "#${colors.base0E}";  # magenta
-      color14 = "#${colors.base0C}";  # cyan
-      color15 = "#${colors.base07}";  # white
+      color8 = "#${colors.base03}"; # bright black = comments (visible)
+      color9 = "#${colors.base08}"; # red
+      color10 = "#${colors.base0B}"; # green
+      color11 = "#${colors.base0A}"; # yellow
+      color12 = "#${colors.base0D}"; # blue
+      color13 = "#${colors.base0E}"; # magenta
+      color14 = "#${colors.base0C}"; # cyan
+      color15 = "#${colors.base07}"; # white
     };
   };
 }

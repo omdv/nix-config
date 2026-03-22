@@ -1,4 +1,8 @@
-{ pkgs, config, ... }: let
+{
+  pkgs,
+  config,
+  ...
+}: let
   colors = config.colorscheme.palette;
 in {
   imports = [
@@ -10,7 +14,7 @@ in {
     ./dunst.nix
   ];
 
-  home.packages = with pkgs; [ xss-lock i3lock ];
+  home.packages = with pkgs; [xss-lock i3lock];
 
   xsession.initExtra = ''
     xset s 600             # blank screen after 10 min idle
@@ -23,19 +27,19 @@ in {
     config = {
       assigns = {
         "2" = [
-          { class = "firefox"; }
-          { class = "Brave-browser"; }
+          {class = "firefox";}
+          {class = "Brave-browser";}
         ];
         "3" = [
-          { class = "Code"; }
-          { class = "Cursor"; }
-          { class = "dev.zed.Zed"; }
+          {class = "Code";}
+          {class = "Cursor";}
+          {class = "dev.zed.Zed";}
         ];
         "5" = [
-          { class = "TelegramDesktop"; }
-          { class = "discord"; }
+          {class = "TelegramDesktop";}
+          {class = "discord";}
         ];
-        "6" = [{ class = "net-sourceforge-kolmafia-KoLmafia"; }];
+        "6" = [{class = "net-sourceforge-kolmafia-KoLmafia";}];
       };
       bars = [];
       defaultWorkspace = "1";
@@ -43,7 +47,7 @@ in {
         names = [
           config.fontProfiles.monospace.family
           config.fontProfiles.icons.family
-          ];
+        ];
         size = 12.0;
       };
       window = {
@@ -58,9 +62,18 @@ in {
         bottom = 5;
       };
       startup = [
-        { command = "${pkgs.xss-lock}/bin/xss-lock --transfer-sleep-lock -- ${pkgs.i3lock}/bin/i3lock --nofork -c ${colors.base00}"; notification = false; }
-        { command = "brave"; notification = false; }
-        { command = "i3-msg workspace 1"; notification = false; }
+        {
+          command = "${pkgs.xss-lock}/bin/xss-lock --transfer-sleep-lock -- ${pkgs.i3lock}/bin/i3lock --nofork -c ${colors.base00}";
+          notification = false;
+        }
+        {
+          command = "brave";
+          notification = false;
+        }
+        {
+          command = "i3-msg workspace 1";
+          notification = false;
+        }
         {
           command = "systemctl --user restart polybar.service";
           always = true;

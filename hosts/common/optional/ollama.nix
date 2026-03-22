@@ -1,6 +1,6 @@
 {
   services.ollama = {
     enable = true;
-    loadModels = [ "deepseek-r1" ];
+    loadModels = ["deepseek-r1"];
   };
 }

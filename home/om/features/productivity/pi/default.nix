@@ -1,5 +1,4 @@
-{ config, ... }:
-let
+{config, ...}: let
   piAgentDir = "${config.home.homeDirectory}/.pi/agent";
 
   piSettings = {
@@ -16,7 +15,6 @@ let
       "${piAgentDir}/extensions/session-breakdown"
     ];
   };
-
 in {
   home.file.".pi/agent/settings.json".text = builtins.toJSON piSettings;
 

@@ -1,4 +1,4 @@
-{ ... }: {
+{...}: {
   programs.nixvim.plugins.which-key = {
     enable = true;
     settings = {
@@ -14,7 +14,7 @@
 
       win = {
         no_overlap = true;
-        padding = [ 1 2 ];
+        padding = [1 2];
         title = true;
         title_pos = "center";
       };

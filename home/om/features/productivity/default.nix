@@ -1,12 +1,12 @@
-{ pkgs, ... }: {
+{pkgs, ...}: {
   imports = [
     ./cursor.nix
     ./k9s.nix
     ./khard.nix
     ./mail.nix
     ./neomutt.nix
-    ./oh-my-pi  # oh-my-pi extensions
-    ./pi        # pi agent extensions
+    ./oh-my-pi # oh-my-pi extensions
+    ./pi # pi agent extensions
     ./vscode.nix
     ./zed.nix
   ];
@@ -33,6 +33,5 @@
     # miscellaneous
     pkgs.rustledger # rust ledger (binary)
     pkgs.sc-im
-
   ];
 }

@@ -1,14 +1,14 @@
 {pkgs, ...}: {
   fonts.fontconfig.enable = true;
-    home.packages = [
-      pkgs.open-sans
-      pkgs.fira-sans
-      pkgs.nerd-fonts.fira-mono
-      pkgs.nerd-fonts.fira-code
-      pkgs.nerd-fonts.symbols-only
-      pkgs.font-awesome
-      pkgs.fontconfig
-    ];
+  home.packages = [
+    pkgs.open-sans
+    pkgs.fira-sans
+    pkgs.nerd-fonts.fira-mono
+    pkgs.nerd-fonts.fira-code
+    pkgs.nerd-fonts.symbols-only
+    pkgs.font-awesome
+    pkgs.fontconfig
+  ];
 
   home.sessionVariables = {
     LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:${pkgs.fontconfig.lib}/lib";

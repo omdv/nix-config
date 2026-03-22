@@ -1,8 +1,10 @@
-{ pkgs, config, ... }:
-let
-  colors = config.colorscheme.palette;
-in
 {
+  pkgs,
+  config,
+  ...
+}: let
+  colors = config.colorscheme.palette;
+in {
   programs.tmux = {
     enable = true;
     package = pkgs.tmux;
@@ -15,7 +17,7 @@ in
       set -g default-terminal "tmux-256color"
       set -as terminal-overrides ',xterm-kitty:RGB'
       set -as terminal-overrides ",xterm-kitty:Ms=\\E]52;c;%p2%s\\7"
-      
+
       # Enable extended keys support
       set -as terminal-features ',*:extkeys'
       set -g extended-keys on

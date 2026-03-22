@@ -1,5 +1,4 @@
-{ pkgs, ... }:
-let
+{pkgs, ...}: let
   pname = "cursor";
   version = "1.5.5";
   cursorAppImage = pkgs.fetchurl {
@@ -7,8 +6,7 @@ let
     sha256 = "sha256-1bSndTGH8C4VanZ86MBsk5PXWPs6cwjnFvfuACODCvM=";
     name = "${pname}-${version}.AppImage";
   };
-in
-{
+in {
   home.packages = with pkgs; [
     (writeShellScriptBin "cursor" ''
       #!${stdenv.shell}

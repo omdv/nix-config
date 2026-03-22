@@ -1,5 +1,8 @@
-{pkgs, lib, ...}:
-let
+{
+  pkgs,
+  lib,
+  ...
+}: let
   tuigreet = "${pkgs.greetd.tuigreet}/bin/tuigreet";
   hypr-run = pkgs.writeShellScriptBin "hypr-run" ''
     export XDG_SESSION_TYPE="wayland"
@@ -11,9 +14,8 @@ let
 
     ${pkgs.hyprland}/bin/hyperctl dispatch exit
   '';
-  runner = (lib.getExe hypr-run);
-in
-{
+  runner = lib.getExe hypr-run;
+in {
   programs.hyprland = {
     enable = true;
     xwayland.enable = true;

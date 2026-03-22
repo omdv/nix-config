@@ -1,4 +1,4 @@
-{ pkgs, ... }: {
+{pkgs, ...}: {
   console = {
     useXkbConfig = true;
     earlySetup = false;
@@ -12,7 +12,7 @@
       theme = "cubes";
       themePackages = with pkgs; [
         (adi1090x-plymouth-themes.override {
-          selected_themes = [ "cubes" ];
+          selected_themes = ["cubes"];
         })
       ];
     };

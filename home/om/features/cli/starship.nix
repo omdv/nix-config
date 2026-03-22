@@ -1,4 +1,4 @@
-{ config, ... }: let
+{config, ...}: let
   colors = config.colorscheme.palette;
   # scheme = "Catppuccin Frappe";
   # base00 = "#303446"; # base

@@ -1,5 +1,5 @@
 # Baofeng radio programming
-{ pkgs, ... }: {
+{pkgs, ...}: {
   home.packages = [
     pkgs.chirp
   ];

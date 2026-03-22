@@ -1,10 +1,9 @@
-{ stdenv
-, fetchurl
-, lib
-, patchelf
-}:
-
-let
+{
+  stdenv,
+  fetchurl,
+  lib,
+  patchelf,
+}: let
   pname = "oh-my-pi";
   version = "13.11.1";
 
@@ -29,38 +28,37 @@ let
   };
 
   src = fetchurl (sources.${stdenv.hostPlatform.system} or (throw "Unsupported system: ${stdenv.hostPlatform.system}"));
-
 in
-stdenv.mkDerivation {
-  inherit pname version src;
+  stdenv.mkDerivation {
+    inherit pname version src;
 
-  nativeBuildInputs = lib.optionals stdenv.hostPlatform.isLinux [ patchelf ];
+    nativeBuildInputs = lib.optionals stdenv.hostPlatform.isLinux [patchelf];
 
-  dontUnpack = true;
-  dontBuild = true;
-  dontPatchELF = true;
-  dontStrip = true;
+    dontUnpack = true;
+    dontBuild = true;
+    dontPatchELF = true;
+    dontStrip = true;
 
-  installPhase = ''
-    runHook preInstall
-    
-    install -D -m755 $src $out/bin/omp
-    
-    # Patch only the interpreter, don't use autoPatchelfHook
-    # Bun-compiled binaries are self-contained and don't need library patching
-    ${lib.optionalString stdenv.hostPlatform.isLinux ''
-      patchelf --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" $out/bin/omp
-    ''}
-    
-    runHook postInstall
-  '';
+    installPhase = ''
+      runHook preInstall
 
-  meta = {
-    description = "AI coding agent for the terminal - fork of pi-coding-agent with extended features";
-    homepage = "https://github.com/can1357/oh-my-pi";
-    license = lib.licenses.mit;
-    maintainers = [ ];
-    platforms = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];
-    mainProgram = "omp";
-  };
-}
+      install -D -m755 $src $out/bin/omp
+
+      # Patch only the interpreter, don't use autoPatchelfHook
+      # Bun-compiled binaries are self-contained and don't need library patching
+      ${lib.optionalString stdenv.hostPlatform.isLinux ''
+        patchelf --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" $out/bin/omp
+      ''}
+
+      runHook postInstall
+    '';
+
+    meta = {
+      description = "AI coding agent for the terminal - fork of pi-coding-agent with extended features";
+      homepage = "https://github.com/can1357/oh-my-pi";
+      license = lib.licenses.mit;
+      maintainers = [];
+      platforms = ["x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin"];
+      mainProgram = "omp";
+    };
+  }

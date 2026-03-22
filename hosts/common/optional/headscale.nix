@@ -1,10 +1,9 @@
-{ config, ... }:
-  let
-    domain = "ts.x9.rs";
-    port = 8000;
-  in {
-    services = {
-      headscale = {
+{config, ...}: let
+  domain = "ts.x9.rs";
+  port = 8000;
+in {
+  services = {
+    headscale = {
       enable = true;
       port = port;
       address = "0.0.0.0";
@@ -55,7 +54,6 @@
     };
   };
 
-  networking.firewall.allowedTCPPorts = [ port ];
+  networking.firewall.allowedTCPPorts = [port];
   environment.systemPackages = [config.services.headscale.package];
-
 }

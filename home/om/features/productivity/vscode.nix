@@ -1,5 +1,4 @@
-{ pkgs, ... }:
-{
+{pkgs, ...}: {
   programs.vscode = {
     enable = true;
     package = pkgs.vscode.fhs;
@@ -17,7 +16,7 @@
         "workbench.startupEditor" = "none";
         "explorer.compactFolders" = false;
         # Copilot
-        "github.copilot.enable"= {
+        "github.copilot.enable" = {
           "*" = false;
           "yaml" = false;
           "plaintext" = false;

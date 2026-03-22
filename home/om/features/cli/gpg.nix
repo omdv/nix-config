@@ -10,11 +10,10 @@
     enableFishIntegration = true;
     pinentry.package = pkgs.pinentry-rofi;
     defaultCacheTtl = 1800;
-    extraConfig =
-      ''
+    extraConfig = ''
       allow-emacs-pinentry
       allow-loopback-pinentry
-      '';
+    '';
     verbose = true;
   };
 }

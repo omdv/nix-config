@@ -1,4 +1,4 @@
-{ pkgs, ... }: {
+{pkgs, ...}: {
   networking = {
     hostId = "c6589261";
     hostName = "homelab";
@@ -6,10 +6,12 @@
     interfaces = {
       enp2s0 = {
         useDHCP = false;
-        ipv4.addresses = [{
-          address = "192.168.1.98";
-          prefixLength = 24;
-        }];
+        ipv4.addresses = [
+          {
+            address = "192.168.1.98";
+            prefixLength = 24;
+          }
+        ];
       };
     };
     defaultGateway = {
@@ -30,7 +32,7 @@
       "1.0.0.1"
       "8.8.8.8"
     ];
-    domains = [ "~." ];
+    domains = ["~."];
     extraConfig = ''
       DNSStubListener=yes
     '';
@@ -52,5 +54,5 @@
     RestartSec = "20s";
   };
 
-  networking.firewall.trustedInterfaces = [ "tailscale0" ];
+  networking.firewall.trustedInterfaces = ["tailscale0"];
 }

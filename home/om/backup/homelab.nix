@@ -25,7 +25,7 @@ in {
             "/pool/media"
             "/pool/databases"
           ];
-          repositories = [ "ssh://nnyrw2md@nnyrw2md.repo.borgbase.com/./repo" ];
+          repositories = ["ssh://nnyrw2md@nnyrw2md.repo.borgbase.com/./repo"];
           extraConfig = {
             remote_path = "borg1";
             exclude_patterns = [
@@ -42,14 +42,14 @@ in {
               "/home/om/.nix-profile"
               "/home/om/.nix-defexpr"
             ];
-            exclude_if_present = [ ".nobackup" ];
+            exclude_if_present = [".nobackup"];
             exclude_caches = true;
           };
         };
         storage = {
           encryptionPasscommand = mkScript {
             name = "borg-encryption-pass";
-            deps = [ pkgs.coreutils ];
+            deps = [pkgs.coreutils];
             script = ''
               ${pkgs.coreutils}/bin/cat ${backup_key}
             '';

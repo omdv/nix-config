@@ -1,3 +1,3 @@
-{ pkgs, ... }: {
-  home.packages = [ pkgs.unstable.zed-editor ];
+{pkgs, ...}: {
+  home.packages = [pkgs.unstable.zed-editor];
 }

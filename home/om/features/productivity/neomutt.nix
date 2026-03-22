@@ -172,5 +172,4 @@
     image/jpeg; ${pkgs.feh}/bin/feh %s; copiousoutput
     image/gif; ${pkgs.feh}/bin/feh %s; copiousoutput
   '';
-
 }

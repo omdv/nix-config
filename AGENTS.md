@@ -8,7 +8,7 @@ Personal NixOS + home-manager configuration managed as a Nix flake. Targets two 
 
 ## Architecture & Data Flow
 
-```
+```text
 flake.nix
 ├── inputs          — nixpkgs 25.11, nixpkgs-unstable, home-manager, sops-nix,
 │                     nixos-hardware, nix-colors, nixvim, firefox-addons

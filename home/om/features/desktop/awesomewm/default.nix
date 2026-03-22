@@ -1,5 +1,8 @@
-{ lib, config, ... }:
-let
+{
+  lib,
+  config,
+  ...
+}: let
   colors = config.colorscheme.palette;
   kittyCmd = lib.getExe config.programs.kitty.package;
   rofiCmd = "${lib.getExe config.programs.rofi.package} -show drun";
@@ -172,9 +175,8 @@ let
 
     awful.spawn.with_shell("xsetroot -solid '#${colors.base00}'")
   '';
-in
-{
-  imports = [ ../common/rofi.nix ];
+in {
+  imports = [../common/rofi.nix];
 
   xdg.configFile."awesome/rc.lua".text = rcLua;
 }

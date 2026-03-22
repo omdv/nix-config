@@ -1,8 +1,8 @@
-{ lib, ... }: {
+{lib, ...}: {
   services.btrfs.autoScrub = {
     enable = true;
     interval = "monthly";
-    fileSystems = [ "/" ];
+    fileSystems = ["/"];
   };
 
   # Prevent scrub from firing at boot when the window was missed

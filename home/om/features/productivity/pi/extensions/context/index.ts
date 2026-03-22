@@ -384,7 +384,7 @@ class ContextView implements Component {
         dim("free") +
         this.theme.fg("dim", "█");
       lines.push(bar);
-      
+
       // Add warning thresholds
       if (u.percent >= 95) {
         lines.push(this.theme.fg("error", "🚨 Critical: Context is 95%+ full!"));

@@ -1,4 +1,9 @@
-{ pkgs, config, lib, ... }: let
+{
+  pkgs,
+  config,
+  lib,
+  ...
+}: let
   colors = config.colorscheme.palette;
   mapStrings = f: xs: lib.map (x: f x) xs;
   commonDeps = with pkgs; [coreutils gnugrep];
@@ -7,15 +12,16 @@
     deps ? [],
     scriptFile ? "",
     args ? [],
-  }:
-    let
-      quotedArgs = lib.concatStringsSep " " (mapStrings (arg: "\"${arg}\"") args);
-    in
-      lib.getExe (pkgs.writeShellApplication {
-        inherit name;
-        text = builtins.readFile scriptFile; # or just text=cmd
-        runtimeInputs = commonDeps ++ deps;
-      })  + " " + quotedArgs;
+  }: let
+    quotedArgs = lib.concatStringsSep " " (mapStrings (arg: "\"${arg}\"") args);
+  in
+    lib.getExe (pkgs.writeShellApplication {
+      inherit name;
+      text = builtins.readFile scriptFile; # or just text=cmd
+      runtimeInputs = commonDeps ++ deps;
+    })
+    + " "
+    + quotedArgs;
 in {
   # service itself
   services.polybar = {
@@ -48,7 +54,6 @@ in {
         font-0 = "${config.fontProfiles.regular.family}:size=14;3";
         font-1 = "${config.fontProfiles.icons.family}:size=24;3";
         font-2 = "${config.fontProfiles.icons.family}:size=16;3";
-
       };
       "bar/top" = {
         "inherit" = "bar/root";
@@ -93,19 +98,18 @@ in {
         format-warn = "%{F${colors.base08}} <label-warn> %{F-}";
         label = "%{T3}%{T-} %temperature%";
         label-warn = "%{T3}%{T-} %temperature%";
-
       };
       "module/audio" = {
         type = "custom/script";
         tail = true;
         exec = mkScriptFromFile {
-          deps = [ pkgs.pulseaudio pkgs.wireplumber pkgs.gawk ];
+          deps = [pkgs.pulseaudio pkgs.wireplumber pkgs.gawk];
           scriptFile = ./polybar/volume-status.sh;
           args = [
             "alsa_output.pci-0000_00_1f.3.analog-stereo"
             "${colors.base05}"
             "${colors.base08}"
-            ];
+          ];
         };
         interval = "once";
         label = "%output%";
@@ -114,7 +118,7 @@ in {
       "module/wlan" = {
         type = "custom/script";
         exec = mkScriptFromFile {
-          deps = [ pkgs.iw pkgs.gawk ];
+          deps = [pkgs.iw pkgs.gawk];
           scriptFile = ./polybar/wlan-status.sh;
           args = [
             "${colors.base0B}"
@@ -131,7 +135,7 @@ in {
       "module/headscale" = {
         type = "custom/script";
         exec = mkScriptFromFile {
-          deps = [ pkgs.unstable.tailscale pkgs.jq ];
+          deps = [pkgs.unstable.tailscale pkgs.jq];
           scriptFile = ./polybar/headscale-status.sh;
           args = [
             "${colors.base0B}"
@@ -146,7 +150,7 @@ in {
       "module/systemd" = {
         type = "custom/script";
         exec = mkScriptFromFile {
-          deps = [ pkgs.systemdMinimal ];
+          deps = [pkgs.systemdMinimal];
           scriptFile = ./polybar/systemd-status.sh;
           args = [
             "${colors.base08}"
@@ -174,7 +178,7 @@ in {
         exec = mkScriptFromFile {
           deps = [pkgs.findutils pkgs.procps];
           scriptFile = ./polybar/email-status.sh;
-          args = [ "${colors.base05}" ];
+          args = ["${colors.base05}"];
         };
         interval = 60;
         format = "<label>";

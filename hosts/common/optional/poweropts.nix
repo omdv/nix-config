@@ -1,4 +1,4 @@
-{ pkgs, ... }: {
+{pkgs, ...}: {
   powerManagement.enable = true;
 
   systemd.sleep.extraConfig = ''
@@ -38,5 +38,4 @@
       "nowatchdog"
     ];
   };
-
 }
