@@ -1273,20 +1273,6 @@ export default function (pi: ExtensionAPI): void {
     },
   });
 
-  pi.registerShortcut("ctrl+o", {
-    description: "Browse files",
-    handler: async (ctx) => {
-      await runFileBrowser(pi, ctx);
-    },
-  });
-
-  pi.registerShortcut("alt+o", {
-    description: "Browse files (alt)",
-    handler: async (ctx) => {
-      await runFileBrowser(pi, ctx);
-    },
-  });
-
   pi.registerShortcut("ctrl+shift+f", {
     description: "Reveal the latest file reference",
     handler: async (ctx) => {
