@@ -27,6 +27,125 @@ flake.nix
 
 **home-manager** is used standalone (not as a NixOS module). `mkHome` hard-codes `x86_64-linux`; per-user `nixpkgs.nix` applies all flake overlays.
 
+### Visual Architecture
+
+```mermaid
+graph TB
+    %% Entry point
+    flake[flake.nix<br/>Entry Point]
+
+    %% Inputs
+    inputs[Flake Inputs<br/>nixpkgs, home-manager,<br/>sops-nix, nix-colors, etc.]
+
+    %% Lib functions
+    lib[lib/<br/>Helper Functions]
+    mkHost[mkHost.nix]
+    mkHome[mkHome.nix]
+    mkSecret[mkSecret.nix]
+
+    %% Overlays
+    overlays[overlays/<br/>Package Overlays]
+    overlay1[flake-inputs]
+    overlay2[unstable]
+    overlay3[additions]
+
+    %% Custom packages
+    pkgs[pkgs/<br/>Custom Packages]
+    pkg1[oh-my-pi]
+    pkg2[pi-coding-agent]
+    pkg3[rustledger]
+
+    %% NixOS configs
+    hosts[NixOS Configurations]
+    framework[hosts/framework/<br/>Laptop Config]
+    homelab[hosts/homelab/<br/>Server Config]
+    common[hosts/common/]
+    global[common/global/<br/>Applied to ALL hosts]
+    optional[common/optional/<br/>Opt-in features]
+
+    %% Home-manager configs
+    home[Home Manager Configurations]
+    hm_framework[home/om/framework.nix<br/>Laptop User Config]
+    hm_homelab[home/om/homelab.nix<br/>Server User Config]
+    hm_global[home/om/global/<br/>Base config]
+    features[home/om/features/<br/>Feature bundles]
+
+    %% Custom modules
+    modules[Custom Modules]
+    nixos_mod[modules/nixos/<br/>smartd]
+    hm_mod[modules/home-manager/<br/>fonts, i3scaling,<br/>monitors, wallpaper]
+
+    %% Connections - Entry
+    flake --> inputs
+    flake --> lib
+    flake --> overlays
+    flake --> modules
+    flake --> hosts
+    flake --> home
+
+    %% Lib connections
+    lib --> mkHost
+    lib --> mkHome
+    lib --> mkSecret
+
+    %% Overlay connections
+    overlays --> overlay1
+    overlays --> overlay2
+    overlays --> overlay3
+    overlay3 --> pkgs
+    pkgs --> pkg1
+    pkgs --> pkg2
+    pkgs --> pkg3
+
+    %% NixOS connections
+    mkHost -.creates.-> framework
+    mkHost -.creates.-> homelab
+    hosts --> framework
+    hosts --> homelab
+    hosts --> common
+    common --> global
+    common --> optional
+    framework --> global
+    framework --> optional
+    homelab --> global
+    homelab --> optional
+
+    %% Home-manager connections
+    mkHome -.creates.-> hm_framework
+    mkHome -.creates.-> hm_homelab
+    home --> hm_framework
+    home --> hm_homelab
+    hm_framework --> hm_global
+    hm_framework --> features
+    hm_homelab --> hm_global
+    hm_homelab --> features
+
+    %% Module connections
+    modules --> nixos_mod
+    modules --> hm_mod
+    framework -.uses.-> nixos_mod
+    homelab -.uses.-> nixos_mod
+    hm_framework -.uses.-> hm_mod
+    hm_homelab -.uses.-> hm_mod
+
+    %% Overlay application
+    overlays -.applied to.-> framework
+    overlays -.applied to.-> homelab
+    overlays -.applied to.-> hm_framework
+    overlays -.applied to.-> hm_homelab
+
+    %% Styling
+    classDef entryPoint fill:#82AAFF,stroke:#333,stroke-width:3px,color:#000
+    classDef factory fill:#C3E88D,stroke:#333,stroke-width:2px,color:#000
+    classDef config fill:#FFCB6B,stroke:#333,stroke-width:2px,color:#000
+    classDef resource fill:#F07178,stroke:#333,stroke-width:2px,color:#000
+
+    class flake entryPoint
+    class mkHost,mkHome,mkSecret factory
+    class framework,homelab,hm_framework,hm_homelab config
+    class overlays,pkgs,modules resource
+```
+
 ---
 
 ## Key Directories
