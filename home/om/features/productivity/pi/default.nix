@@ -11,6 +11,7 @@ let
     extensions = [
       "${piAgentDir}/extensions/security"
       "${piAgentDir}/extensions/files"
+      "${piAgentDir}/extensions/context"
     ];
   };
 
@@ -22,4 +23,7 @@ in {
 
   home.file.".pi/agent/extensions/files/index.ts".source =
     ./extensions/files/index.ts;
+
+  home.file.".pi/agent/extensions/context/index.ts".source =
+    ./extensions/context/index.ts;
 }
