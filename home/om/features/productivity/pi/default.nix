@@ -13,6 +13,7 @@ let
       "${piAgentDir}/extensions/files"
       "${piAgentDir}/extensions/context"
       "${piAgentDir}/extensions/notify"
+      "${piAgentDir}/extensions/session-breakdown"
     ];
   };
 
@@ -30,4 +31,7 @@ in {
 
   home.file.".pi/agent/extensions/notify/index.ts".source =
     ./extensions/notify/index.ts;
+
+  home.file.".pi/agent/extensions/session-breakdown/index.ts".source =
+    ./extensions/session-breakdown/index.ts;
 }
