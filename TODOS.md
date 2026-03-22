@@ -1,7 +1,7 @@
 # Repository Improvement TODOs
 
 Generated: 2026-03-21  
-Last Updated: 2026-03-21
+Last Updated: 2026-03-22
 
 ## ✅ Completed
 
@@ -16,6 +16,7 @@ Last Updated: 2026-03-21
 - ⏭️ #9 - Rebuild aliases (already existed: `hms`, `snrs`)
 
 **P2 (Quick Wins):**
+- ✅ #3 - Simplify overlay application
 - ✅ #8 - Add update automation script
 - ⏭️ #17 - Age key backup warning (user has separate backup strategy)
 - ⏭️ #19 - Optimize GC (current settings fine)
@@ -31,7 +32,6 @@ Last Updated: 2026-03-21
 ## 📊 Remaining Items
 
 **P2 - Medium Priority (not started):**
-- #3 - Simplify overlay application
 - #5 - Parameterize host configs
 - #6 - Add pre-commit hooks configuration
 - #10 - Standardize home-manager module imports
@@ -50,14 +50,6 @@ Last Updated: 2026-03-21
 ---
 
 ## 🔄 Remaining P2 Items (Medium Priority)
-
-### 3. **Simplify overlay application**
-Your `flake.nix` has `homeManagerCommonOverlays = []` that does nothing. Either use it or remove the abstraction.
-
-**Files to modify:**
-- `flake.nix`
-
----
 
 ### 5. **Parameterize host configs**
 Both hosts have hardcoded stateVersion, boot config, etc. Create a `hostConfig` option.
