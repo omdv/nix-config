@@ -22,8 +22,10 @@ Last Updated: 2026-03-22
 - ✅ #3 - Simplify overlay application
 - ✅ #6 - Add pre-commit hooks configuration
 - ✅ #8 - Add update automation script
+- ⏭️ #5 - Parameterize host configs (not needed with only 2 hosts)
 - ⏭️ #17 - Age key backup warning (user has separate backup strategy)
 - ⏭️ #19 - Optimize GC (current settings fine)
+- ⏭️ #22 - Consolidate shell scripts (current ad-hoc approach works fine)
 
 **P3 (Nice-to-Have):**
 
@@ -38,10 +40,8 @@ Last Updated: 2026-03-22
 
 **P2 - Medium Priority (not started):**
 
-- #5 - Parameterize host configs
 - #10 - Standardize home-manager module imports
 - #12 - Standardize secret naming
-- #22 - Consolidate shell scripts
 
 **P3 - Documentation:**
 
@@ -57,19 +57,6 @@ Last Updated: 2026-03-22
 ---
 
 ## 🔄 Remaining P2 Items (Medium Priority)
-
-### 5. **Parameterize host configs**
-
-Both hosts have hardcoded stateVersion, boot config, etc. Create a `hostConfig` option.
-
-**Files to modify:**
-
-- `lib/mkHost.nix`
-- `flake.nix`
-- `hosts/framework/default.nix`
-- `hosts/homelab/default.nix`
-
----
 
 ### 10. **Standardize home-manager module imports**
 
@@ -89,17 +76,6 @@ You use both underscores and hyphens. Be consistent: either all underscores or a
 
 - All `secrets.yaml` files
 - `lib/mkSecret.nix`
-
----
-
-### 22. **Consolidate shell scripts**
-
-Your `scripts/` are ad-hoc. Move them to `pkgs/` as proper derivations or add to home packages.
-
-**Files to consider:**
-
-- `scripts/cleanup_k3.sh`
-- `scripts/transfer_k3s_config.sh`
 
 ---
 
