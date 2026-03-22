@@ -57,9 +57,12 @@ export default function (pi: ExtensionAPI) {
             return { block: true, reason: `Blocked ${desc} (no UI to confirm)` };
           }
 
-          const ok = await ctx.ui.confirm(`⚠️ Dangerous command: ${desc}`, command);
+          const choice = await ctx.ui.select(
+            `⚠️ Dangerous command: ${desc}\n\n  ${command}\n\nAllow?`,
+            ["Yes", "No"],
+          );
 
-          if (!ok) {
+          if (choice !== "Yes") {
             return { block: true, reason: `Blocked ${desc} by user` };
           }
           break;
@@ -93,12 +96,12 @@ export default function (pi: ExtensionAPI) {
             return { block: true, reason: `Protected path (no UI): ${desc}` };
           }
 
-          const ok = await ctx.ui.confirm(
-            `⚠️ Modifying ${desc}`,
-            `Are you sure you want to modify ${filePath}?`,
+          const choice = await ctx.ui.select(
+            `⚠️ Modifying ${desc}\n\n  ${filePath}\n\nAllow?`,
+            ["Yes", "No"],
           );
 
-          if (!ok) {
+          if (choice !== "Yes") {
             return { block: true, reason: `User blocked write to ${desc}` };
           }
           break;
