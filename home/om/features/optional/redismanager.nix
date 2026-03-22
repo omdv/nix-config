@@ -1,5 +1,4 @@
-{ pkgs, ... }:
-let
+{pkgs, ...}: let
   pname = "AnotherRedisDesktopManager";
   version = "1.7.1";
   ardmAppImage = pkgs.fetchurl {
@@ -7,8 +6,7 @@ let
     sha256 = "sha256-XuS4jsbhUproYUE2tncT43R6ErYB9WTg6d7s16OOxFQ=";
     name = "${pname}-${version}.AppImage";
   };
-in
-{
+in {
   home.packages = with pkgs; [
     (writeShellScriptBin "AnotherRedisDesktopManager" ''
       #!${stdenv.shell}
@@ -21,7 +19,7 @@ in
     genericName = "Redis GUI Client";
     exec = "AnotherRedisDesktopManager";
     icon = "redis";
-    categories = [ "Development" "Utility" ];
+    categories = ["Development" "Utility"];
     comment = "A faster, better and more stable redis desktop manager.";
   };
 }

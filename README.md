@@ -4,7 +4,7 @@ Personal NixOS + home-manager configuration as a flake. Two machines: `framework
 
 ## Structure
 
-```
+```text
 flake.nix          -- inputs, outputs, wiring
 hosts/             -- NixOS system configs per machine
 home/om/           -- home-manager config for user om
@@ -19,6 +19,7 @@ lib/               -- mkHost, mkHome, mkSecret helpers
 ## Machines
 
 **framework** -- Framework 13 laptop
+
 - xanmod kernel, systemd-boot
 - i3wm, picom, polybar, rofi, dunst
 - catppuccin-mocha colorscheme
@@ -29,6 +30,7 @@ lib/               -- mkHost, mkHome, mkSecret helpers
 - auto-cpufreq, xss-lock + i3lock
 
 **homelab** -- headless server
+
 - k3s, Tailscale
 - sops-nix secrets
 

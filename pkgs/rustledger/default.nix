@@ -1,4 +1,8 @@
-{ stdenv, fetchurl, autoPatchelfHook }:
+{
+  stdenv,
+  fetchurl,
+  autoPatchelfHook,
+}:
 stdenv.mkDerivation rec {
   pname = "rustledger";
   version = "0.9.1";
@@ -8,7 +12,7 @@ stdenv.mkDerivation rec {
     sha256 = "1v4x9n7mqszmilxwkbvp1aisigkijcpikb3dr04qg15cbxavq1qm";
   };
 
-  nativeBuildInputs = [ autoPatchelfHook ];
+  nativeBuildInputs = [autoPatchelfHook];
 
   sourceRoot = ".";
 

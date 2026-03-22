@@ -1,4 +1,8 @@
-{pkgs,config, ...}: let
+{
+  pkgs,
+  config,
+  ...
+}: let
   dockerEnabled = false;
 in {
   # Enable common container config files in /etc/containers

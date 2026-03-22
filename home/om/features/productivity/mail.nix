@@ -1,4 +1,9 @@
-{ lib, config, pkgs, ...}: let
+{
+  lib,
+  config,
+  pkgs,
+  ...
+}: let
   mbsync = "${config.programs.mbsync.package}/bin/mbsync";
   fastmail_password = "${pkgs.coreutils-full}/bin/cat ${config.sops.secrets.fastmail_password.path}";
   gmail_password = "${pkgs.coreutils-full}/bin/cat ${config.sops.secrets.gmail_password.path}";
@@ -53,7 +58,8 @@ in {
               "Trash"
             ];
           };
-        } // common;
+        }
+        // common;
       gmail =
         rec {
           primary = false;
@@ -73,13 +79,13 @@ in {
             enable = true;
             create = "maildir";
             expunge = "both";
-            patterns = [ "*" "[Gmail]*" ];
+            patterns = ["*" "[Gmail]*"];
           };
           folders = {
             inbox = "Inbox";
             drafts = "[Gmail]/Drafts";
-            sent   = "[Gmail]/Sent Mail";
-            trash  = "[Gmail]/Trash";
+            sent = "[Gmail]/Sent Mail";
+            trash = "[Gmail]/Trash";
           };
           neomutt = {
             enable = true;
@@ -93,7 +99,8 @@ in {
               "[Gmail]/Trash"
             ];
           };
-        } // common;
+        }
+        // common;
     };
   };
 
@@ -103,8 +110,8 @@ in {
   systemd.user.services.mbsync = {
     Unit = {
       Description = "mbsync synchronization";
-      After = [ "network-online.target" ];
-      Wants = [ "network-online.target" ];
+      After = ["network-online.target"];
+      Wants = ["network-online.target"];
     };
     Service = {
       Type = "oneshot";
@@ -127,11 +134,12 @@ in {
   # Run 'createMaildir' after 'linkGeneration'
   home.activation = let
     mbsyncAccounts = lib.filter (a: a.mbsync.enable) (lib.attrValues config.accounts.email.accounts);
-  in lib.mkIf (mbsyncAccounts != [ ]) {
-    createMaildir = lib.mkForce (lib.hm.dag.entryAfter [ "linkGeneration" ] ''
-      run mkdir -m700 -p $VERBOSE_ARG ${
-        lib.concatMapStringsSep " " (a: a.maildir.absPath) mbsyncAccounts
-      }
-    '');
-  };
+  in
+    lib.mkIf (mbsyncAccounts != []) {
+      createMaildir = lib.mkForce (lib.hm.dag.entryAfter ["linkGeneration"] ''
+        run mkdir -m700 -p $VERBOSE_ARG ${
+          lib.concatMapStringsSep " " (a: a.maildir.absPath) mbsyncAccounts
+        }
+      '');
+    };
 }

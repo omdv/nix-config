@@ -1,5 +1,5 @@
 # everything related to k8s goes here
-{ pkgs, ... }: {
+{pkgs, ...}: {
   # misc k8s tools
   home.packages = with pkgs; [
     kubectl
@@ -237,8 +237,8 @@
         views = {
           charts = {
             bgColor = "default";
-            defaultDialColors = [ "#bd93f9" "#ff5555" ];
-            defaultChartColors = [ "#bd93f9" "#ff5555" ];
+            defaultDialColors = ["#bd93f9" "#ff5555"];
+            defaultChartColors = ["#bd93f9" "#ff5555"];
           };
           table = {
             fgColor = "#f8f8f2";
@@ -291,5 +291,4 @@
       };
     };
   };
-
 }

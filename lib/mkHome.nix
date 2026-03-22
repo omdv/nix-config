@@ -1,6 +1,11 @@
 # Factory for Home Manager configurations
-{ lib, inputs, outputs, pkgsFor }:
-name: host: lib.homeManagerConfiguration {
+{
+  lib,
+  inputs,
+  outputs,
+  pkgsFor,
+}: name: host:
+lib.homeManagerConfiguration {
   pkgs = pkgsFor.x86_64-linux;
   modules = [
     ../home/${name}/${host}.nix
@@ -11,7 +16,7 @@ name: host: lib.homeManagerConfiguration {
   extraSpecialArgs = {
     inherit inputs outputs;
     # Note: lib is NOT passed here - modules get HM-extended lib automatically
-    mkSecret = import ./mkSecret.nix { inherit lib; };
+    mkSecret = import ./mkSecret.nix {inherit lib;};
     colors = inputs.nix-colors;
   };
 }

@@ -1,5 +1,4 @@
-{ pkgs, ... }:
-let
+{pkgs, ...}: let
   tailscaleIP = "100.105.105.101";
   lanIP = "192.168.1.98";
 in {
@@ -14,7 +13,7 @@ in {
     role = "server";
     package = pkgs.symlinkJoin {
       name = "k3s-with-deps";
-      paths = [ pkgs.k3s pkgs.tailscale ];
+      paths = [pkgs.k3s pkgs.tailscale];
     };
     extraFlags = toString [
       "--disable traefik"
@@ -33,13 +32,13 @@ in {
   networking.firewall.allowedTCPPorts = [
     80
     443
-    6443    # k3s
-    8443    # ingress-nginx
-    10250   # kubelet metrics
-    32400   # plex
+    6443 # k3s
+    8443 # ingress-nginx
+    10250 # kubelet metrics
+    32400 # plex
   ];
 
   networking.firewall.allowedUDPPorts = [
-    51820   # flannel wireguard-native
+    51820 # flannel wireguard-native
   ];
 }

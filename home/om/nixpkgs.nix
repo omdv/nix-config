@@ -1,8 +1,5 @@
 # This file should be included when using hm standalone
-{
-  outputs,
-  ...
-}: {
+{outputs, ...}: {
   nixpkgs = {
     overlays = builtins.attrValues outputs.overlays;
     config = {

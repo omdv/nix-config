@@ -1,4 +1,9 @@
-{ pkgs, config, lib, ...}: {
+{
+  pkgs,
+  config,
+  lib,
+  ...
+}: {
   programs.git = {
     enable = true;
     package = pkgs.gitFull;

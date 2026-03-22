@@ -1,4 +1,4 @@
-{ pkgs, ...}: {
+{pkgs, ...}: {
   environment.systemPackages = with pkgs; [
     zfs
   ];
@@ -13,7 +13,7 @@
     };
     autoScrub = {
       enable = true;
-      pools = [ "pool" ];
+      pools = ["pool"];
       interval = "monthly";
     };
     autoSnapshot = {

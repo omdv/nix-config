@@ -1,5 +1,9 @@
-{ config, lib, pkgs, ... }:
-let
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: let
   colors = config.colorscheme.palette;
   # Explicit icon path: recursive GTK lookup fails for audio icons because
   # Papirus only ships audio-volume-* up to 24x24 (actions context), below

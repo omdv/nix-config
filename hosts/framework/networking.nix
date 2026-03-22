@@ -1,4 +1,8 @@
-{ lib, pkgs, ... }: {
+{
+  lib,
+  pkgs,
+  ...
+}: {
   services.resolved = {
     enable = true;
     fallbackDns = [
@@ -6,7 +10,7 @@
       "1.0.0.1"
       "8.8.8.8"
     ];
-    domains = [ "~." ];
+    domains = ["~."];
     extraConfig = ''
       DNSStubListener=yes
       MulticastDNS=yes

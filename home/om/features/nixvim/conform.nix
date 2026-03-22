@@ -1,10 +1,10 @@
-{ pkgs, ... }: {
+{pkgs, ...}: {
   programs.nixvim.plugins.conform-nvim = {
     enable = true;
     settings = {
       formatters_by_ft = {
-        nix    = [ "alejandra" ];
-        python = [ "ruff_format" "ruff_organize_imports" ];
+        nix = ["alejandra"];
+        python = ["ruff_format" "ruff_organize_imports"];
       };
       format_on_save = {
         timeout_ms = 500;

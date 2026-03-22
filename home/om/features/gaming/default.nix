@@ -1,4 +1,4 @@
-{ pkgs, ... }: {
+{pkgs, ...}: {
   home.packages = with pkgs.unstable; [
     # brogue # roguelike
     cataclysm-dda # roguelike

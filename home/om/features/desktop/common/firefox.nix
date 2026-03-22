@@ -16,7 +16,7 @@
       search = {
         force = true;
         default = "ddg";
-        order = [ "ddg" "google" ];
+        order = ["ddg" "google"];
       };
       bookmarks = {};
       settings = {
