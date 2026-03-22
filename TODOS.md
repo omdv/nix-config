@@ -22,6 +22,7 @@ Last Updated: 2026-03-22
 - ✅ #3 - Simplify overlay application
 - ✅ #6 - Add pre-commit hooks configuration
 - ✅ #8 - Add update automation script
+- ✅ #12 - Standardize secret naming (already consistent)
 - ⏭️ #5 - Parameterize host configs (not needed with only 2 hosts)
 - ⏭️ #17 - Age key backup warning (user has separate backup strategy)
 - ⏭️ #19 - Optimize GC (current settings fine)
@@ -41,7 +42,6 @@ Last Updated: 2026-03-22
 **P2 - Medium Priority (not started):**
 
 - #10 - Standardize home-manager module imports
-- #12 - Standardize secret naming
 
 **P3 - Documentation:**
 
@@ -65,17 +65,6 @@ Some features use explicit imports, others don't. Be consistent.
 **Files to audit:**
 
 - All `home/om/features/*/default.nix`
-
----
-
-### 12. **Standardize secret naming**
-
-You use both underscores and hyphens. Be consistent: either all underscores or all hyphens.
-
-**Files to audit:**
-
-- All `secrets.yaml` files
-- `lib/mkSecret.nix`
 
 ---
 
