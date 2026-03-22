@@ -30,7 +30,9 @@
     pkgs.pi-coding-agent # pi wrapper with nodejs
     pkgs.oh-my-pi # oh-my-pi fork with extended features
 
+    # miscellaneous
     pkgs.rustledger # rust ledger (binary)
+    pkgs.sc-im
 
   ];
 }
