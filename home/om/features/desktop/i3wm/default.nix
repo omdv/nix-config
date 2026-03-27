@@ -17,8 +17,8 @@ in {
   home.packages = with pkgs; [xss-lock i3lock];
 
   xsession.initExtra = ''
-    xset s 600             # blank screen after 10 min idle
-    xset dpms 600 600 900  # display off at 10/10/15 min
+    xset s off             # disable screen blanking timeout
+    xset -dpms             # disable display power management
   '';
 
   xsession.windowManager.i3 = {
@@ -62,10 +62,11 @@ in {
         bottom = 5;
       };
       startup = [
-        {
-          command = "${pkgs.xss-lock}/bin/xss-lock --transfer-sleep-lock -- ${pkgs.i3lock}/bin/i3lock --nofork -c ${colors.base00}";
-          notification = false;
-        }
+        # Automatic lock disabled - use Mod+l to lock manually
+        # {
+        #   command = "${pkgs.xss-lock}/bin/xss-lock --transfer-sleep-lock -- ${pkgs.i3lock}/bin/i3lock --nofork -c ${colors.base00}";
+        #   notification = false;
+        # }
         {
           command = "brave";
           notification = false;
