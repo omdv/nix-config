@@ -54,6 +54,12 @@ in {
         border = 0;
         titlebar = false;
         hideEdgeBorders = "smart";
+        commands = [
+          {
+            criteria = {title = "i3 Keybinding Cheatsheet";};
+            command = "floating enable, move position center";
+          }
+        ];
       };
       gaps = {
         smartGaps = false;
