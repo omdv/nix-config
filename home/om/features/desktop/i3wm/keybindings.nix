@@ -53,6 +53,18 @@ in {
             scriptFile = ./scripts/wifi-menu.sh;
             args = ["${config.fontProfiles.monospace.family} 16"];
           }}";
+          # keybinding cheatsheet
+          "${mod}+F1" = "exec ${mkScriptFromFile {
+            deps = [pkgs.imagemagick pkgs.feh pkgs.xorg.xdpyinfo];
+            scriptFile = ./scripts/keybinding-cheatsheet.sh;
+            args = [
+              "${config.fontProfiles.monospace.family} 16"
+              "${config.colorscheme.palette.base00}"  # BG_COLOR
+              "${config.colorscheme.palette.base05}"  # FG_COLOR
+              "${config.colorscheme.palette.base0D}"  # ACCENT_COLOR
+              "${config.colorscheme.palette.base08}"  # HEADER_COLOR
+            ];
+          }}";
 
           # volume control
           "XF86AudioRaiseVolume" = "exec ${mkScriptFromFile {
