@@ -1,9 +1,16 @@
-{pkgs, ...}: {
+{
+  lib,
+  pkgs,
+  ...
+}: {
   networking = {
     hostId = "35f9f50f";
     hostName = "desktop";
-    useNetworkd = true;
-    useDHCP = true;
+    useNetworkd = false;
+    networkmanager = {
+      enable = true;
+      dns = lib.mkForce "none";
+    };
   };
 
   services.resolved = {
