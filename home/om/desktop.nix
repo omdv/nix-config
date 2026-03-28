@@ -9,5 +9,5 @@
 
   # nix-colors colorscheme
   # https://github.com/tinted-theming/schemes
-  colorscheme = colors.colorSchemes.solarized-dark;
+  colorscheme = colors.colorSchemes.tokyo-night-moon;
 }
