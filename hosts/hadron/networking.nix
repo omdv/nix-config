@@ -5,7 +5,7 @@
 }: {
   networking = {
     hostId = "35f9f50f";
-    hostName = "desktop";
+    hostName = "hadron";
     useNetworkd = false;
     networkmanager = {
       enable = true;
