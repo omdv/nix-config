@@ -12,6 +12,8 @@
     ../common/global
     ../common/users/om
 
+    ../common/optional/nvidia.nix
+
     # Monitoring
     ../common/monitoring/system-notifications.nix
     ../common/monitoring/smartd.nix
