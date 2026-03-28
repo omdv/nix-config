@@ -78,12 +78,14 @@
     nixosConfigurations = {
       framework = mkHost "framework";
       homelab = mkHost "homelab";
+      desktop = mkHost "desktop";
     };
 
     # Home configurations
     homeConfigurations = {
       "om@framework" = mkHome "om" "framework";
       "om@homelab" = mkHome "om" "homelab";
+      "om@desktop" = mkHome "om" "desktop";
     };
   };
 }
