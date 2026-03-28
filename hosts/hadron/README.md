@@ -1,17 +1,17 @@
-# Desktop Host Configuration
+# Hadron Host Configuration
 
-Basic headless NixOS configuration for the desktop host.
+Basic headless NixOS configuration for the hadron host.
 
 ## Setup Steps
 
 ### 1. Copy hardware-configuration.nix
 
-Copy the generated `hardware-configuration.nix` from your desktop machine:
+Copy the generated `hardware-configuration.nix` from your hadron machine:
 
 ```bash
-# On the desktop machine after initial NixOS install:
+# On the hadron machine after initial NixOS install:
 nixos-generate-config --show-hardware-config > hardware-configuration.nix
-# Copy this file to hosts/desktop/hardware-configuration.nix in this repo
+# Copy this file to hosts/hadron/hardware-configuration.nix in this repo
 ```
 
 ### 2. Update networking.nix
@@ -19,7 +19,7 @@ nixos-generate-config --show-hardware-config > hardware-configuration.nix
 Update the `hostId` in `networking.nix`:
 
 ```bash
-# On the desktop machine:
+# On the hadron machine:
 head -c 8 /etc/machine-id
 # Replace the "00000000" placeholder in networking.nix with the output
 ```
@@ -27,7 +27,7 @@ head -c 8 /etc/machine-id
 ### 3. Generate and configure age key for sops
 
 ```bash
-# On the desktop machine after first boot:
+# On the hadron machine after first boot:
 # The host SSH key will be automatically converted to age format
 # Get the age public key:
 nix-shell -p ssh-to-age --run 'ssh-keyscan localhost | ssh-to-age'
@@ -44,7 +44,7 @@ Then update `.sops.yaml` in this repo:
 
 ```bash
 # Create the secrets file with required secrets:
-sops hosts/desktop/secrets.yaml
+sops hosts/hadron/secrets.yaml
 ```
 
 Add the following secret:
@@ -60,10 +60,10 @@ ntfy_system_topic: <your-ntfy-topic-url>
 nix build .#nixosConfigurations.desktop.config.system.build.toplevel
 
 # Deploy to the machine:
-sudo nixos-rebuild switch --flake .#desktop
+sudo nixos-rebuild switch --flake .#hadron
 
 # Apply home-manager configuration:
-home-manager switch --flake .#om@desktop
+home-manager switch --flake .#om@hadron
 ```
 
 ## Configuration Overview

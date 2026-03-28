@@ -6,7 +6,7 @@ keys:
   - &hosts:
     - &framework age1cv5pnzc4672e3u9zswkvqgn9ws8nm73z6xvju9zgxd8n885wva7s92mcdz
     - &homelab age1ujk86zknye398v9gaa8slwect79k8e73wq5us4nh6jw2vnlfge8qcpkr3c
-    - &desktop age1l7j8kj8aaw7qfux255z84x4a6fj0gjyxuc5nlp4vtm83053meueszjw76z
+    - &hadron age1l7j8kj8aaw7qfux255z84x4a6fj0gjyxuc5nlp4vtm83053meueszjw76z
 
 creation_rules:
   # For all users on framework
@@ -23,11 +23,11 @@ creation_rules:
       - *homelab
       - *om
 
-  # For all users on desktop
-  - path_regex: hosts/desktop/secrets.ya?ml$
+  # For all users on hadron
+  - path_regex: hosts/hadron/secrets.ya?ml$
     key_groups:
     - age:
-      - *desktop
+      - *hadron
       - *om
 
   # For current user on all machines
@@ -36,5 +36,5 @@ creation_rules:
     - age:
       - *framework
       - *homelab
-      - *desktop
+      - *hadron
       - *om
