@@ -59,10 +59,10 @@ in {
             scriptFile = ./scripts/keybinding-cheatsheet.sh;
             args = [
               "${config.fontProfiles.monospace.family} 16"
-              "${config.colorscheme.palette.base00}"  # BG_COLOR
-              "${config.colorscheme.palette.base05}"  # FG_COLOR
-              "${config.colorscheme.palette.base0D}"  # ACCENT_COLOR
-              "${config.colorscheme.palette.base08}"  # HEADER_COLOR
+              "${config.colorscheme.palette.base00}" # BG_COLOR
+              "${config.colorscheme.palette.base05}" # FG_COLOR
+              "${config.colorscheme.palette.base0D}" # ACCENT_COLOR
+              "${config.colorscheme.palette.base08}" # HEADER_COLOR
             ];
           }}";
 
