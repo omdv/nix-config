@@ -38,6 +38,6 @@
     pciutils
     usbutils
     vulkan-tools
-    glxinfo
+    mesa-demos
   ];
 }
