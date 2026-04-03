@@ -9,8 +9,9 @@
 
 /*****----- Configuration -----*****/
 configuration {
-	modi:                       "drun,projects:tp,run,filebrowser,window";
+	modi:                       "drun,projects:tp,tailscale:tssh,run,filebrowser,window";
     display-projects:           "󰃖 Tmux";
+    display-tailscale:          "󰖂 SSH";
     show-icons:                 true;
     display-drun:               " Apps";
     display-run:                " Run";
@@ -56,7 +57,7 @@ window {
     location:                    center;
     anchor:                      center;
     fullscreen:                  false;
-    width:                       800px;
+    width:                       1000px;
     x-offset:                    0px;
     y-offset:                    0px;
 
