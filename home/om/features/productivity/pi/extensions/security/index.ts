@@ -79,7 +79,11 @@ export default function (pi: ExtensionAPI) {
       return undefined;
     }
 
-    if (event.toolName === "write" || event.toolName === "edit") {
+    if (
+      event.toolName === "write" ||
+      event.toolName === "edit" ||
+      event.toolName === "hashline_edit"
+    ) {
       const filePath = event.input.path as string;
       const normalizedPath = path.normalize(filePath);
 

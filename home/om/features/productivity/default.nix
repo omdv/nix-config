@@ -1,13 +1,10 @@
 {pkgs, ...}: {
   imports = [
-    ./cursor.nix
     ./k9s.nix
     ./khard.nix
     ./mail.nix
     ./neomutt.nix
-    ./oh-my-pi # oh-my-pi extensions
-    ./pi # pi agent extensions
-    ./vscode.nix
+    ./pi
     ./zed.nix
   ];
 
@@ -23,12 +20,9 @@
     pkgs.claude-code # up-to-date claude code
     pkgs.unstable.claude-monitor # up-to-date claude cost monitor
 
-    # llm tools
+    # AI tools
     pkgs.unstable.aichat
-    pkgs.unstable.opencode # open source AI coding agent
-    pkgs.unstable.litellm
     pkgs.pi-coding-agent # pi wrapper with nodejs
-    pkgs.oh-my-pi # oh-my-pi fork with extended features
 
     # miscellaneous
     pkgs.rustledger # rust ledger (binary)
