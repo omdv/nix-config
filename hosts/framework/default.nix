@@ -15,15 +15,16 @@
     ../common/optional/xserver.nix
     ../common/optional/i3wm.nix
 
+    ../common/optional/containers.nix
     ../common/optional/java.nix
     ../common/optional/libvirt.nix
     ../common/optional/light.nix
+    ../common/optional/ollama.nix
     ../common/optional/pipewire.nix
     ../common/optional/poweropts.nix
     ../common/optional/printers.nix
     ../common/optional/quietboot.nix
     ../common/optional/steam.nix
-    ../common/optional/virtualisation.nix
     ../common/optional/vpn.nix
 
     # Monitoring
