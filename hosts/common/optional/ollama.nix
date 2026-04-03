@@ -1,6 +1,7 @@
-{
+{pkgs, ...}: {
   services.ollama = {
     enable = true;
-    loadModels = ["deepseek-r1"];
+    package = pkgs.unstable.ollama;
+    loadModels = ["qwen3.5"];
   };
 }
