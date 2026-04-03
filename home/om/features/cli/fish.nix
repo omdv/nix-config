@@ -14,10 +14,8 @@
   hasFd = hasPackage "fd";
   hasKubecolor = hasPackage "kubecolor";
   hasGopass = hasPackage "gopass";
-  hasClaude = hasPackage "claude-code";
 
   hasBat = config.programs.bat.enable;
-  hasNnn = config.programs.nnn.enable;
   hasNeovim = config.programs.neovim.enable || config.programs.nixvim.enable;
   hasNeomutt = config.programs.neomutt.enable;
   hasKitty = config.programs.kitty.enable;
@@ -41,15 +39,6 @@ in {
       # Clone-in-kitty
       cik = mkIf hasKitty "clone-in-kitty --type os-window";
 
-      # Better tools
-      find = mkIf hasFd "fd";
-      ls = mkIf hasExa "eza -al";
-      top = mkIf hasHtop "htop";
-      vim = mkIf hasNeovim "nvim";
-      mutt = mkIf hasNeomutt "neomutt";
-      pass = mkIf hasGopass "gopass";
-      ya = mkIf hasYazi "yazi";
-
       # Nix shortcuts
       snrs = "nh os switch .";
       hms = "nh home switch .";
@@ -65,84 +54,22 @@ in {
       # Clear screen and scrollback
       clear = "printf '\\033[2J\\033[3J\\033[1;1H'";
 
-      # AI tools
-      ai = "aichat";
-
-      # Claude code loading direnv
-      cl = mkIf hasClaude "direnv exec . claude";
-
       # Better tools
-      kubectl = mkIf hasKubecolor "kubecolor";
-      k = mkIf hasKubecolor "kubecolor";
+      ai = "aichat";
       cat = mkIf hasBat "bat";
-
-      # Shortcuts
-      ec = "cd /home/om/Documents/nix-config && code .";
-      ff = "source ~/.config/fish/config.fish";
+      find = mkIf hasFd "fd";
+      k = mkIf hasKubecolor "kubecolor";
+      kubectl = mkIf hasKubecolor "kubecolor";
+      ls = mkIf hasExa "eza -al";
+      mutt = mkIf hasNeomutt "neomutt";
+      pass = mkIf hasGopass "gopass";
+      top = mkIf hasHtop "htop";
+      vim = mkIf hasNeovim "nvim";
+      ya = mkIf hasYazi "yazi";
     };
     functions = {
       # Disable greeting
       fish_greeting = "";
-      # n wrapper with cd quit
-      n = mkIf hasNnn ''
-        # Block nesting of nnn in subshells
-        if test -n "$NNNLVL" -a "$NNNLVL" -ge 1
-            echo "nnn is already running"
-            return
-        end
-
-        # The behaviour is set to cd on quit (nnn checks if NNN_TMPFILE is set)
-        # If NNN_TMPFILE is set to a custom path, it must be exported for nnn to
-        # see. To cd on quit only on ^G, remove the "-x" from both lines below,
-        # without changing the paths.
-        if test -n "$XDG_CONFIG_HOME"
-            set -x NNN_TMPFILE "$XDG_CONFIG_HOME/nnn/.lastd"
-        else
-            set -x NNN_TMPFILE "$HOME/.config/nnn/.lastd"
-        end
-
-        # Unmask ^Q (, ^V etc.) (if required, see `stty -a`) to Quit nnn
-        # stty start undef
-        # stty stop undef
-        # stty lwrap undef
-        # stty lnext undef
-
-        # The command function allows one to alias this function to `nnn` without
-        # making an infinitely recursive alias
-        command nnn $argv
-
-        if test -e $NNN_TMPFILE
-            source $NNN_TMPFILE
-            rm -- $NNN_TMPFILE
-        end
-      '';
-      # sgpt integration
-      _sgpt_commandline = ''
-        # Get the current command line content
-        set -l _sgpt_prompt (commandline)
-
-        # Only proceed if there is a prompt
-        if test -z "$_sgpt_prompt"
-            return
-        end
-
-        # Append an hourglass to the current command
-        commandline -a "⌛"
-        commandline -f end-of-line  # needed to display the icon
-
-        # Get the output of the sgpt command
-        set -l _sgpt_output (echo "$_sgpt_prompt" | sgpt --shell --no-interaction)
-
-        if test $status -eq 0
-            # Replace the command line with the output from sgpt
-            commandline -r -- (string trim "$_sgpt_output")
-            commandline -a "  # $_sgpt_prompt"
-        else
-            # If the sgpt command failed, remove the hourglass
-            commandline -f backward-delete-char
-            commandline -a "  # ERROR: sgpt command failed"
-        end
-      '';
     };
     interactiveShellInit = ''
       # XDG configs
@@ -178,13 +105,6 @@ in {
 
       # kubeconfig
       set -gx KUBECONFIG $HOME/.kube/config:$HOME/Documents/devops/homelab-server/provision/kubeconfig
-
-      # nnn
-      set -Ux NNN_PLUG "o:fzopen;p:preview-tui;d:diffs;t:tree;f:finder;s:stats"
-      set -gx NNN_FIFO "/tmp/nnn.fifo"
-
-      # # asdf
-      # source "$HOME/.nix-profile/share/asdf-vm/asdf.fish"
 
       # direnv
       direnv hook fish | source
