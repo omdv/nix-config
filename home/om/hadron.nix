@@ -3,7 +3,7 @@
     ./global
 
     ./features/desktop/common
-    ./features/desktop/gnome
+    # ./features/desktop/gnome
 
     ./features/cli
     ./features/nixvim

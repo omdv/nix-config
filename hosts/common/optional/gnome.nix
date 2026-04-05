@@ -3,21 +3,15 @@
   lib,
   ...
 }: {
-  services = {
-    xserver = {
-      enable = true;
-      desktopManager.gnome = {
-        enable = true;
-      };
-      displayManager.gdm = {
-        enable = true;
-        autoSuspend = false;
-      };
-    };
+  services.xserver.enable = true;
+  services.desktopManager.gnome.enable = true;
+  services.displayManager.gdm = {
+    enable = true;
+    autoSuspend = false;
   };
 
   environment.systemPackages = with pkgs; [
-    gnome3.gnome-tweaks
+    gnome-tweaks
   ];
 
   # Disable tracker
