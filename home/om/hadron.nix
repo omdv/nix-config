@@ -2,6 +2,9 @@
   imports = [
     ./global
 
+    ./features/desktop/common
+    ./features/desktop/i3wm
+
     ./features/cli
     ./features/nixvim
     ./features/pass
