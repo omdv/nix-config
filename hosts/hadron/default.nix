@@ -12,10 +12,9 @@
     ../common/global
     ../common/users/om
 
-    # gaming / gpu profile
+    # desktop / gpu profile
     ../common/optional/nvidia.nix
-    ../common/optional/xserver.nix
-    ../common/optional/i3wm.nix
+    ../common/optional/gnome.nix
 
     # Monitoring
     ../common/monitoring/system-notifications.nix
@@ -46,6 +45,8 @@
       sopsFile = ./secrets.yaml;
     };
   };
+
+  programs.dconf.enable = true;
 
   system.stateVersion = "25.11";
 }
