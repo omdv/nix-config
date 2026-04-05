@@ -36,17 +36,15 @@
     yq-go # yaml processor https://github.com/mikefarah/yq
 
     # system tools
+    dua # TUI fast disk space viewer
     duf # TUI disk usage
-    iotop # io monitoring
     kmon # TUI kernel manager
     lm_sensors # for `sensors` command
     lsof # list open files
     ltrace # library call monitoring
-    ncdu # TUI disk usage
     pciutils # lspci
     strace # system call monitoring
     sysz # fzf for systemd
-    usbutils # lsusb
     unzip # zip decompressor
 
     # network tools
