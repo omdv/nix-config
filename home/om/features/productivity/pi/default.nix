@@ -2,8 +2,8 @@
   piAgentDir = "${config.home.homeDirectory}/.pi/agent";
 
   piSettings = {
-    defaultProvider = "anthropic";
-    defaultModel = "claude-sonnet-4-5";
+    defaultProvider = "openai-codex";
+    defaultModel = "gpt-5.3-codex";
     theme = "dark";
     hideThinkingBlock = true;
 
@@ -39,4 +39,7 @@ in {
 
   home.file.".pi/agent/skills/context-optimization/SKILL.md".source =
     ./skills/context-optimization/SKILL.md;
+
+  home.file.".pi/agent/AGENTS.md".source =
+    ./AGENTS.md;
 }
