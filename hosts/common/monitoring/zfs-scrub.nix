@@ -35,7 +35,7 @@
               ;;
           esac
           ;;
-        resilver_finish|scrub_finish)
+        resilver_finish|scrub_finish|sysevent.fs.zfs.resilver_finish|sysevent.fs.zfs.scrub_finish)
           SEVERITY="info"
           ;;
         *)
@@ -52,6 +52,16 @@
       Device: $ZEVENT_VDEV_PATH"
       [ -n "$ZEVENT_VDEV_STATE" ] && MESSAGE="$MESSAGE
       State: $ZEVENT_VDEV_STATE"
+      [ -n "$ZEVENT_EID" ] && MESSAGE="$MESSAGE
+      Event ID: $ZEVENT_EID"
+      [ -n "$ZEVENT_TIME_STRING" ] && MESSAGE="$MESSAGE
+      Time: $ZEVENT_TIME_STRING"
+      [ -n "$ZEVENT_HISTORY_HOST" ] && MESSAGE="$MESSAGE
+      Source Host: $ZEVENT_HISTORY_HOST"
+      [ -n "$ZEVENT_HISTORY_DSNAME" ] && MESSAGE="$MESSAGE
+      Dataset: $ZEVENT_HISTORY_DSNAME"
+      [ -n "$ZEVENT_HISTORY_INTERNAL_NAME" ] && MESSAGE="$MESSAGE
+      Internal: $ZEVENT_HISTORY_INTERNAL_NAME"
 
       # Call unified notification script
       exec /etc/system-notify.sh "zed" "$SEVERITY" "$MESSAGE"
@@ -87,6 +97,8 @@
       io \
       resilver_finish \
       scrub_finish \
+      sysevent.fs.zfs.resilver_finish \
+      sysevent.fs.zfs.scrub_finish \
       statechange \
       data \
       ereport.fs.zfs.checksum \
