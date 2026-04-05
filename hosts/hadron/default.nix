@@ -12,7 +12,10 @@
     ../common/global
     ../common/users/om
 
+    # gaming / gpu profile
     ../common/optional/nvidia.nix
+    ../common/optional/xserver.nix
+    ../common/optional/i3wm.nix
 
     # Monitoring
     ../common/monitoring/system-notifications.nix
