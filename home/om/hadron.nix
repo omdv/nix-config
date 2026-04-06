@@ -3,11 +3,12 @@
     ./global
 
     ./features/desktop/common
-    # ./features/desktop/gnome
+    ./features/desktop/gnome
 
     ./features/cli
     ./features/nixvim
     ./features/pass
+    ./features/productivity
 
     ./features/optional/minecraft-clj.nix
   ];

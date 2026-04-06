@@ -17,7 +17,7 @@
         fi
 
         if [ ! -f "$MC_DATA_DIR/rcon-password" ]; then
-          tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 24 > "$MC_DATA_DIR/rcon-password"
+          od -An -N16 -tx1 /dev/urandom | tr -d ' \n' | cut -c1-24 > "$MC_DATA_DIR/rcon-password"
           chmod 600 "$MC_DATA_DIR/rcon-password"
           echo "Generated RCON password at: $MC_DATA_DIR/rcon-password"
         fi
@@ -122,7 +122,7 @@ in {
               dy (range height)]
         (set-block! (+ x dx) (+ y dy) z block)))
 
-    (defn house!
+    (defn box!
       "Build a simple hollow box house."
       [x y z width height depth block]
       ;; floor
