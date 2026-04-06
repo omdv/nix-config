@@ -6,9 +6,7 @@
     ./features/desktop/gnome
 
     ./features/cli
-    ./features/nixvim
-    ./features/pass
-    ./features/productivity
+    ./features/development
 
     ./features/optional/minecraft-clj.nix
   ];

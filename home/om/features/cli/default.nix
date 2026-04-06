@@ -10,6 +10,8 @@
     ./btop.nix
     ./htop.nix
     ./navi.nix
+    ./nixvim
+    ./pass.nix
     ./qutebrowser.nix
     ./ssh.nix
     ./starship.nix
