@@ -2,6 +2,7 @@
   imports = [
     ./k9s.nix
     ./pi
+    ./mirage-proxy.nix
     ./zed.nix
   ];
 
@@ -13,5 +14,6 @@
     # AI tools
     pkgs.unstable.aichat
     pkgs.pi-coding-agent # pi wrapper with nodejs
+    pkgs.mirage-proxy
   ];
 }
