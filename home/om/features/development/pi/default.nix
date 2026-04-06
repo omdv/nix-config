@@ -42,4 +42,7 @@ in {
 
   home.file.".pi/agent/AGENTS.md".source =
     ./AGENTS.md;
+
+  home.file.".pi/agent/models.json".source =
+    ./models.json;
 }
