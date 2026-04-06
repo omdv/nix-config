@@ -1,0 +1,16 @@
+{
+  "providers": {
+    "anthropic": {
+      "baseUrl": "http://127.0.0.1:8686/anthropic"
+    },
+    "openai": {
+      "baseUrl": "http://127.0.0.1:8686/openai"
+    },
+    "_openai-codex": {
+      "baseUrl": "http://127.0.0.1:8686/codex"
+    },
+    "openrouter": {
+      "baseUrl": "http://127.0.0.1:8686/openrouter"
+    }
+  }
+}
