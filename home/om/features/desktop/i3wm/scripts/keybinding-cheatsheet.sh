@@ -73,13 +73,14 @@ convert -size ${WIDTH}x${HEIGHT} xc:none \
     -annotate +${COL2}+390 "snrs                nh os switch ." \
     -annotate +${COL2}+415 "hms                 nh home switch ." \
     -annotate +${COL2}+440 "nixgc               nix-collect-garbage -d" \
+    -annotate +${COL2}+465 "nfit <kw>           init flake template" \
     \
-    -fill "$ACCENT_COLOR" -pointsize 18 -annotate +${COL2}+490 "i3 CONTROL" \
+    -fill "$ACCENT_COLOR" -pointsize 18 -annotate +${COL2}+505 "i3 CONTROL" \
     -fill "$FG_COLOR" -pointsize 16 \
-    -annotate +${COL2}+520 "Mod + F1            This cheatsheet" \
-    -annotate +${COL2}+545 "Mod + Shift + c     Reload config" \
-    -annotate +${COL2}+570 "Mod + Shift + r     Restart i3" \
-    -annotate +${COL2}+595 "Mod + Shift + e     Exit i3" \
+    -annotate +${COL2}+535 "Mod + F1            This cheatsheet" \
+    -annotate +${COL2}+560 "Mod + Shift + c     Reload config" \
+    -annotate +${COL2}+585 "Mod + Shift + r     Restart i3" \
+    -annotate +${COL2}+610 "Mod + Shift + e     Exit i3" \
     \
     -fill "$FG_COLOR" -pointsize 14 -gravity South -annotate +0+30 "Press ESC or click to close" \
     "$TMPFILE"

@@ -74,6 +74,21 @@
     devShells = forEachSystem (pkgs: import ./shell.nix {inherit pkgs;});
     formatter = forEachSystem (pkgs: pkgs.alejandra);
 
+    templates = {
+      python = {
+        path = ./templates/python;
+        description = "Python development shell (python, pip, virtualenv, ruff, black)";
+      };
+      rust = {
+        path = ./templates/rust;
+        description = "Rust development shell (rustc, cargo, clippy, rustfmt, rust-analyzer)";
+      };
+      nodejs = {
+        path = ./templates/nodejs;
+        description = "Node.js development shell (nodejs_22, pnpm, yarn)";
+      };
+    };
+
     # Host configurations
     nixosConfigurations = {
       framework = mkHost "framework";
