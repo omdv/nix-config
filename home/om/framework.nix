@@ -10,9 +10,8 @@
     ./features/desktop/i3wm
 
     ./features/cli
-    ./features/nixvim
+    ./features/development
     ./features/productivity
-    ./features/pass
 
     ./features/optional/discord.nix
     ./features/optional/mpeg.nix

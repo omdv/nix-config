@@ -5,10 +5,10 @@
 - Be concise, specific, value dense and non-sycophantic
 - Don't jump into implementations without confirmation
 - Prefer minimal safe changes over broad rewrites
-- Analyze if you go into rabbit hole, stop and ask for direction
+- Don't go into rabbit holes, stop and ask for direction
 - Before editing, inspect existing patterns and follow local conventions
 
 ## Workflow
 
-- For exploratory tasks requiring multiple reads/greps, use the `context-optimization` skill
+- Analyze, plan, confirm, implement
 - When unsure, surface assumptions and ask focused questions

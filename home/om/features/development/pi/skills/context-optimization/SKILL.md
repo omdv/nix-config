@@ -26,14 +26,15 @@ Use checkpoint/rewind by default for:
 - 🤔 **Comparing approaches** before implementation
 
 Only skip checkpoint for clearly direct actions (single-file, obvious edit, immediate execution).
+
 ## How It Works
 
-```
+```markdown
 1. checkpoint(goal: "specific investigation goal")
    ↓
 2. Perform exploratory work freely
    - read multiple files
-   - grep across codebase  
+   - grep across codebase
    - run LSP queries
    - check git history
    - anything needed to understand the issue
@@ -67,21 +68,24 @@ rewind(report: "Bottleneck identified: N+1 query in User.posts relationship. Lin
 ### Report Quality Guide
 
 **Good reports** (compress well):
-```
-"Bug found: JWT expiry validation skipped in auth/middleware.ts:89. 
-Token acceptance logic checks signature but not exp claim. 
-Attacker with expired but signed token can authenticate. 
+
+```markdown
+"Bug found: JWT expiry validation skipped in auth/middleware.ts:89.
+Token acceptance logic checks signature but not exp claim.
+Attacker with expired but signed token can authenticate.
 Fix: Add exp < now check before signature verification."
 ```
 
 **Bad reports** (defeat the purpose):
-```
-"I started by reading auth.ts which has 500 lines. Then I checked 
+
+```markdown
+"I started by reading auth.ts which has 500 lines. Then I checked
 middleware.ts and found some JWT code. I searched for 'jwt' and got
 many results. After reading database.ts and api.ts, I noticed that..."
 ```
 
 **Report checklist**:
+
 - ✅ States what you found (bug/bottleneck/answer)
 - ✅ Explains where (file:line or component name)
 - ✅ Describes impact/severity
@@ -135,6 +139,7 @@ read middleware/auth.ts // 250 lines in context
 4. **Report discipline**: Keep rewind report concise (target 50-150 words, hard cap 200). Include: finding, location, impact, next action.
 
 5. **Allowed skip cases only**: You may skip checkpoint only for direct, low-ambiguity tasks that require minimal exploration.
+
 ## Advanced Patterns
 
 ### Multi-Stage Investigation
@@ -147,7 +152,7 @@ checkpoint(goal: "Locate source of memory leak")
 // ... exploration ...
 rewind(report: "Leak in cache.ts:156 - WeakMap not cleaning up listeners")
 
-// Phase 2: Understand fix requirements  
+// Phase 2: Understand fix requirements
 checkpoint(goal: "Determine safe fix for cache listener leak")
 // ... more exploration ...
 rewind(report: "Safe fix: Add cleanup in destroy() method. No breaking changes needed.")
@@ -171,11 +176,12 @@ Even negative results are valuable when compressed!
 ## Context Savings Math
 
 **Without checkpoint:**
-```
+
+```markdown
 User: "Why is this slow?"
 Assistant: read api.ts (500 lines)
 Tool: [500 lines]
-Assistant: read db.ts (400 lines)  
+Assistant: read db.ts (400 lines)
 Tool: [400 lines]
 Assistant: grep "query" (50 matches)
 Tool: [200 lines of matches]
@@ -185,7 +191,8 @@ Total: ~1400 lines in context
 ```
 
 **With checkpoint:**
-```
+
+```markdown
 User: "Why is this slow?"
 Assistant: checkpoint(goal="Find performance issue")
 Assistant: [same exploration, but...]
@@ -196,6 +203,7 @@ Total: ~50 words in context (96% savings)
 ## Monitoring
 
 Check checkpoint status:
+
 ```bash
 /checkpoint-status    # See active checkpoint details
 /checkpoint-abandon   # Cancel checkpoint without rewinding (rare)
@@ -250,6 +258,7 @@ After using this skill, you should see:
 The goal is to make exploration free. Once you've already used context, checkpointing is pointless.
 
 Think of it like:
+
 - 🚫 **Wrong**: Drive 100 miles, then realize you should have tracked mileage
 - ✅ **Right**: Reset trip odometer before driving, check distance after
 
