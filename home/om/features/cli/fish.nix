@@ -70,6 +70,29 @@ in {
     functions = {
       # Disable greeting
       fish_greeting = "";
+      nfit = ''
+        set -l key $argv[1]
+        set -l template
+
+        switch "$key"
+          case python py
+            set template python
+          case rust rs
+            set template rust
+          case nodejs node js
+            set template nodejs
+          case '*'
+            echo "Usage: nfit [python|rust|nodejs]"
+            return 1
+        end
+
+        nix flake init -t ~/nix-config#$template
+        or return 1
+
+        if test ! -f .envrc
+          printf "use flake\n" > .envrc
+        end
+      '';
     };
     interactiveShellInit = ''
       # XDG configs
@@ -84,6 +107,7 @@ in {
       # xdg folder cleanup
       set -gx ASDF_DATA_DIR $XDG_DATA_HOME/asdf
       set -gx CALCHISTFILE $XDG_CACHE_HOME/calc_history
+
       set -gx CARGO_HOME $XDG_DATA_HOME/cargo
       set -gx DOCKER_CONFIG $XDG_CONFIG_HOME/docker
       set -gx GOPATH $XDG_DATA_HOME/go
