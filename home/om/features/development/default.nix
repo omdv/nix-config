@@ -14,6 +14,6 @@
     # AI tools
     pkgs.unstable.aichat
     pkgs.pi-coding-agent # pi wrapper with nodejs
-    pkgs.mirage-proxy
+    # pkgs.mirage-proxy
   ];
 }

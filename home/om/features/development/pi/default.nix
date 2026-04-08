@@ -1,4 +1,8 @@
-{config, ...}: let
+{
+  config,
+  pkgs,
+  ...
+}: let
   piAgentDir = "${config.home.homeDirectory}/.pi/agent";
 
   piSettings = {
@@ -6,7 +10,6 @@
     defaultModel = "gpt-5.3-codex";
     theme = "dark";
     hideThinkingBlock = true;
-
     extensions = [
       "${piAgentDir}/extensions/security"
       "${piAgentDir}/extensions/files"
@@ -14,6 +17,7 @@
       "${piAgentDir}/extensions/context"
       "${piAgentDir}/extensions/notify"
       "${piAgentDir}/extensions/session-breakdown"
+      pkgs.pi-dynamic-context-pruning
     ];
   };
 in {
@@ -37,12 +41,9 @@ in {
   home.file.".pi/agent/extensions/session-breakdown/index.ts".source =
     ./extensions/session-breakdown/index.ts;
 
-  home.file.".pi/agent/skills/context-optimization/SKILL.md".source =
-    ./skills/context-optimization/SKILL.md;
-
   home.file.".pi/agent/AGENTS.md".source =
     ./AGENTS.md;
 
-  home.file.".pi/agent/models.json".source =
-    ./models.json;
+  # home.file.".pi/agent/models.json".source =
+  #   ./models.json;
 }

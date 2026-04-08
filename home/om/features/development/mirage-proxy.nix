@@ -18,13 +18,13 @@ in {
       - "generativelanguage.googleapis.com"  # skip Google (TLS fingerprint issues)
 
     rules:
-      always_redact: [SSN, CREDIT_CARD, PRIVATE_KEY, AWS_KEY, GITHUB_TOKEN, SECRET]
-      mask: [EMAIL, PHONE]
+      always_redact: [PRIVATE_KEY, AWS_KEY, BEARER_TOKEN, GITHUB_TOKEN, CONNECTION_STRING, SECRET]
+      mask: [EMAIL, PHONE, SSN, CREDIT_CARD]
       warn_only: [IP_ADDRESS]
 
     audit:
       enabled: true
-      path: "./mirage-audit.jsonl"
+      path: "$XDG_STATE_HOME/mirage/mirage-audit.jsonl"
       log_values: false
   '';
 
