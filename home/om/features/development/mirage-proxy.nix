@@ -1,14 +1,14 @@
 {pkgs, ...}: let
-  mirageWrapper = pkgs.writeShellScriptBin "mirage-proxy-wrapped" ''
+  mirageWrapper = pkgs.writeShellScriptBin "mirage" ''
     set -euo pipefail
     # Retrieve vault key from pass
     export MIRAGE_VAULT_KEY=$(${pkgs.pass}/bin/pass mirage/vault-key 2>/dev/null || true)
     exec ${pkgs.mirage-proxy}/bin/mirage-proxy "$@"
   '';
 in {
-  # home.packages = [
-  #   mirageWrapper
-  # ];
+  home.packages = [
+    mirageWrapper
+  ];
 
   # config file
   home.file.".config/mirage/mirage.yaml".text = ''
@@ -37,25 +37,25 @@ in {
         - "/nix/store/[a-z0-9]{32}-[^\\s\"']+"
   '';
 
-  # # systemd service
-  # systemd.user.services.mirage-proxy = {
-  #   Unit = {
-  #     Description = "Mirage proxy daemon";
-  #     After = ["network-online.target"];
-  #     Wants = ["network-online.target"];
-  #   };
+  # systemd service
+  systemd.user.services.mirage-proxy = {
+    Unit = {
+      Description = "Mirage proxy daemon";
+      After = ["network-online.target"];
+      Wants = ["network-online.target"];
+    };
 
-  #   Service = {
-  #     Type = "simple";
-  #     StateDirectory = "mirage";
-  #     WorkingDirectory = "%S/mirage";
-  #     ExecStart = "${mirageWrapper}/bin/mirage-proxy-wrapped --port 8686 --no-update-check --config %E/mirage/mirage.yaml";
-  #     Restart = "always";
-  #     RestartSec = 2;
-  #   };
+    Service = {
+      Type = "simple";
+      StateDirectory = "mirage";
+      WorkingDirectory = "%S/mirage";
+      ExecStart = "${mirageWrapper}/bin/mirage run --port 8686 --config %E/mirage/mirage.yaml";
+      Restart = "always";
+      RestartSec = 2;
+    };
 
-  #   Install = {
-  #     WantedBy = ["default.target"];
-  #   };
-  # };
+    Install = {
+      WantedBy = ["default.target"];
+    };
+  };
 }
