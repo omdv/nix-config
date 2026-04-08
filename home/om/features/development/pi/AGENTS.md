@@ -11,4 +11,5 @@
 ## Workflow
 
 - Analyze, plan, confirm, implement
+- Before starting executions and editing explain the approach
 - When unsure, surface assumptions and ask focused questions
