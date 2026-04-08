@@ -24,8 +24,17 @@ in {
 
     audit:
       enabled: true
-      path: "$XDG_STATE_HOME/mirage/mirage-audit.jsonl"
+      path: "/home/om/.local/state/mirage/mirage-audit.jsonl"
       log_values: false
+
+    vault:
+      enabled: true
+      path: "/home/om/.local/state/mirage/mirage-vault.enc"
+
+    exclusions:
+      values:
+        - "sha256-[A-Za-z0-9+/=]{20,}"
+        - "/nix/store/[a-z0-9]{32}-[^\\s\"']+"
   '';
 
   # # systemd service
