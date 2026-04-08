@@ -70,6 +70,7 @@
     nvd # Nix version diff
 
     # misc
+    awscli2
     qgis # Great qt-based GIS
     tldr # Simplified man
     simplescreenrecorder # record screen
