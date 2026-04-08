@@ -10,6 +10,14 @@
     defaultModel = "gpt-5.3-codex";
     theme = "dark";
     hideThinkingBlock = true;
+    enabledModels = [
+      "glm-5.1"
+      "gpt-5.3-codex"
+      "claude-sonnet-4-5"
+      "claude-sonnet-4-6"
+      "claude-opus-4-5"
+      "claude-opus-4-6"
+    ];
     extensions = [
       "${piAgentDir}/extensions/security"
       "${piAgentDir}/extensions/files"
@@ -17,7 +25,8 @@
       "${piAgentDir}/extensions/context"
       "${piAgentDir}/extensions/notify"
       "${piAgentDir}/extensions/session-breakdown"
-      pkgs.pi-dynamic-context-pruning
+      # pkgs.pi-dynamic-context-pruning
+      # pkgs.taskplane
     ];
   };
 in {

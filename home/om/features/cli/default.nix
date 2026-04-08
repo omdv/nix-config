@@ -28,6 +28,7 @@
     # better utils
     bc # Calculator
     comma # Install and run programs by sticking a , before them
+    diff-so-fancy # Better diff viewer
     eza # Better ls
     fd # Better find
     maim # Screenshot tool
