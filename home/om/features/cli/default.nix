@@ -28,14 +28,10 @@
     # better utils
     bc # Calculator
     comma # Install and run programs by sticking a , before them
-    diff-so-fancy # Better diff
-    distrobox # Nice escape hatch, integrates docker images with my environment
     eza # Better ls
     fd # Better find
-    jq # A lightweight and flexible command-line JSON processor
     maim # Screenshot tool
     ripgrep # Better grep
-    yq-go # yaml processor https://github.com/mikefarah/yq
 
     # system tools
     dua # TUI fast disk space viewer
@@ -43,9 +39,6 @@
     kmon # TUI kernel manager
     lm_sensors # for `sensors` command
     lsof # list open files
-    ltrace # library call monitoring
-    pciutils # lspci
-    strace # system call monitoring
     sysz # fzf for systemd
     unzip # zip decompressor
 

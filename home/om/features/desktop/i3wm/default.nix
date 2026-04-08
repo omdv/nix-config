@@ -68,11 +68,6 @@ in {
         bottom = 5;
       };
       startup = [
-        # Automatic lock disabled - use Mod+l to lock manually
-        # {
-        #   command = "${pkgs.xss-lock}/bin/xss-lock --transfer-sleep-lock -- ${pkgs.i3lock}/bin/i3lock --nofork -c ${colors.base00}";
-        #   notification = false;
-        # }
         {
           command = "brave";
           notification = false;
