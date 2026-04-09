@@ -26,7 +26,6 @@
       "${piAgentDir}/extensions/notify"
       "${piAgentDir}/extensions/session-breakdown"
       # pkgs.pi-dynamic-context-pruning
-      # pkgs.taskplane
     ];
   };
 in {
@@ -49,6 +48,9 @@ in {
 
   home.file.".pi/agent/extensions/session-breakdown/index.ts".source =
     ./extensions/session-breakdown/index.ts;
+
+  home.file.".pi/agent/skills/analyze-repo/SKILL.md".source =
+    ./skills/analyze-repo/SKILL.md;
 
   home.file.".pi/agent/AGENTS.md".source =
     ./AGENTS.md;
