@@ -5,7 +5,11 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
   };
 
-  outputs = {nixpkgs}: let
+  outputs = {
+    self,
+    nixpkgs,
+    ...
+  }: let
     systems = [
       "x86_64-linux"
     ];
