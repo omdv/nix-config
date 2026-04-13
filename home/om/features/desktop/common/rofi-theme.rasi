@@ -10,7 +10,7 @@
 /*****----- Configuration -----*****/
 configuration {
 	modi:                       "drun,projects:tp,tailscale:tssh,run,filebrowser,window";
-    display-projects:           "󰃖 Tmux";
+    display-projects:           "󰃖 Zellij";
     display-tailscale:          "󰖂 SSH";
     show-icons:                 true;
     display-drun:               " Apps";

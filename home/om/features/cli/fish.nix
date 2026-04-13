@@ -134,7 +134,7 @@ in {
       direnv hook fish | source
 
       # fzf.fish and settings
-      fzf_configure_bindings --git_status=\cg --variables=\cv --directory=\cf --git_log=\cl --processes=\ct
+      fzf_configure_bindings --git_status=\eg --variables=\cv --directory=\cf --git_log=\cl --processes=\ct
       set -gx fzf_fd_opts --hidden --no-ignore --exclude=.git --max-depth 5
       set -gx fzf_preview_dir_cmd eza --tree --level=2 --color=always
       set -gx fzf_diff_highlighter diff-so-fancy
