@@ -39,7 +39,7 @@ lib/               -- mkHost, mkHome, mkSecret helpers
 | Tool | Config |
 |---|---|
 | shell | fish |
-| terminal | kitty + tmux |
+| terminal | kitty + zellij |
 | editor | neovim (nixvim) with LSP, treesitter, catppuccin |
 | mail | neomutt + mbsync + msmtp |
 | browser | Brave |

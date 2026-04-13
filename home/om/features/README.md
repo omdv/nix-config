@@ -29,7 +29,7 @@ features/
 Core shell experience and CLI tools. Includes:
 
 - **Shell:** Fish with starship prompt
-- **Multiplexer:** tmux
+- **Multiplexer:** zellij
 - **Editor:** (config only, neovim is in nixvim)
 - **File tools:** bat, eza, fd, ripgrep, fzf, yazi
 - **System tools:** btop, htop, ncdu, duf
@@ -37,7 +37,7 @@ Core shell experience and CLI tools. Includes:
 - **Dev tools:** git, direnv, ssh, gpg
 - **Nix tools:** alejandra, nh, nixd, nix-tree, nvd
 
-**Sub-modules:** 16 files (atuin, bat, fish, git, gpg, ssh, tmux, etc.)
+**Sub-modules:** 16 files (atuin, bat, fish, git, gpg, ssh, zellij, etc.)
 
 ### `desktop/common/` - Shared Desktop Applications
 

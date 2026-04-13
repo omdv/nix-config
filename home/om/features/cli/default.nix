@@ -15,7 +15,7 @@
     ./qutebrowser.nix
     ./ssh.nix
     ./starship.nix
-    ./tmux.nix
+    ./zellij.nix
     ./yazi.nix
   ];
   home.packages = with pkgs; [
