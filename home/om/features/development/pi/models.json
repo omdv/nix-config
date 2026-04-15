@@ -11,6 +11,9 @@
     },
     "openrouter": {
       "baseUrl": "http://127.0.0.1:8686/openrouter"
+    },
+    "zai": {
+      "baseUrl": "http://127.0.0.1:8686/zai"
     }
   }
 }
