@@ -1,8 +1,4 @@
-{
-  config,
-  pkgs,
-  ...
-}: let
+{config, ...}: let
   piAgentDir = "${config.home.homeDirectory}/.pi/agent";
 
   piSettings = {
@@ -13,10 +9,6 @@
     enabledModels = [
       "glm-5.1"
       "gpt-5.3-codex"
-      "claude-sonnet-4-5"
-      "claude-sonnet-4-6"
-      "claude-opus-4-5"
-      "claude-opus-4-6"
     ];
     extensions = [
       "${piAgentDir}/extensions/security"
@@ -25,35 +17,44 @@
       "${piAgentDir}/extensions/context"
       "${piAgentDir}/extensions/notify"
       "${piAgentDir}/extensions/session-breakdown"
-      # pkgs.pi-dynamic-context-pruning
+      "${piAgentDir}/extensions/dcp"
     ];
   };
 in {
   home.file.".pi/agent/settings.json".text = builtins.toJSON piSettings;
-
-  home.file.".pi/agent/extensions/security/index.ts".source =
-    ./extensions/security/index.ts;
-
-  home.file.".pi/agent/extensions/files/index.ts".source =
-    ./extensions/files/index.ts;
-
-  home.file.".pi/agent/extensions/hashline/index.ts".source =
-    ./extensions/hashline/index.ts;
-
-  home.file.".pi/agent/extensions/context/index.ts".source =
-    ./extensions/context/index.ts;
-
-  home.file.".pi/agent/extensions/notify/index.ts".source =
-    ./extensions/notify/index.ts;
-
-  home.file.".pi/agent/extensions/session-breakdown/index.ts".source =
-    ./extensions/session-breakdown/index.ts;
-
-  home.file.".pi/agent/skills/analyze-repo/SKILL.md".source =
-    ./skills/analyze-repo/SKILL.md;
-
-  home.file.".pi/agent/AGENTS.md".source =
-    ./AGENTS.md;
+  home.file.".pi/agent/extensions/security" = {
+    source = ./extensions/security;
+    recursive = true;
+  };
+  home.file.".pi/agent/extensions/files" = {
+    source = ./extensions/files;
+    recursive = true;
+  };
+  home.file.".pi/agent/extensions/hashline" = {
+    source = ./extensions/hashline;
+    recursive = true;
+  };
+  home.file.".pi/agent/extensions/context" = {
+    source = ./extensions/context;
+    recursive = true;
+  };
+  home.file.".pi/agent/extensions/notify" = {
+    source = ./extensions/notify;
+    recursive = true;
+  };
+  home.file.".pi/agent/extensions/session-breakdown" = {
+    source = ./extensions/session-breakdown;
+    recursive = true;
+  };
+  home.file.".pi/agent/extensions/dcp" = {
+    source = ./extensions/dcp;
+    recursive = true;
+  };
+  home.file.".pi/agent/skills/analyze-repo" = {
+    source = ./skills/analyze-repo;
+    recursive = true;
+  };
+  home.file.".pi/agent/AGENTS.md".source = ./AGENTS.md;
 
   # home.file.".pi/agent/models.json".source =
   #   ./models.json;
