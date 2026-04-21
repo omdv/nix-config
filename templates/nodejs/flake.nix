@@ -1,33 +1,29 @@
 {
-  description = "Node.js development template with pnpm";
+  description = "Node.js development shell with pnpm";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
   };
 
   outputs = {nixpkgs, ...}: let
-    systems = ["x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin"];
-    forEachSystem = nixpkgs.lib.genAttrs systems;
+    system = "x86_64-linux";
+    pkgs = import nixpkgs {inherit system;};
   in {
-    devShells = forEachSystem (system: let
-      pkgs = import nixpkgs {inherit system;};
-    in {
-      default = pkgs.mkShell {
-        packages = with pkgs; [
-          nodejs_20
-          nodePackages.pnpm
-          typescript-language-server
-        ];
+    devShells.${system}.default = pkgs.mkShell {
+      packages = with pkgs; [
+        nodejs_22
+        pnpm
+        typescript
+        typescript-language-server
+      ];
 
-        shellHook = ''
-          if [ -f "pnpm-lock.yaml" ]; then
-            echo "Syncing Node dependencies..."
-            pnpm install
-          fi
-
-          echo "Node $(node -v) | pnpm $(pnpm -v)"
-        '';
-      };
-    });
+      shellHook = ''
+        echo "Node $(node -v) | pnpm $(pnpm -v)"
+        if [ -f "pnpm-lock.yaml" ]; then
+          echo "Installing dependencies (pnpm install)..."
+          pnpm install
+        fi
+      '';
+    };
   };
 }

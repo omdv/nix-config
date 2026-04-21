@@ -6,28 +6,24 @@
   };
 
   outputs = {nixpkgs, ...}: let
-    systems = ["x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin"];
-    forEachSystem = nixpkgs.lib.genAttrs systems;
+    system = "x86_64-linux";
+    pkgs = import nixpkgs {inherit system;};
   in {
-    devShells = forEachSystem (system: let
-      pkgs = import nixpkgs {inherit system;};
-    in {
-      default = pkgs.mkShell {
-        packages = with pkgs; [
-          cargo
-          rustc
-          rust-analyzer
-          rustfmt
-          clippy
-        ];
+    devShells.${system}.default = pkgs.mkShell {
+      packages = with pkgs; [
+        cargo
+        rustc
+        rust-analyzer
+        rustfmt
+        clippy
+      ];
 
-        # Set RUST_SRC_PATH so rust-analyzer can find standard library source
-        RUST_SRC_PATH = pkgs.rustPlatform.rustLibSrc;
+      # Set RUST_SRC_PATH so rust-analyzer can find standard library source
+      RUST_SRC_PATH = pkgs.rustPlatform.rustLibSrc;
 
-        shellHook = ''
-          echo "Rust $(rustc --version) | Cargo $(cargo --version)"
-        '';
-      };
-    });
+      shellHook = ''
+        echo "Rust $(rustc --version) | Cargo $(cargo --version)"
+      '';
+    };
   };
 }
