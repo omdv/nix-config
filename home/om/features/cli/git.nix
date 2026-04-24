@@ -42,4 +42,22 @@
       "result"
     ];
   };
+  programs.jujutsu = {
+    enable = true;
+    package = pkgs.jujutsu;
+    settings = {
+      user = {
+        name = "Oleg Medvedev";
+        email = lib.mkDefault "omdv@protonmail.com";
+        signing.key = "A125B037FB60B286";
+      };
+      ui = {
+        default-command = "log";
+      };
+    };
+  };
+  programs.jjui = {
+    enable = true;
+    package = pkgs.jjui;
+  };
 }

@@ -17,7 +17,6 @@
       "${piAgentDir}/extensions/context"
       "${piAgentDir}/extensions/notify"
       "${piAgentDir}/extensions/session-breakdown"
-      "${piAgentDir}/extensions/dcp"
     ];
   };
 in {

@@ -6,7 +6,8 @@
   ];
 
   home.packages = [
-    pkgs.beancount # ledger alternative
+    pkgs.beancount
+    pkgs.unstable.obsidian
     pkgs.sc-im
   ];
 }

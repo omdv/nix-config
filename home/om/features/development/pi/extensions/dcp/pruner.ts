@@ -38,6 +38,44 @@ function estimateMessageTokens(msg: any): number {
   }
   return 0;
 }
+/**
+ * Find the index of a message in the array that matches a given timestamp.
+ * Uses robust matching to handle timestamp collisions:
+ *
+ * 1. Collects all candidate indices with matching timestamp
+ * 2. For "start" boundary: returns the first match (forward search)
+ * 3. For "end" boundary: returns the last match (backward search)
+ *    This correctly handles startTimestamp === endTimestamp by returning
+ *    different indices for start vs end when multiple messages share a timestamp.
+ *
+ * Falls back to pure timestamp matching when messageId is unavailable or stale.
+ */
+function findMessageBoundary(
+  messages: any[],
+  timestamp: number,
+  _messageId: string | undefined,
+  _state: DcpState,
+  boundary: "start" | "end",
+): number {
+  // Collect all indices with matching timestamp
+  const candidates: number[] = [];
+  for (let i = 0; i < messages.length; i++) {
+    if (messages[i].timestamp === timestamp) {
+      candidates.push(i);
+    }
+  }
+
+  if (candidates.length === 0) return -1;
+  if (candidates.length === 1) return candidates[0];
+
+  // Multiple candidates with the same timestamp.
+  // Use boundary direction to disambiguate:
+  // - "start" → first match (forward search, same as findIndex)
+  // - "end" → last match (backward search, like findLastIndex)
+  // This correctly handles startTimestamp === endTimestamp.
+  return boundary === "start" ? candidates[0] : candidates[candidates.length - 1];
+}
+
 
 /**
  * Apply active compression blocks to the message array.
@@ -51,9 +89,16 @@ function applyCompressionBlocks(messages: any[], state: DcpState): any[] {
     // Skip blocks with corrupted timestamps (from pre-fix sessions)
     if (!Number.isFinite(block.startTimestamp) || !Number.isFinite(block.endTimestamp)) continue;
 
-    // Find start and end indices by timestamp
-    const startIdx = messages.findIndex((m) => m.timestamp === block.startTimestamp);
-    const endIdx = messages.findIndex((m) => m.timestamp === block.endTimestamp);
+    // Find start and end indices using robust boundary matching.
+    // For start: search forward from beginning (findIndex).
+    // For end: search backward from end (findLastIndex) to correctly
+    // handle cases where startTimestamp === endTimestamp.
+    const startIdx = findMessageBoundary(
+      messages, block.startTimestamp, block.startMessageId, state, "start",
+    );
+    const endIdx = findMessageBoundary(
+      messages, block.endTimestamp, block.endMessageId, state, "end",
+    );
 
     if (startIdx === -1 || endIdx === -1) continue;
 

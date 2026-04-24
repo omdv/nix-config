@@ -222,8 +222,12 @@ function handleDecompress(
 
     const lines: string[] = ["Active compression blocks:"]
     for (const block of activeBlocks) {
+      const msgIds =
+        block.startMessageId && block.endMessageId
+          ? ` (${block.startMessageId}..${block.endMessageId})`
+          : ""
       lines.push(
-        `  b${block.id} — "${block.topic}" (est. ${fmt(block.summaryTokenEstimate)} tokens)`,
+        `  b${block.id} — "${block.topic}"${msgIds} (est. ${fmt(block.summaryTokenEstimate)} tokens)`,
       )
     }
     lines.push("")

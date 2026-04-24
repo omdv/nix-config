@@ -12,6 +12,7 @@
     pkgs.visidata # tui for data analysis
 
     # AI tools
+    pkgs.unstable.code-cursor
     pkgs.unstable.aichat
     pkgs.pi-coding-agent # pi wrapper with nodejs
     pkgs.mirage-proxy
