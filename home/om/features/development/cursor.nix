@@ -1,9 +1,13 @@
-{pkgs, ...}: let
+{
+  pkgs,
+  lib,
+  ...
+}: let
   pname = "cursor";
-  version = "1.5.5";
+  version = "3.0";
   cursorAppImage = pkgs.fetchurl {
-    url = "https://www.cursor.com/download/stable/linux-x64";
-    sha256 = "sha256-1bSndTGH8C4VanZ86MBsk5PXWPs6cwjnFvfuACODCvM=";
+    url = "https://api2.cursor.sh/updates/download/golden/linux-x64/cursor/3.0";
+    sha256 = "sha256-AAAA";
     name = "${pname}-${version}.AppImage";
   };
 in {

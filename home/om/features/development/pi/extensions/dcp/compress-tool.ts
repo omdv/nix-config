@@ -184,6 +184,8 @@ export function registerCompressTool(
           startTimestamp,
           endTimestamp,
           anchorTimestamp,
+          startMessageId: startId.trim(),
+          endMessageId: endId.trim(),
           active: true,
           summaryTokenEstimate: estimateTokens(expandedSummary),
           createdAt: Date.now(),

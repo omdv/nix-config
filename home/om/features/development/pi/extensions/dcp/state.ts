@@ -52,6 +52,10 @@ export interface CompressionBlock {
    * to the end of the conversation.
    */
   anchorTimestamp: number
+  /** The mNNN message ID of the start message at compression time */
+  startMessageId?: string
+  /** The mNNN message ID of the end message at compression time */
+  endMessageId?: string
   /** Whether this block is still being applied (false = soft-deleted) */
   active: boolean
   /** Token estimate for the summary text itself */

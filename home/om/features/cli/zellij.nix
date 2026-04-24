@@ -2,9 +2,10 @@
   programs.zellij = {
     enable = true;
     package = pkgs.zellij;
-    enableFishIntegration = true;
+    enableFishIntegration = false;
     settings = {
       theme = "catppuccin-mocha";
+      show_release_notes = false;
     };
   };
 
