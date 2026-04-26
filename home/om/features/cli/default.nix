@@ -31,6 +31,7 @@
     diff-so-fancy # Better diff viewer
     eza # Better ls
     fd # Better find
+    jq # json
     maim # Screenshot tool
     ripgrep # Better grep
 
@@ -38,6 +39,7 @@
     dua # TUI fast disk space viewer
     duf # TUI disk usage
     kmon # TUI kernel manager
+    ncdu # TUI disk space viewer
     lm_sensors # for `sensors` command
     lsof # list open files
     sysz # fzf for systemd
