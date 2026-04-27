@@ -25,7 +25,7 @@ in {
         git = "$git_branch$git_commit$git_state$git_status";
       in ''
         $username$hostname($shlvl)( $cmd_duration) $fill ($nix_shell)''${custom.nix_inspect} ($python)($rust)($nodejs)
-        $directory(${git}) $fill $time
+        $directory(''${custom.jj_state}${git}) $fill $time
         $jobs$character
       '';
 
@@ -85,6 +85,39 @@ in {
       nodejs = {
         format = "[$symbol$version]($style) ";
         style = "bold #${colors.base0B}";
+      };
+      custom.jj_state = {
+        when = "jj root >/dev/null 2>&1";
+        shell = ["bash" "--noprofile" "--norc"];
+        command = ''
+          bm="$(jj bookmark list --all-remotes --color=never | sed -n 's/^\(main\|master\):.*/\1/p' | head -n1)"
+          if [[ -z "$bm" ]]; then
+            echo "jj:@"
+            exit 0
+          fi
+
+          if ! jj log -r "$bm@origin" -n1 --no-graph --color=never >/dev/null 2>&1; then
+            echo "jj:$bm ?"
+            exit 0
+          fi
+
+          ahead="$(jj log -r "$bm@origin..$bm" --no-graph --color=never --template x 2>/dev/null | wc -c)"
+          behind="$(jj log -r "$bm..$bm@origin" --no-graph --color=never --template x 2>/dev/null | wc -c)"
+
+          if [[ "$ahead" -gt 0 && "$behind" -gt 0 ]]; then
+            state="⇕"
+          elif [[ "$ahead" -gt 0 ]]; then
+            state="⇡"
+          elif [[ "$behind" -gt 0 ]]; then
+            state="⇣"
+          else
+            state="✓"
+          fi
+
+          echo "jj:$bm $state"
+        '';
+        format = "[$output]($style) ";
+        style = "bold #${colors.base0E}";
       };
       character = {
         error_symbol = "[~~>](bold #${colors.base08})";
