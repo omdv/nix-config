@@ -3,6 +3,7 @@
     ./k9s.nix
     ./pi
     ./mirage-proxy.nix
+    ./auto-commit.nix
     ./zed.nix
   ];
 

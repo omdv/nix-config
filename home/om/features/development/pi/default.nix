@@ -45,10 +45,6 @@ in {
     source = ./extensions/session-breakdown;
     recursive = true;
   };
-  home.file.".pi/agent/extensions/dcp" = {
-    source = ./extensions/dcp;
-    recursive = true;
-  };
   home.file.".pi/agent/skills/analyze-repo" = {
     source = ./skills/analyze-repo;
     recursive = true;
