@@ -3,4 +3,5 @@
   pi-coding-agent = pkgs.callPackage ./pi-coding-agent {};
   taskplane = pkgs.callPackage ./taskplane {};
   mirage-proxy = pkgs.callPackage ./mirage-proxy {};
+  jjcai = pkgs.callPackage ./jjcai { aichat = pkgs.unstable.aichat; };
 }
