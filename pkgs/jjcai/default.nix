@@ -52,4 +52,17 @@ EOF
   echo "----------------------------------------"
 
   jj commit -m "$MSG"
+
+  BOOKMARK=""
+  if jj bookmark list | grep -q '^main:'; then
+    BOOKMARK="main"
+  elif jj bookmark list | grep -q '^master:'; then
+    BOOKMARK="master"
+  else
+    echo "Neither 'main' nor 'master' bookmark exists; skipping bookmark move." >&2
+    exit 0
+  fi
+
+  jj bookmark move "$BOOKMARK" --to @-
+  echo "Moved bookmark '$BOOKMARK' -> @-"
 ''
