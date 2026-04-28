@@ -56,6 +56,7 @@ in {
 
       # Better tools
       ai = "aichat";
+      jjcai = "${config.home.homeDirectory}/.local/bin/jjcai";
       cat = mkIf hasBat "bat";
       find = mkIf hasFd "fd";
       k = mkIf hasKubecolor "kubecolor";
@@ -143,4 +144,55 @@ in {
       bind \cs _sgpt_commandline
     '';
   };
+
+
+  home.file.".local/bin/jjcai" = {
+    executable = true;
+    text = ''
+      #!/usr/bin/env bash
+      set -euo pipefail
+
+      CHANGED_PATHS="$(jj diff --name-only 2>/dev/null || true)"
+      if [[ -z "''${CHANGED_PATHS//[[:space:]]/}" ]]; then
+        echo "No changes detected. Nothing to commit."
+        exit 0
+      fi
+
+      DIFF_SUMMARY="$(jj diff --summary 2>/dev/null || true)"
+      DIFF_GIT="$(jj diff --git 2>/dev/null | head -c 12000 || true)"
+
+      PROMPT=$(cat <<EOF
+      You are generating a git/jj commit message.
+
+      Rules:
+      - Output only commit message text.
+      - Use Conventional Commits style.
+      - Keep subject line <= 72 characters.
+      - Imperative mood, concise, specific.
+      - Add a short body only if needed.
+
+      Repository diff summary:
+      ''${DIFF_SUMMARY}
+
+      Repository diff (truncated):
+      ''${DIFF_GIT}
+      EOF
+      )
+
+      MSG="$(aichat --no-stream "$PROMPT" 2>/dev/null || true)"
+      MSG="$(printf '%s' "$MSG" | sed '/^[[:space:]]*$/d' | sed 's/^```.*$//g' | sed 's/^"//; s/"$//')"
+
+      if [[ -z "''${MSG//[[:space:]]/}" ]]; then
+        MSG="chore: automated snapshot"
+      fi
+
+      echo "Generated commit message:"
+      echo "----------------------------------------"
+      echo "$MSG"
+      echo "----------------------------------------"
+
+      jj commit -m "$MSG"
+    '';
+  };
+
 }
