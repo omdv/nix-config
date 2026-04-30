@@ -15,6 +15,7 @@
       "${piAgentDir}/extensions/files"
       "${piAgentDir}/extensions/hashline"
       "${piAgentDir}/extensions/context"
+      "${piAgentDir}/extensions/context-mode"
       "${piAgentDir}/extensions/notify"
       "${piAgentDir}/extensions/session-breakdown"
     ];
@@ -35,6 +36,10 @@ in {
   };
   home.file.".pi/agent/extensions/context" = {
     source = ./extensions/context;
+    recursive = true;
+  };
+  home.file.".pi/agent/extensions/context-mode" = {
+    source = ./extensions/context-mode;
     recursive = true;
   };
   home.file.".pi/agent/extensions/notify" = {
