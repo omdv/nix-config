@@ -6,6 +6,7 @@
     settings = {
       theme = "catppuccin-mocha";
       show_release_notes = false;
+      default_mode = "locked";
     };
   };
 

@@ -1,4 +1,4 @@
-{config, ...}: let
+{config, pkgs, ...}: let
   piAgentDir = "${config.home.homeDirectory}/.pi/agent";
 
   piSettings = {
@@ -10,17 +10,33 @@
       "glm-5.1"
       "gpt-5.3-codex"
     ];
+    packages = [
+      "npm:pi-mcp-adapter"
+      "npm:context-mode"
+      "npm:pi-lens"
+    ];
     extensions = [
       "${piAgentDir}/extensions/security"
       "${piAgentDir}/extensions/files"
       "${piAgentDir}/extensions/hashline"
-      "${piAgentDir}/extensions/context"
-      "${piAgentDir}/extensions/context-mode"
-      "${piAgentDir}/extensions/notify"
-      "${piAgentDir}/extensions/session-breakdown"
     ];
   };
+
+  piMcp = {
+    mcpServers = {
+      context-mode = {
+        command = "${pkgs.context-mode}/bin/context-mode";
+      };
+    };
+  };
 in {
+  home.packages = [
+    pkgs.context-mode
+  ];
+
+  home.sessionVariables.NPM_CONFIG_PREFIX = "${config.home.homeDirectory}/.npm-global";
+
+  home.file.".pi/agent/mcp.json".text = builtins.toJSON piMcp;
   home.file.".pi/agent/settings.json".text = builtins.toJSON piSettings;
   home.file.".pi/agent/extensions/security" = {
     source = ./extensions/security;
@@ -34,28 +50,9 @@ in {
     source = ./extensions/hashline;
     recursive = true;
   };
-  home.file.".pi/agent/extensions/context" = {
-    source = ./extensions/context;
-    recursive = true;
-  };
-  home.file.".pi/agent/extensions/context-mode" = {
-    source = ./extensions/context-mode;
-    recursive = true;
-  };
-  home.file.".pi/agent/extensions/notify" = {
-    source = ./extensions/notify;
-    recursive = true;
-  };
-  home.file.".pi/agent/extensions/session-breakdown" = {
-    source = ./extensions/session-breakdown;
-    recursive = true;
-  };
   home.file.".pi/agent/skills/analyze-repo" = {
     source = ./skills/analyze-repo;
     recursive = true;
   };
   home.file.".pi/agent/AGENTS.md".source = ./AGENTS.md;
-
-  # home.file.".pi/agent/models.json".source =
-  #   ./models.json;
 }
