@@ -9,6 +9,8 @@
     enabledModels = [
       "glm-5.1"
       "gpt-5.3-codex"
+      "deepseek-v4-pro"
+      "deepseek-v4-flash"
     ];
     packages = [
       "npm:pi-mcp-adapter"
@@ -17,7 +19,6 @@
     ];
     extensions = [
       "${piAgentDir}/extensions/security"
-      "${piAgentDir}/extensions/files"
       "${piAgentDir}/extensions/hashline"
     ];
   };
@@ -40,10 +41,6 @@ in {
   home.file.".pi/agent/settings.json".text = builtins.toJSON piSettings;
   home.file.".pi/agent/extensions/security" = {
     source = ./extensions/security;
-    recursive = true;
-  };
-  home.file.".pi/agent/extensions/files" = {
-    source = ./extensions/files;
     recursive = true;
   };
   home.file.".pi/agent/extensions/hashline" = {
