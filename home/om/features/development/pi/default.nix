@@ -1,4 +1,4 @@
-{config, pkgs, ...}: let
+{config, ...}: let
   piAgentDir = "${config.home.homeDirectory}/.pi/agent";
 
   piSettings = {
@@ -13,8 +13,6 @@
       "deepseek/deepseek-v4-pro"
     ];
     packages = [
-      "npm:pi-mcp-adapter"
-      "npm:context-mode"
       "npm:pi-lens"
     ];
     extensions = [
@@ -22,22 +20,9 @@
       "${piAgentDir}/extensions/hashline"
     ];
   };
-
-  piMcp = {
-    mcpServers = {
-      context-mode = {
-        command = "${pkgs.context-mode}/bin/context-mode";
-      };
-    };
-  };
 in {
-  home.packages = [
-    pkgs.context-mode
-  ];
-
   home.sessionVariables.NPM_CONFIG_PREFIX = "${config.home.homeDirectory}/.npm-global";
 
-  home.file.".pi/agent/mcp.json".text = builtins.toJSON piMcp;
   home.file.".pi/agent/settings.json".text = builtins.toJSON piSettings;
   home.file.".pi/agent/extensions/security" = {
     source = ./extensions/security;

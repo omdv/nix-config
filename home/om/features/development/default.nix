@@ -1,7 +1,6 @@
 {pkgs, ...}: {
   imports = [
     ./k9s.nix
-    ./opencode.nix
     ./pi
     ./mirage-proxy.nix
     ./zed.nix

@@ -258,23 +258,30 @@ function resolveEditAnchors(
 	for (const edit of edits) {
 		const lines = hashlineParseText(edit.content);
 		const loc = edit.loc;
+		const locFromAnchor =
+			typeof loc === "string" && loc !== "append" && loc !== "prepend"
+				? tryParseTag(loc)
+				: undefined;
+		const normalizedLoc = locFromAnchor
+			? { range: { pos: loc, end: loc } }
+			: loc;
 
-		if (loc === "append") {
+		if (normalizedLoc === "append") {
 			result.push({ op: "append_file", lines });
-		} else if (loc === "prepend") {
+		} else if (normalizedLoc === "prepend") {
 			result.push({ op: "prepend_file", lines });
-		} else if (typeof loc === "object") {
-			if ("append" in loc) {
-				const anchor = tryParseTag(loc.append);
+		} else if (typeof normalizedLoc === "object") {
+			if ("append" in normalizedLoc) {
+				const anchor = tryParseTag(normalizedLoc.append);
 				if (!anchor) throw new Error("append requires a valid anchor.");
 				result.push({ op: "append_at", pos: anchor, lines });
-			} else if ("prepend" in loc) {
-				const anchor = tryParseTag(loc.prepend);
+			} else if ("prepend" in normalizedLoc) {
+				const anchor = tryParseTag(normalizedLoc.prepend);
 				if (!anchor) throw new Error("prepend requires a valid anchor.");
 				result.push({ op: "prepend_at", pos: anchor, lines });
-			} else if ("range" in loc) {
-				const posAnchor = tryParseTag(loc.range.pos);
-				const endAnchor = tryParseTag(loc.range.end);
+			} else if ("range" in normalizedLoc) {
+				const posAnchor = tryParseTag(normalizedLoc.range.pos);
+				const endAnchor = tryParseTag(normalizedLoc.range.end);
 				if (!posAnchor || !endAnchor) {
 					throw new Error("range requires valid pos and end anchors.");
 				}
