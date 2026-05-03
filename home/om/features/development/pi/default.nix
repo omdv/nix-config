@@ -18,6 +18,7 @@
     extensions = [
       "${piAgentDir}/extensions/security"
       "${piAgentDir}/extensions/hashline"
+      "${piAgentDir}/extensions/dcp"
     ];
   };
 in {
@@ -30,6 +31,10 @@ in {
   };
   home.file.".pi/agent/extensions/hashline" = {
     source = ./extensions/hashline;
+    recursive = true;
+  };
+  home.file.".pi/agent/extensions/dcp" = {
+    source = ./extensions/dcp;
     recursive = true;
   };
   home.file.".pi/agent/skills/analyze-repo" = {
