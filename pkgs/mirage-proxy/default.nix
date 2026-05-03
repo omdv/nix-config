@@ -5,16 +5,16 @@
 }:
 rustPlatform.buildRustPackage rec {
   pname = "mirage-proxy";
-  version = "unstable-2026-04-08";
+  version = "0.1.0";
 
   src = fetchFromGitHub {
     owner = "omdv";
     repo = "mirage-proxy";
-    rev = "5fa96f72c5dd93cd83aaf57c416badb7cd7149a5";
-    hash = "sha256-rr+mxtd022NiHuZsyK26l8AqHMtQQH3bB8TbJzted+k=";
+    rev = "v0.1.0";
+    hash = "sha256-oOxEnt3AwIgB1gFTMSHVigx23h1Wx/rahT3g7wDUZ30=";
   };
 
-  cargoHash = "sha256-ZyhD4YEjzUiviJym/c+ILPln96QjBQQe+HpPr7kd4OM=";
+  cargoHash = "sha256-fTigHEyp1vydUWUaJyvuFxyUuVumVJluwzg0k7omI0o=";
 
   meta = with lib; {
     description = "Invisible sensitive data filter for LLM APIs";

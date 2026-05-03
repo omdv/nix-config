@@ -25,7 +25,11 @@ in {
     audit:
       enabled: true
       path: "/home/om/.local/state/mirage/mirage-audit.jsonl"
-      log_values: false
+      log_values: true
+      encrypted: true
+      max_size_mb: 50
+      rotate_keep: 5
+      max_age_days: 14
 
     vault:
       enabled: true
