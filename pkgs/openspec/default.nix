@@ -4,5 +4,5 @@
 }:
 writeShellScriptBin "pi" ''
   export PATH="${nodejs_22}/bin:$PATH"
-  exec npx @mariozechner/pi-coding-agent@0.73.0 "$@"
+  exec npx @fission-ai/openspec@1.3.1 "$@"
 ''

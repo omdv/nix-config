@@ -1,909 +1,1024 @@
-import {
-	access as fsAccess,
-	readFile,
-	rename,
-	unlink,
-	writeFile,
-} from "node:fs/promises";
 import { constants } from "node:fs";
+import {
+  access as fsAccess,
+  mkdir,
+  readFile,
+  rename,
+  unlink,
+  writeFile,
+} from "node:fs/promises";
 import * as path from "node:path";
 import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
+import { renderDiff } from "@mariozechner/pi-coding-agent";
 import { Type } from "@sinclair/typebox";
+import * as Diff from "diff";
 
-type Anchor = { line: number; hash: string };
-type HashMismatch = { line: number; expected: string; actual: string };
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
+
+type AnchorRef = { line: number; id: string };
+type ResolvedAnchor = { line: number; moved: boolean };
 
 type HashlineEdit =
-	| { op: "replace_range"; pos: Anchor; end: Anchor; lines: string[] }
-	| { op: "append_at"; pos: Anchor; lines: string[] }
-	| { op: "prepend_at"; pos: Anchor; lines: string[] }
-	| { op: "append_file"; lines: string[] }
-	| { op: "prepend_file"; lines: string[] };
+  | { op: "replace_range"; pos: AnchorRef; end: AnchorRef; lines: string[] }
+  | { op: "append_at"; pos: AnchorRef; lines: string[] }
+  | { op: "prepend_at"; pos: AnchorRef; lines: string[] }
+  | { op: "append_file"; lines: string[] }
+  | { op: "prepend_file"; lines: string[] };
 
-type ReadWindowState = {
-	startLine: number;
-	endLine: number;
-	truncated: boolean;
-	anchors: Set<string>;
-};
+type PlannedOp =
+  | {
+      kind: "delete";
+      requestedPath: string;
+      absolutePath: string;
+      summary: string;
+    }
+  | {
+      kind: "write";
+      requestedPath: string;
+      absolutePath: string;
+      moveTo?: { requested: string; absolute: string };
+      content: string;
+      summary: string;
+      warnings: string[];
+      diff?: string;
+      firstChangedLine?: number;
+    };
 
-const NIBBLE_STR = "ZPMQVRWSNKTXJBYH";
-const DICT = Array.from({ length: 256 }, (_, i) => {
-	const h = i >>> 4;
-	const l = i & 0x0f;
-	return `${NIBBLE_STR[h]}${NIBBLE_STR[l]}`;
-});
-const RE_SIGNIFICANT = /[\p{L}\p{N}]/u;
-const HASHLINE_PREFIX_RE =
-	/^\s*(?:>>>|>>)?\s*(?:\+?\s*(?:\d+\s*#\s*|#\s*)|\+)\s*[ZPMQVRWSNKTXJBYH]{2}:/;
-const HASHLINE_PREFIX_PLUS_RE =
-	/^\s*(?:>>>|>>)?\s*\+\s*(?:\d+\s*#\s*|#\s*)?[ZPMQVRWSNKTXJBYH]{2}:/;
-const DIFF_PLUS_RE = /^[+](?![+])/;
-const lastReadByFile = new Map<string, ReadWindowState>();
+interface FileAnchorState {
+  lines: string[];
+  anchors: string[];
+  nextId: number;
+}
+
+// ---------------------------------------------------------------------------
+// Anchor state
+// ---------------------------------------------------------------------------
+
+const ANCHOR_ALPHABET = "ZPMQVRWSNKTXJBYH";
+const ANCHOR_BASE = ANCHOR_ALPHABET.length;
+
+const anchorStateByFile = new Map<string, FileAnchorState>();
+
+function encodeAnchorId(n: number): string {
+  let out = "";
+  let x = n;
+  do {
+    out = ANCHOR_ALPHABET[x % ANCHOR_BASE] + out;
+    x = Math.floor(x / ANCHOR_BASE);
+  } while (x > 0);
+  while (out.length < 2) out = ANCHOR_ALPHABET[0] + out;
+  return out;
+}
+
+function normalizeLineForAnchor(line: string): string {
+  return line.replace(/\r/g, "");
+}
+
+/**
+ * Dirac-style reconcile: use structural diff between previous and current lines.
+ * Unchanged segments keep anchor IDs exactly, inserted/changed lines get new IDs.
+ */
+function reconcileAnchors(
+  absolutePath: string,
+  currentLinesRaw: string[],
+): string[] {
+  const currentLines = currentLinesRaw.map(normalizeLineForAnchor);
+  const prev = anchorStateByFile.get(absolutePath);
+
+  if (!prev) {
+    const anchors = currentLines.map((_, i) => encodeAnchorId(i));
+    anchorStateByFile.set(absolutePath, {
+      lines: currentLines,
+      anchors,
+      nextId: currentLines.length,
+    });
+    return anchors;
+  }
+
+  const changes = Diff.diffArrays(prev.lines, currentLines);
+  const newAnchors: string[] = new Array(currentLines.length);
+  let oldIdx = 0;
+  let newIdx = 0;
+  let nextId = prev.nextId;
+
+  for (const chunk of changes) {
+    const arr = chunk.value ?? [];
+    if (chunk.removed) {
+      oldIdx += arr.length;
+      continue;
+    }
+    if (chunk.added) {
+      for (let i = 0; i < arr.length; i++) {
+        newAnchors[newIdx++] = encodeAnchorId(nextId++);
+      }
+      continue;
+    }
+
+    for (let i = 0; i < arr.length; i++) {
+      newAnchors[newIdx++] = prev.anchors[oldIdx++];
+    }
+  }
+
+  for (let i = 0; i < newAnchors.length; i++) {
+    if (!newAnchors[i]) newAnchors[i] = encodeAnchorId(nextId++);
+  }
+
+  anchorStateByFile.set(absolutePath, {
+    lines: currentLines,
+    anchors: newAnchors,
+    nextId,
+  });
+
+  return newAnchors;
+}
+
+function dropAnchorState(absolutePath: string) {
+  anchorStateByFile.delete(absolutePath);
+}
+
+// ---------------------------------------------------------------------------
+// Schemas
+// ---------------------------------------------------------------------------
 
 const hashlineReadSchema = Type.Object({
-	path: Type.String({ description: "Path to the file to read" }),
-	offset: Type.Optional(
-		Type.Number({
-			description: "Line number to start reading from (1-indexed)",
-		}),
-	),
-	limit: Type.Optional(
-		Type.Number({ description: "Maximum number of lines to read" }),
-	),
+  path: Type.String({ description: "Path to the file to read" }),
+  offset: Type.Optional(
+    Type.Number({
+      description: "Line number to start reading from (1-indexed)",
+    }),
+  ),
+  limit: Type.Optional(
+    Type.Number({ description: "Maximum number of lines to read" }),
+  ),
 });
 
 const linesSchema = Type.Union([
-	Type.Array(Type.String(), { description: "content (preferred format)" }),
-	Type.String(),
-	Type.Null(),
+  Type.Array(Type.String(), { description: "content (preferred format)" }),
+  Type.String(),
+  Type.Null(),
 ]);
 
 const locSchema = Type.Union(
-	[
-		Type.Literal("append"),
-		Type.Literal("prepend"),
-		Type.Object({ append: Type.String({ description: "anchor" }) }),
-		Type.Object({ prepend: Type.String({ description: "anchor" }) }),
-		Type.Object({
-			range: Type.Object({
-				pos: Type.String({ description: "first line to edit (inclusive)" }),
-				end: Type.String({ description: "last line to edit (inclusive)" }),
-			}),
-		}),
-	],
-	{ description: "insert location" },
+  [
+    Type.Literal("append"),
+    Type.Literal("prepend"),
+    Type.Object({ append: Type.String({ description: "anchor" }) }),
+    Type.Object({ prepend: Type.String({ description: "anchor" }) }),
+    Type.Object({
+      range: Type.Object({
+        pos: Type.String({ description: "first line to edit (inclusive)" }),
+        end: Type.String({ description: "last line to edit (inclusive)" }),
+      }),
+    }),
+  ],
+  { description: "insert location" },
 );
 
 const fileEditItemSchema = Type.Object(
-	{
-		path: Type.String({ description: "path" }),
-		edits: Type.Optional(
-			Type.Array(
-				Type.Object(
-					{
-						loc: locSchema,
-						content: linesSchema,
-					},
-					{ additionalProperties: false },
-				),
-				{ description: "edits over $path" },
-			),
-		),
-		delete: Type.Optional(
-			Type.Boolean({ description: "If true, delete $path" }),
-		),
-		move: Type.Optional(
-			Type.String({ description: "If set, move $path to $move" }),
-		),
-	},
-	{ additionalProperties: false },
+  {
+    path: Type.String({ description: "path" }),
+    edits: Type.Optional(
+      Type.Array(
+        Type.Object(
+          {
+            loc: locSchema,
+            content: linesSchema,
+          },
+          { additionalProperties: false },
+        ),
+        { description: "edits over $path" },
+      ),
+    ),
+    delete: Type.Optional(
+      Type.Boolean({ description: "If true, delete $path" }),
+    ),
+    move: Type.Optional(
+      Type.String({ description: "If set, move $path to $move" }),
+    ),
+  },
+  { additionalProperties: false },
 );
 
 const hashlineEditSchema = Type.Object(
-	{
-		path: Type.Optional(Type.String({ description: "path" })),
-		edits: Type.Optional(
-			Type.Array(
-				Type.Object(
-					{
-						loc: locSchema,
-						content: linesSchema,
-					},
-					{ additionalProperties: false },
-				),
-				{ description: "edits over $path" },
-			),
-		),
-		delete: Type.Optional(
-			Type.Boolean({ description: "If true, delete $path" }),
-		),
-		move: Type.Optional(
-			Type.String({ description: "If set, move $path to $move" }),
-		),
-		files: Type.Optional(
-			Type.Array(fileEditItemSchema, {
-				description: "Batch edits over multiple files",
-			}),
-		),
-	},
-	{ additionalProperties: false },
+  {
+    path: Type.Optional(Type.String({ description: "path" })),
+    edits: Type.Optional(
+      Type.Array(
+        Type.Object(
+          {
+            loc: locSchema,
+            content: linesSchema,
+          },
+          { additionalProperties: false },
+        ),
+        { description: "edits over $path" },
+      ),
+    ),
+    delete: Type.Optional(
+      Type.Boolean({ description: "If true, delete $path" }),
+    ),
+    move: Type.Optional(
+      Type.String({ description: "If set, move $path to $move" }),
+    ),
+    files: Type.Optional(
+      Type.Array(fileEditItemSchema, {
+        description: "Batch edits over multiple files",
+      }),
+    ),
+  },
+  { additionalProperties: false },
 );
 
-function rotl32(x: number, r: number): number {
-	return ((x << r) | (x >>> (32 - r))) >>> 0;
-}
+// ---------------------------------------------------------------------------
+// Parse + normalize helpers
+// ---------------------------------------------------------------------------
 
-function readU32LE(data: Uint8Array, i: number): number {
-	return (
-		(data[i] |
-			(data[i + 1] << 8) |
-			(data[i + 2] << 16) |
-			(data[i + 3] << 24)) >>>
-		0
-	);
-}
-
-function xxh32(input: string, seed = 0): number {
-	const PRIME32_1 = 0x9e3779b1 >>> 0;
-	const PRIME32_2 = 0x85ebca77 >>> 0;
-	const PRIME32_3 = 0xc2b2ae3d >>> 0;
-	const PRIME32_4 = 0x27d4eb2f >>> 0;
-	const PRIME32_5 = 0x165667b1 >>> 0;
-
-	const data = new TextEncoder().encode(input);
-	const len = data.length;
-	let p = 0;
-	let h32 = 0;
-
-	if (len >= 16) {
-		let v1 = (seed + PRIME32_1 + PRIME32_2) >>> 0;
-		let v2 = (seed + PRIME32_2) >>> 0;
-		let v3 = seed >>> 0;
-		let v4 = (seed - PRIME32_1) >>> 0;
-
-		const limit = len - 16;
-		while (p <= limit) {
-			v1 =
-				Math.imul(
-					rotl32((v1 + Math.imul(readU32LE(data, p), PRIME32_2)) >>> 0, 13),
-					PRIME32_1,
-				) >>> 0;
-			p += 4;
-			v2 =
-				Math.imul(
-					rotl32((v2 + Math.imul(readU32LE(data, p), PRIME32_2)) >>> 0, 13),
-					PRIME32_1,
-				) >>> 0;
-			p += 4;
-			v3 =
-				Math.imul(
-					rotl32((v3 + Math.imul(readU32LE(data, p), PRIME32_2)) >>> 0, 13),
-					PRIME32_1,
-				) >>> 0;
-			p += 4;
-			v4 =
-				Math.imul(
-					rotl32((v4 + Math.imul(readU32LE(data, p), PRIME32_2)) >>> 0, 13),
-					PRIME32_1,
-				) >>> 0;
-			p += 4;
-		}
-
-		h32 =
-			(rotl32(v1, 1) + rotl32(v2, 7) + rotl32(v3, 12) + rotl32(v4, 18)) >>> 0;
-	} else {
-		h32 = (seed + PRIME32_5) >>> 0;
-	}
-
-	h32 = (h32 + len) >>> 0;
-
-	while (p + 4 <= len) {
-		h32 = (h32 + Math.imul(readU32LE(data, p), PRIME32_3)) >>> 0;
-		h32 = Math.imul(rotl32(h32, 17), PRIME32_4) >>> 0;
-		p += 4;
-	}
-
-	while (p < len) {
-		h32 = (h32 + Math.imul(data[p], PRIME32_5)) >>> 0;
-		h32 = Math.imul(rotl32(h32, 11), PRIME32_1) >>> 0;
-		p++;
-	}
-
-	h32 ^= h32 >>> 15;
-	h32 = Math.imul(h32, PRIME32_2) >>> 0;
-	h32 ^= h32 >>> 13;
-	h32 = Math.imul(h32, PRIME32_3) >>> 0;
-	h32 ^= h32 >>> 16;
-
-	return h32 >>> 0;
-}
-
-function computeLineHash(idx: number, line: string): string {
-	line = line.replace(/\r/g, "").trimEnd();
-	const seed = RE_SIGNIFICANT.test(line) ? 0 : idx;
-	return DICT[xxh32(line, seed) & 0xff];
-}
-
-function parseTag(ref: string): Anchor {
-	const match = ref.match(/^\s*[>+-]*\s*(\d+)\s*#\s*([ZPMQVRWSNKTXJBYH]{2})/);
-	if (!match) {
-		throw new Error(
-			`Invalid line reference "${ref}". Expected format "LINE#ID" (e.g. "5#aa").`,
-		);
-	}
-	const line = Number.parseInt(match[1], 10);
-	if (line < 1) {
-		throw new Error(`Line number must be >= 1, got ${line} in "${ref}".`);
-	}
-	return { line, hash: match[2] };
-}
-
-function tryParseTag(raw: string): Anchor | undefined {
-	try {
-		return parseTag(raw);
-	} catch {
-		return undefined;
-	}
-}
+const HASHLINE_PREFIX_RE =
+  /^\s*(?:>>>|>>)?\s*(?:\+?\s*(?:\d+\s*#\s*|#\s*)|\+)\s*[ZPMQVRWSNKTXJBYH]+:/;
+const HASHLINE_PREFIX_PLUS_RE =
+  /^\s*(?:>>>|>>)?\s*\+\s*(?:\d+\s*#\s*|#\s*)?[ZPMQVRWSNKTXJBYH]+:/;
+const DIFF_PLUS_RE = /^[+](?![+])/;
 
 function stripNewLinePrefixes(lines: string[]): string[] {
-	let hashPrefixCount = 0;
-	let diffPlusHashPrefixCount = 0;
-	let diffPlusCount = 0;
-	let nonEmpty = 0;
+  let hashPrefixCount = 0;
+  let diffPlusHashPrefixCount = 0;
+  let diffPlusCount = 0;
+  let nonEmpty = 0;
 
-	for (const l of lines) {
-		if (l.length === 0) continue;
-		nonEmpty++;
-		if (HASHLINE_PREFIX_RE.test(l)) hashPrefixCount++;
-		if (HASHLINE_PREFIX_PLUS_RE.test(l)) diffPlusHashPrefixCount++;
-		if (DIFF_PLUS_RE.test(l)) diffPlusCount++;
-	}
-	if (nonEmpty === 0) return lines;
+  for (const l of lines) {
+    if (l.length === 0) continue;
+    nonEmpty++;
+    if (HASHLINE_PREFIX_RE.test(l)) hashPrefixCount++;
+    if (HASHLINE_PREFIX_PLUS_RE.test(l)) diffPlusHashPrefixCount++;
+    if (DIFF_PLUS_RE.test(l)) diffPlusCount++;
+  }
+  if (nonEmpty === 0) return lines;
 
-	const stripHash = hashPrefixCount > 0 && hashPrefixCount === nonEmpty;
-	const stripPlus =
-		!stripHash &&
-		diffPlusHashPrefixCount === 0 &&
-		diffPlusCount > 0 &&
-		diffPlusCount >= nonEmpty * 0.5;
+  const stripHash = hashPrefixCount > 0 && hashPrefixCount === nonEmpty;
+  const stripPlus =
+    !stripHash &&
+    diffPlusHashPrefixCount === 0 &&
+    diffPlusCount > 0 &&
+    diffPlusCount >= nonEmpty * 0.5;
 
-	if (!stripHash && !stripPlus && diffPlusHashPrefixCount === 0) return lines;
+  if (!stripHash && !stripPlus && diffPlusHashPrefixCount === 0) return lines;
 
-	return lines.map((l) => {
-		if (stripHash) return l.replace(HASHLINE_PREFIX_RE, "");
-		if (stripPlus) return l.replace(DIFF_PLUS_RE, "");
-		if (diffPlusHashPrefixCount > 0 && HASHLINE_PREFIX_PLUS_RE.test(l)) {
-			return l.replace(HASHLINE_PREFIX_RE, "");
-		}
-		return l;
-	});
+  return lines.map((l) => {
+    if (stripHash) return l.replace(HASHLINE_PREFIX_RE, "");
+    if (stripPlus) return l.replace(DIFF_PLUS_RE, "");
+    if (diffPlusHashPrefixCount > 0 && HASHLINE_PREFIX_PLUS_RE.test(l)) {
+      return l.replace(HASHLINE_PREFIX_RE, "");
+    }
+    return l;
+  });
 }
 
-function hashlineParseText(edit: string[] | string | null): string[] {
-	if (edit === null) return [];
-	if (typeof edit === "string") {
-		const normalizedEdit = edit.endsWith("\n") ? edit.slice(0, -1) : edit;
-		edit = normalizedEdit.replaceAll("\r", "").split("\n");
-	}
-	return stripNewLinePrefixes(edit);
+function parseContent(content: string[] | string | null): string[] {
+  if (content === null) return [];
+  if (Array.isArray(content)) return stripNewLinePrefixes(content);
+  const normalized = content.endsWith("\n") ? content.slice(0, -1) : content;
+  return stripNewLinePrefixes(normalized.replaceAll("\r", "").split("\n"));
 }
 
-function resolveEditAnchors(
-	edits: Array<{ loc: any; content: string[] | string | null }>,
+function parseAnchorRef(raw: string): AnchorRef {
+  const m = raw.match(/^\s*[>+-]*\s*(\d+)\s*#\s*([ZPMQVRWSNKTXJBYH]{2,})/);
+  if (!m) {
+    throw new Error(
+      `Invalid line reference "${raw}". Expected format "LINE#ID" (e.g. "305#YW").`,
+    );
+  }
+  const line = Number.parseInt(m[1], 10);
+  if (!Number.isFinite(line) || line < 1) {
+    throw new Error(`Line number must be >= 1 in "${raw}".`);
+  }
+  return { line, id: m[2] };
+}
+
+function tryParseAnchorRef(raw: unknown): AnchorRef | undefined {
+  if (typeof raw !== "string") return undefined;
+  try {
+    return parseAnchorRef(raw);
+  } catch {
+    return undefined;
+  }
+}
+
+function resolveEditPayload(
+  edits: Array<{ loc: any; content: string[] | string | null }>,
 ): HashlineEdit[] {
-	const result: HashlineEdit[] = [];
-	for (const edit of edits) {
-		const lines = hashlineParseText(edit.content);
-		const loc = edit.loc;
-		const locFromAnchor =
-			typeof loc === "string" && loc !== "append" && loc !== "prepend"
-				? tryParseTag(loc)
-				: undefined;
-		const normalizedLoc = locFromAnchor
-			? { range: { pos: loc, end: loc } }
-			: loc;
+  const out: HashlineEdit[] = [];
 
-		if (normalizedLoc === "append") {
-			result.push({ op: "append_file", lines });
-		} else if (normalizedLoc === "prepend") {
-			result.push({ op: "prepend_file", lines });
-		} else if (typeof normalizedLoc === "object") {
-			if ("append" in normalizedLoc) {
-				const anchor = tryParseTag(normalizedLoc.append);
-				if (!anchor) throw new Error("append requires a valid anchor.");
-				result.push({ op: "append_at", pos: anchor, lines });
-			} else if ("prepend" in normalizedLoc) {
-				const anchor = tryParseTag(normalizedLoc.prepend);
-				if (!anchor) throw new Error("prepend requires a valid anchor.");
-				result.push({ op: "prepend_at", pos: anchor, lines });
-			} else if ("range" in normalizedLoc) {
-				const posAnchor = tryParseTag(normalizedLoc.range.pos);
-				const endAnchor = tryParseTag(normalizedLoc.range.end);
-				if (!posAnchor || !endAnchor) {
-					throw new Error("range requires valid pos and end anchors.");
-				}
-				result.push({
-					op: "replace_range",
-					pos: posAnchor,
-					end: endAnchor,
-					lines,
-				});
-			} else {
-				throw new Error(
-					"Unknown loc shape. Expected append, prepend, or range.",
-				);
-			}
-		} else {
-			throw new Error(`Invalid loc value: ${JSON.stringify(loc)}`);
-		}
-	}
-	return result;
+  for (const edit of edits) {
+    const lines = parseContent(edit.content);
+    const loc = edit.loc;
+
+    if (loc === "append") {
+      out.push({ op: "append_file", lines });
+      continue;
+    }
+    if (loc === "prepend") {
+      out.push({ op: "prepend_file", lines });
+      continue;
+    }
+
+    if (typeof loc === "string") {
+      const one = tryParseAnchorRef(loc);
+      if (one) {
+        out.push({ op: "replace_range", pos: one, end: one, lines });
+        continue;
+      }
+      throw new Error(`Invalid loc value: ${JSON.stringify(loc)}`);
+    }
+
+    if (!loc || typeof loc !== "object") {
+      throw new Error(`Invalid loc value: ${JSON.stringify(loc)}`);
+    }
+
+    if ("append" in loc) {
+      const a = tryParseAnchorRef(loc.append);
+      if (!a) throw new Error("append requires a valid LINE#ID anchor.");
+      out.push({ op: "append_at", pos: a, lines });
+      continue;
+    }
+
+    if ("prepend" in loc) {
+      const a = tryParseAnchorRef(loc.prepend);
+      if (!a) throw new Error("prepend requires a valid LINE#ID anchor.");
+      out.push({ op: "prepend_at", pos: a, lines });
+      continue;
+    }
+
+    if ("range" in loc && loc.range) {
+      const pos = tryParseAnchorRef(loc.range.pos);
+      const end = tryParseAnchorRef(loc.range.end);
+      if (!pos || !end) {
+        throw new Error(
+          "range requires valid pos and end anchors in LINE#ID format.",
+        );
+      }
+      out.push({ op: "replace_range", pos, end, lines });
+      continue;
+    }
+
+    throw new Error(`Unknown loc shape: ${JSON.stringify(loc)}`);
+  }
+
+  return out;
 }
 
-function validateNoOverlappingRanges(edits: HashlineEdit[]): void {
-	const ranges = edits
-		.filter(
-			(edit): edit is Extract<HashlineEdit, { op: "replace_range" }> =>
-				edit.op === "replace_range",
-		)
-		.map((edit) => ({ start: edit.pos.line, end: edit.end.line }))
-		.sort((a, b) => a.start - b.start || a.end - b.end);
+// ---------------------------------------------------------------------------
+// Anchor resolving + edit apply
+// ---------------------------------------------------------------------------
 
-	for (let i = 1; i < ranges.length; i++) {
-		const prev = ranges[i - 1];
-		const curr = ranges[i];
-		if (curr.start <= prev.end) {
-			throw new Error(
-				`Overlapping replace_range edits are not allowed: [${prev.start}-${prev.end}] overlaps [${curr.start}-${curr.end}]. Merge overlapping changes into one range.`,
-			);
-		}
-	}
+function buildAnchorIndex(anchors: string[]): Map<string, number[]> {
+  const index = new Map<string, number[]>();
+  for (let i = 0; i < anchors.length; i++) {
+    const id = anchors[i];
+    let arr = index.get(id);
+    if (!arr) {
+      arr = [];
+      index.set(id, arr);
+    }
+    arr.push(i + 1);
+  }
+  return index;
 }
 
-function validateAnchorsFromLatestRead(
-	filePath: string,
-	edits: HashlineEdit[],
-): void {
-	const readState = lastReadByFile.get(filePath);
-	if (!readState) {
-		throw new Error(
-			"No prior read state for this file. Read the file first and use LINE#ID anchors from that read.",
-		);
-	}
+function resolveAnchor(
+  ref: AnchorRef,
+  anchorIndex: Map<string, number[]>,
+): ResolvedAnchor {
+  const candidates = anchorIndex.get(ref.id);
+  if (!candidates || candidates.length === 0) {
+    throw new Error(
+      `Anchor ${ref.line}#${ref.id} was not found in current file state. The line may have changed or been deleted. Re-read the file.`,
+    );
+  }
+  if (candidates.includes(ref.line)) return { line: ref.line, moved: false };
+  if (candidates.length === 1) return { line: candidates[0], moved: true };
 
-	const refs: Anchor[] = [];
-	for (const edit of edits) {
-		if (edit.op === "replace_range") refs.push(edit.pos, edit.end);
-		else if (edit.op === "append_at" || edit.op === "prepend_at")
-			refs.push(edit.pos);
-	}
-
-	for (const ref of refs) {
-		const key = `${ref.line}#${ref.hash}`;
-		if (!readState.anchors.has(key)) {
-			throw new Error(
-				`Anchor ${key} is not from the latest read output for this file. Re-read and use current LINE#ID anchors.`,
-			);
-		}
-		if (ref.line < readState.startLine || ref.line > readState.endLine) {
-			throw new Error(
-				`Anchor ${key} is outside the latest read window (${readState.startLine}-${readState.endLine}). Re-read with offset/limit to include this area.`,
-			);
-		}
-	}
-
-	if (readState.truncated) {
-		const highestAnchor = refs.reduce((max, ref) => Math.max(max, ref.line), 0);
-		if (highestAnchor === readState.endLine) {
-			// Allowed: anchor is in current window. Nothing else required.
-		}
-	}
+  let best = candidates[0];
+  let bestDist = Math.abs(best - ref.line);
+  for (let i = 1; i < candidates.length; i++) {
+    const d = Math.abs(candidates[i] - ref.line);
+    if (d < bestDist) {
+      best = candidates[i];
+      bestDist = d;
+    }
+  }
+  return { line: best, moved: true };
 }
 
-class HashlineMismatchError extends Error {
-	constructor(
-		public readonly mismatches: HashMismatch[],
-		public readonly fileLines: string[],
-	) {
-		super(HashlineMismatchError.formatMessage(mismatches, fileLines));
-		this.name = "HashlineMismatchError";
-	}
-
-	static formatMessage(
-		mismatches: HashMismatch[],
-		fileLines: string[],
-	): string {
-		const mismatchSet = new Map<number, HashMismatch>();
-		for (const m of mismatches) mismatchSet.set(m.line, m);
-
-		const displayLines = new Set<number>();
-		for (const m of mismatches) {
-			const lo = Math.max(1, m.line - 2);
-			const hi = Math.min(fileLines.length, m.line + 2);
-			for (let i = lo; i <= hi; i++) displayLines.add(i);
-		}
-
-		const sorted = [...displayLines].sort((a, b) => a - b);
-		const lines: string[] = [];
-		lines.push(
-			`${mismatches.length} line${mismatches.length > 1 ? "s have" : " has"} changed since last read. Use the updated LINE#ID references shown below (>>> marks changed lines).`,
-		);
-		lines.push("");
-
-		let prevLine = -1;
-		for (const lineNum of sorted) {
-			if (prevLine !== -1 && lineNum > prevLine + 1) lines.push("    ...");
-			prevLine = lineNum;
-			const text = fileLines[lineNum - 1];
-			const hash = computeLineHash(lineNum, text);
-			const prefix = `${lineNum}#${hash}`;
-			if (mismatchSet.has(lineNum)) lines.push(`>>> ${prefix}:${text}`);
-			else lines.push(`    ${prefix}:${text}`);
-		}
-
-		return lines.join("\n");
-	}
+function validateNoOverlappingRanges(
+  ranges: Array<{ start: number; end: number }>,
+) {
+  const sorted = [...ranges].sort((a, b) => a.start - b.start || a.end - b.end);
+  for (let i = 1; i < sorted.length; i++) {
+    if (sorted[i].start <= sorted[i - 1].end) {
+      throw new Error(
+        `Overlapping replace_range edits are not allowed: [${sorted[i - 1].start}-${sorted[i - 1].end}] overlaps [${sorted[i].start}-${sorted[i].end}].`,
+      );
+    }
+  }
 }
 
 function applyHashlineEdits(
-	text: string,
-	edits: HashlineEdit[],
-): {
-	lines: string;
-	firstChangedLine: number | undefined;
-	warnings?: string[];
-} {
-	if (edits.length === 0) return { lines: text, firstChangedLine: undefined };
+  source: string,
+  edits: HashlineEdit[],
+  anchorIndex: Map<string, number[]>,
+): { content: string; warnings: string[]; firstChangedLine?: number } {
+  if (edits.length === 0) return { content: source, warnings: [] };
 
-	const fileLines = text.split("\n");
-	const originalFileLines = [...fileLines];
-	let firstChangedLine: number | undefined;
-	const warnings: string[] = [];
+  const warnings: string[] = [];
+  const lines = source.split("\n");
+  let firstChangedLine: number | undefined;
 
-	const mismatches: HashMismatch[] = [];
-	function validateRef(ref: Anchor): boolean {
-		if (ref.line < 1 || ref.line > fileLines.length) {
-			throw new Error(
-				`Line ${ref.line} does not exist (file has ${fileLines.length} lines)`,
-			);
-		}
-		const actualHash = computeLineHash(ref.line, fileLines[ref.line - 1]);
-		if (actualHash === ref.hash) return true;
-		mismatches.push({ line: ref.line, expected: ref.hash, actual: actualHash });
-		return false;
-	}
+  type ResolvedEdit = {
+    edit: HashlineEdit;
+    start: number;
+    end: number;
+    insert: string[];
+    sortLine: number;
+    precedence: number;
+  };
 
-	for (const edit of edits) {
-		switch (edit.op) {
-			case "replace_range": {
-				const startValid = validateRef(edit.pos);
-				const endValid = validateRef(edit.end);
-				if (!startValid || !endValid) continue;
-				if (edit.pos.line > edit.end.line) {
-					throw new Error(
-						`Range start line ${edit.pos.line} must be <= end line ${edit.end.line}`,
-					);
-				}
-				break;
-			}
-			case "append_at":
-			case "prepend_at": {
-				if (!validateRef(edit.pos)) continue;
-				if (edit.lines.length === 0) edit.lines = [""];
-				break;
-			}
-			case "append_file":
-			case "prepend_file": {
-				if (edit.lines.length === 0) edit.lines = [""];
-				break;
-			}
-		}
-	}
+  const resolved: ResolvedEdit[] = [];
+  const replaceRanges: Array<{ start: number; end: number }> = [];
 
-	if (mismatches.length > 0)
-		throw new HashlineMismatchError(mismatches, fileLines);
+  for (const edit of edits) {
+    switch (edit.op) {
+      case "replace_range": {
+        const start = resolveAnchor(edit.pos, anchorIndex);
+        const end = resolveAnchor(edit.end, anchorIndex);
+        if (start.moved) {
+          warnings.push(
+            `Anchor ${edit.pos.line}#${edit.pos.id} moved to line ${start.line}.`,
+          );
+        }
+        if (end.moved) {
+          warnings.push(
+            `Anchor ${edit.end.line}#${edit.end.id} moved to line ${end.line}.`,
+          );
+        }
+        if (start.line > end.line) {
+          throw new Error(
+            `Range start line ${start.line} must be <= end line ${end.line}.`,
+          );
+        }
+        replaceRanges.push({ start: start.line, end: end.line });
+        resolved.push({
+          edit,
+          start: start.line,
+          end: end.line,
+          insert: edit.lines,
+          sortLine: end.line,
+          precedence: 0,
+        });
+        break;
+      }
+      case "append_at": {
+        const pos = resolveAnchor(edit.pos, anchorIndex);
+        if (pos.moved) {
+          warnings.push(
+            `Anchor ${edit.pos.line}#${edit.pos.id} moved to line ${pos.line}.`,
+          );
+        }
+        resolved.push({
+          edit,
+          start: pos.line,
+          end: pos.line,
+          insert: edit.lines,
+          sortLine: pos.line,
+          precedence: 1,
+        });
+        break;
+      }
+      case "prepend_at": {
+        const pos = resolveAnchor(edit.pos, anchorIndex);
+        if (pos.moved) {
+          warnings.push(
+            `Anchor ${edit.pos.line}#${edit.pos.id} moved to line ${pos.line}.`,
+          );
+        }
+        resolved.push({
+          edit,
+          start: pos.line,
+          end: pos.line,
+          insert: edit.lines,
+          sortLine: pos.line,
+          precedence: 2,
+        });
+        break;
+      }
+      case "append_file":
+        resolved.push({
+          edit,
+          start: lines.length + 1,
+          end: lines.length + 1,
+          insert: edit.lines,
+          sortLine: lines.length + 1,
+          precedence: 1,
+        });
+        break;
+      case "prepend_file":
+        resolved.push({
+          edit,
+          start: 0,
+          end: 0,
+          insert: edit.lines,
+          sortLine: 0,
+          precedence: 2,
+        });
+        break;
+    }
+  }
 
-	if ((process.env.PI_HASHLINE_AUTOCORRECT_ESCAPED_TABS ?? "1") !== "0") {
-		for (const edit of edits) {
-			if (edit.lines.length === 0) continue;
-			const hasEscapedTabs = edit.lines.some((line) => line.includes("\\t"));
-			if (!hasEscapedTabs) continue;
-			const hasRealTabs = edit.lines.some((line) => line.includes("\t"));
-			if (hasRealTabs) continue;
-			let correctedCount = 0;
-			edit.lines = edit.lines.map((line) =>
-				line.replace(/^((?:\\t)+)/, (escaped) => {
-					correctedCount += escaped.length / 2;
-					return "\t".repeat(escaped.length / 2);
-				}),
-			);
-			if (correctedCount > 0) {
-				warnings.push(
-					"Auto-corrected escaped tab indentation in edit: converted leading \\t sequence(s) to real tab characters",
-				);
-			}
-		}
-	}
+  validateNoOverlappingRanges(replaceRanges);
 
-	for (const edit of edits) {
-		let endLine: number;
-		if (edit.op === "replace_range") {
-			endLine = edit.end.line;
-		} else {
-			continue;
-		}
-		if (edit.lines.length === 0) continue;
-		const nextSurvivingIdx = endLine;
-		if (nextSurvivingIdx >= originalFileLines.length) continue;
-		const nextSurvivingLine = originalFileLines[nextSurvivingIdx];
-		const lastInsertedLine = edit.lines[edit.lines.length - 1];
-		const trimmedNext = nextSurvivingLine.trim();
-		const trimmedLast = lastInsertedLine.trim();
-		if (trimmedLast.length > 0 && trimmedLast === trimmedNext) {
-			const tag = `${endLine + 1}#${computeLineHash(endLine + 1, nextSurvivingLine)}`;
-			warnings.push(
-				`Possible boundary duplication: your last replacement line \`${trimmedLast}\` is identical to the next surviving line ${tag}. If you meant to replace the entire block, set \`end\` to ${tag} instead.`,
-			);
-		}
-	}
+  resolved.sort(
+    (a, b) => b.sortLine - a.sortLine || a.precedence - b.precedence,
+  );
 
-	const annotated = edits.map((edit, idx) => {
-		let sortLine: number;
-		let precedence: number;
-		switch (edit.op) {
-			case "replace_range":
-				sortLine = edit.end.line;
-				precedence = 0;
-				break;
-			case "append_at":
-				sortLine = edit.pos.line;
-				precedence = 1;
-				break;
-			case "prepend_at":
-				sortLine = edit.pos.line;
-				precedence = 2;
-				break;
-			case "append_file":
-				sortLine = fileLines.length + 1;
-				precedence = 1;
-				break;
-			case "prepend_file":
-				sortLine = 0;
-				precedence = 2;
-				break;
-		}
-		return { edit, idx, sortLine, precedence };
-	});
+  for (const item of resolved) {
+    const insert = item.insert.length === 0 ? [""] : item.insert;
+    switch (item.edit.op) {
+      case "replace_range": {
+        const removeCount = item.end - item.start + 1;
+        lines.splice(item.start - 1, removeCount, ...insert);
+        firstChangedLine =
+          firstChangedLine === undefined
+            ? item.start
+            : Math.min(firstChangedLine, item.start);
+        break;
+      }
+      case "append_at": {
+        lines.splice(item.start, 0, ...insert);
+        const changed = item.start + 1;
+        firstChangedLine =
+          firstChangedLine === undefined
+            ? changed
+            : Math.min(firstChangedLine, changed);
+        break;
+      }
+      case "prepend_at": {
+        lines.splice(item.start - 1, 0, ...insert);
+        firstChangedLine =
+          firstChangedLine === undefined
+            ? item.start
+            : Math.min(firstChangedLine, item.start);
+        break;
+      }
+      case "append_file": {
+        if (lines.length === 1 && lines[0] === "") {
+          lines.splice(0, 1, ...insert);
+          firstChangedLine =
+            firstChangedLine === undefined ? 1 : Math.min(firstChangedLine, 1);
+        } else {
+          const before = lines.length;
+          lines.splice(lines.length, 0, ...insert);
+          const changed = before + 1;
+          firstChangedLine =
+            firstChangedLine === undefined
+              ? changed
+              : Math.min(firstChangedLine, changed);
+        }
+        break;
+      }
+      case "prepend_file": {
+        if (lines.length === 1 && lines[0] === "") {
+          lines.splice(0, 1, ...insert);
+        } else {
+          lines.splice(0, 0, ...insert);
+        }
+        firstChangedLine =
+          firstChangedLine === undefined ? 1 : Math.min(firstChangedLine, 1);
+        break;
+      }
+    }
+  }
 
-	annotated.sort(
-		(a, b) =>
-			b.sortLine - a.sortLine || a.precedence - b.precedence || a.idx - b.idx,
-	);
-
-	for (const { edit } of annotated) {
-		switch (edit.op) {
-			case "replace_range": {
-				const count = edit.end.line - edit.pos.line + 1;
-				fileLines.splice(edit.pos.line - 1, count, ...edit.lines);
-				trackFirstChanged(edit.pos.line);
-				break;
-			}
-			case "append_at": {
-				fileLines.splice(edit.pos.line, 0, ...edit.lines);
-				trackFirstChanged(edit.pos.line + 1);
-				break;
-			}
-			case "prepend_at": {
-				fileLines.splice(edit.pos.line - 1, 0, ...edit.lines);
-				trackFirstChanged(edit.pos.line);
-				break;
-			}
-			case "append_file": {
-				if (fileLines.length === 1 && fileLines[0] === "") {
-					fileLines.splice(0, 1, ...edit.lines);
-					trackFirstChanged(1);
-				} else {
-					fileLines.splice(fileLines.length, 0, ...edit.lines);
-					trackFirstChanged(fileLines.length - edit.lines.length + 1);
-				}
-				break;
-			}
-			case "prepend_file": {
-				if (fileLines.length === 1 && fileLines[0] === "") {
-					fileLines.splice(0, 1, ...edit.lines);
-				} else {
-					fileLines.splice(0, 0, ...edit.lines);
-				}
-				trackFirstChanged(1);
-				break;
-			}
-		}
-	}
-
-	return {
-		lines: fileLines.join("\n"),
-		firstChangedLine,
-		...(warnings.length > 0 ? { warnings } : {}),
-	};
-
-	function trackFirstChanged(line: number): void {
-		if (firstChangedLine === undefined || line < firstChangedLine) {
-			firstChangedLine = line;
-		}
-	}
+  return { content: lines.join("\n"), warnings, firstChangedLine };
 }
 
-function formatHashLines(text: string, startLine = 1): string {
-	const lines = text.split("\n");
-	return lines
-		.map((line, i) => {
-			const num = startLine + i;
-			return `${num}#${computeLineHash(num, line)}:${line}`;
-		})
-		.join("\n");
+// ---------------------------------------------------------------------------
+// Diff output for vanilla-like edit renderer
+// ---------------------------------------------------------------------------
+
+function generateDiffString(
+  oldContent: string,
+  newContent: string,
+  contextLines = 4,
+): { diff: string; firstChangedLine?: number } {
+  const oldLines = oldContent.split("\n");
+  const newLines = newContent.split("\n");
+  const width = String(Math.max(oldLines.length, newLines.length, 1)).length;
+
+  const chunks = Diff.diffLines(oldContent, newContent);
+  const out: string[] = [];
+
+  let oldNo = 1;
+  let newNo = 1;
+  let firstChangedLine: number | undefined;
+  let lastWasChange = false;
+
+  for (let i = 0; i < chunks.length; i++) {
+    const c = chunks[i];
+    const lines = c.value.split("\n");
+    if (lines[lines.length - 1] === "") lines.pop();
+
+    if (c.added || c.removed) {
+      if (firstChangedLine === undefined && c.added) firstChangedLine = newNo;
+      for (const line of lines) {
+        if (c.added) {
+          out.push(`+${String(newNo).padStart(width, " ")} ${line}`);
+          newNo++;
+        } else {
+          out.push(`-${String(oldNo).padStart(width, " ")} ${line}`);
+          oldNo++;
+        }
+      }
+      lastWasChange = true;
+      continue;
+    }
+
+    const nextIsChange =
+      i < chunks.length - 1 && !!(chunks[i + 1].added || chunks[i + 1].removed);
+    if (!lastWasChange && !nextIsChange) {
+      oldNo += lines.length;
+      newNo += lines.length;
+      continue;
+    }
+
+    if (lastWasChange && nextIsChange) {
+      if (lines.length <= contextLines * 2) {
+        for (const line of lines) {
+          out.push(` ${String(oldNo).padStart(width, " ")} ${line}`);
+          oldNo++;
+          newNo++;
+        }
+      } else {
+        for (const line of lines.slice(0, contextLines)) {
+          out.push(` ${String(oldNo).padStart(width, " ")} ${line}`);
+          oldNo++;
+          newNo++;
+        }
+        const skipped = lines.length - contextLines * 2;
+        out.push(` ${"".padStart(width, " ")} ...`);
+        oldNo += skipped;
+        newNo += skipped;
+        for (const line of lines.slice(-contextLines)) {
+          out.push(` ${String(oldNo).padStart(width, " ")} ${line}`);
+          oldNo++;
+          newNo++;
+        }
+      }
+    } else if (lastWasChange) {
+      const shown = lines.slice(0, contextLines);
+      for (const line of shown) {
+        out.push(` ${String(oldNo).padStart(width, " ")} ${line}`);
+        oldNo++;
+        newNo++;
+      }
+      if (shown.length < lines.length) {
+        const skipped = lines.length - shown.length;
+        out.push(` ${"".padStart(width, " ")} ...`);
+        oldNo += skipped;
+        newNo += skipped;
+      }
+    } else {
+      const skipped = Math.max(0, lines.length - contextLines);
+      if (skipped > 0) {
+        out.push(` ${"".padStart(width, " ")} ...`);
+        oldNo += skipped;
+        newNo += skipped;
+      }
+      for (const line of lines.slice(skipped)) {
+        out.push(` ${String(oldNo).padStart(width, " ")} ${line}`);
+        oldNo++;
+        newNo++;
+      }
+    }
+    lastWasChange = false;
+  }
+
+  return { diff: out.join("\n"), firstChangedLine };
 }
+
+// ---------------------------------------------------------------------------
+// Formatting
+// ---------------------------------------------------------------------------
+
+function formatHashLines(
+  lines: string[],
+  anchors: string[],
+  startLine: number,
+): string {
+  return lines
+    .map((line, i) => `${startLine + i}#${anchors[i]}:${line}`)
+    .join("\n");
+}
+
+function resolveAbsolute(cwd: string, p: string): string {
+  return path.isAbsolute(p) ? path.normalize(p) : path.resolve(cwd, p);
+}
+
+function ensureParentDir(filePath: string) {
+  return mkdir(path.dirname(filePath), { recursive: true });
+}
+
+// ---------------------------------------------------------------------------
+// Extension
+// ---------------------------------------------------------------------------
 
 export default function (pi: ExtensionAPI) {
-	pi.registerTool({
-		name: "read",
-		label: "read",
-		description:
-			"Read file content formatted as LINE#ID:TEXT. Use these LINE#ID anchors with edit.",
-		promptSnippet:
-			"Read the file first and copy LINE#ID anchors exactly from this output before edit.",
-		parameters: hashlineReadSchema,
-		async execute(_toolCallId, params, _signal, _onUpdate, ctx) {
-			const cwd = ctx.cwd;
-			const filePath = path.isAbsolute(params.path)
-				? path.normalize(params.path)
-				: path.resolve(cwd, params.path);
+  pi.registerTool({
+    name: "read",
+    label: "read",
+    description:
+      "Read file content formatted as LINE#ID:TEXT. Line anchors are stable across reads for unchanged lines.",
+    promptSnippet:
+      "Read the file first, then use LINE#ID anchors for edit. Anchors are stable across reads for unchanged lines.",
+    parameters: hashlineReadSchema,
+    async execute(_toolCallId, params, _signal, _onUpdate, ctx) {
+      const absolutePath = resolveAbsolute(ctx.cwd, params.path);
+      const content = await readFile(absolutePath, "utf8");
+      const allLines = content.split("\n");
+      const allAnchors = reconcileAnchors(absolutePath, allLines);
 
-			const content = await readFile(filePath, "utf8");
-			const allLines = content.split("\n");
-			const startLine = params.offset ? Math.max(0, params.offset - 1) : 0;
-			const effectiveLimit = params.limit ?? 200;
-			const endLine = Math.min(startLine + effectiveLimit, allLines.length);
+      const startIdx = Math.max(0, (params.offset ?? 1) - 1);
+      const limit = Math.max(1, params.limit ?? 200);
+      const endIdx = Math.min(allLines.length, startIdx + limit);
 
-			if (params.offset && startLine >= allLines.length) {
-				return {
-					content: [
-						{
-							type: "text" as const,
-							text: `Offset ${params.offset} is beyond end of file (${allLines.length} lines total).`,
-						},
-					],
-				};
-			}
+      if (params.offset && startIdx >= allLines.length) {
+        return {
+          content: [
+            {
+              type: "text" as const,
+              text: `Offset ${params.offset} is beyond end of file (${allLines.length} lines total).`,
+            },
+          ],
+        };
+      }
 
-			const slice = allLines.slice(startLine, endLine).join("\n");
-			let output = formatHashLines(slice, startLine + 1);
-			if (endLine < allLines.length) {
-				output += `\n\n[${allLines.length - endLine} more lines in file. Use offset=${endLine + 1} to continue]`;
-			}
+      const sliceLines = allLines.slice(startIdx, endIdx);
+      const sliceAnchors = allAnchors.slice(startIdx, endIdx);
+      let out = formatHashLines(sliceLines, sliceAnchors, startIdx + 1);
 
-			const anchors = new Set<string>();
-			for (let i = startLine; i < endLine; i++) {
-				const lineNumber = i + 1;
-				anchors.add(
-					`${lineNumber}#${computeLineHash(lineNumber, allLines[i] ?? "")}`,
-				);
-			}
-			lastReadByFile.set(filePath, {
-				startLine: startLine + 1,
-				endLine,
-				truncated: endLine < allLines.length,
-				anchors,
-			});
+      if (endIdx < allLines.length) {
+        out += `\n\n[${allLines.length - endIdx} more lines in file. Use offset=${endIdx + 1} to continue]`;
+      }
 
-			return {
-				content: [{ type: "text" as const, text: output }],
-			};
-		},
-	});
+      return {
+        content: [{ type: "text" as const, text: out }],
+      };
+    },
+  });
 
-	pi.registerTool({
-		name: "edit",
-		label: "edit",
-		description:
-			"Apply precise file edits using LINE#ID anchors from read output.",
-		promptSnippet:
-			"Read first with read, then apply minimal edits with exact LINE#ID anchors.",
-		promptGuidelines: [
-			"Use anchors exactly as LINE#ID from the latest read output.",
-			"range requires both pos and end.",
-			"After a successful edit, re-read before editing the same file again.",
-		],
-		parameters: hashlineEditSchema,
-		async execute(_toolCallId, params, _signal, _onUpdate, ctx) {
-			const cwd = ctx.cwd;
-			const requests: Array<{
-				path: string;
-				edits?: Array<{ loc: any; content: string[] | string | null }>;
-				delete?: boolean;
-				move?: string;
-			}> = [];
+  pi.registerTool({
+    name: "edit",
+    label: "edit",
+    description:
+      "Apply precise file edits using LINE#ID anchors. Anchors are stable across reads for unchanged lines.",
+    promptSnippet:
+      "Batch related edits in one call. Use files[] for multi-file edits. Use LINE#ID anchors from prior read output.",
+    promptGuidelines: [
+      "Prefer one edit call with multiple edits (or files[]) instead of many small calls.",
+      "Use anchors from any prior read output — unchanged lines keep IDs.",
+      "range requires both pos and end; ranges must not overlap.",
+    ],
+    parameters: hashlineEditSchema,
+    renderResult(result, _options, _theme, context) {
+      if (context.isError) return undefined;
+      const diff = (result as any).details?.diff;
+      const argPath = (context.args as any)?.path;
+      if (typeof diff === "string" && diff.length > 0) {
+        return renderDiff(diff, {
+          filePath: typeof argPath === "string" ? argPath : undefined,
+        });
+      }
+      return undefined;
+    },
+    async execute(_toolCallId, params, _signal, _onUpdate, ctx) {
+      const requests: Array<{
+        path: string;
+        edits?: Array<{ loc: any; content: string[] | string | null }>;
+        delete?: boolean;
+        move?: string;
+      }> = [];
 
-			if (params.path) {
-				requests.push({
-					path: params.path,
-					edits: params.edits,
-					delete: params.delete,
-					move: params.move,
-				});
-			}
+      if (params.path) {
+        requests.push({
+          path: params.path,
+          edits: params.edits,
+          delete: params.delete,
+          move: params.move,
+        });
+      }
+      if (Array.isArray(params.files)) {
+        for (const f of params.files) requests.push(f as any);
+      }
 
-			if (Array.isArray(params.files)) {
-				for (const item of params.files) {
-					requests.push(item as any);
-				}
-			}
+      if (requests.length === 0) {
+        throw new Error("No edits provided. Use path+edits or files[].");
+      }
 
-			if (requests.length === 0) {
-				throw new Error(
-					"No edits provided. Supply path+edits or files[] for batch edits.",
-				);
-			}
+      const plan: PlannedOp[] = [];
 
-			type PlannedOp =
-				| { kind: "delete"; filePath: string; summary: string }
-				| {
-						kind: "write";
-						filePath: string;
-						movePath?: string;
-						content: string;
-						summary: string;
-						warnings: string[];
-						firstChangedLine?: number;
-				  };
+      // Preflight: compute all outputs without mutating filesystem
+      for (const req of requests) {
+        const absolutePath = resolveAbsolute(ctx.cwd, req.path);
+        const moveTo = req.move
+          ? {
+              requested: req.move,
+              absolute: resolveAbsolute(ctx.cwd, req.move),
+            }
+          : undefined;
 
-			const plan: PlannedOp[] = [];
-			const warningsAll: string[] = [];
-			let firstChangedLine: number | undefined;
+        if (req.delete) {
+          await fsAccess(absolutePath, constants.F_OK);
+          plan.push({
+            kind: "delete",
+            requestedPath: req.path,
+            absolutePath,
+            summary: `Deleted ${req.path}`,
+          });
+          continue;
+        }
 
-			// Preflight pass: validate and compute all outputs without mutating files.
-			for (const req of requests) {
-				const filePath = path.isAbsolute(req.path)
-					? path.normalize(req.path)
-					: path.resolve(cwd, req.path);
-				const movePath = req.move
-					? path.isAbsolute(req.move)
-						? path.normalize(req.move)
-						: path.resolve(cwd, req.move)
-					: undefined;
+        const edits = req.edits ?? [];
+        if (edits.length === 0)
+          throw new Error(`No edits provided for ${req.path}.`);
 
-				if (req.delete) {
-					await fsAccess(filePath, constants.F_OK);
-					plan.push({
-						kind: "delete",
-						filePath,
-						summary: `Deleted ${req.path}`,
-					});
-					continue;
-				}
+        let sourceContent: string | null = null;
+        try {
+          sourceContent = await readFile(absolutePath, "utf8");
+        } catch {
+          sourceContent = null;
+        }
 
-				const toolEdits = (req.edits ?? []) as Array<{
-					loc: any;
-					content: string[] | string | null;
-				}>;
-				if (toolEdits.length === 0) {
-					throw new Error(`No edits provided for ${req.path}`);
-				}
+        if (sourceContent === null) {
+          const createdLines: string[] = [];
+          for (const edit of edits) {
+            if (edit.loc === "append")
+              createdLines.push(...parseContent(edit.content));
+            else if (edit.loc === "prepend")
+              createdLines.unshift(...parseContent(edit.content));
+            else
+              throw new Error(
+                `File not found: ${req.path}. Create with append/prepend only.`,
+              );
+          }
+          const newContent = createdLines.join("\n");
+          const diffInfo = generateDiffString("", newContent);
+          plan.push({
+            kind: "write",
+            requestedPath: req.path,
+            absolutePath,
+            moveTo,
+            content: newContent,
+            summary: moveTo
+              ? `Created ${req.path} and moved to ${req.move}`
+              : `Created ${req.path}`,
+            warnings: [],
+            diff: diffInfo.diff,
+            firstChangedLine: diffInfo.firstChangedLine,
+          });
+          continue;
+        }
 
-				let sourceContent: string | null = null;
-				try {
-					sourceContent = await readFile(filePath, "utf8");
-				} catch {
-					sourceContent = null;
-				}
+        const sourceLines = sourceContent.split("\n");
+        const anchors = reconcileAnchors(absolutePath, sourceLines);
+        const anchorIndex = buildAnchorIndex(anchors);
 
-				if (sourceContent === null) {
-					const lines: string[] = [];
-					for (const edit of toolEdits) {
-						if (edit.loc === "append")
-							lines.push(...hashlineParseText(edit.content));
-						else if (edit.loc === "prepend")
-							lines.unshift(...hashlineParseText(edit.content));
-						else throw new Error(`File not found: ${req.path}`);
-					}
-					plan.push({
-						kind: "write",
-						filePath,
-						movePath,
-						content: lines.join("\n"),
-						summary: movePath
-							? `Created ${req.path} and moved to ${req.move}`
-							: `Created ${req.path}`,
-						warnings: [],
-					});
-					continue;
-				}
+        const parsedEdits = resolveEditPayload(edits);
+        const applied = applyHashlineEdits(
+          sourceContent,
+          parsedEdits,
+          anchorIndex,
+        );
 
-				const edits = resolveEditAnchors(toolEdits);
-				validateNoOverlappingRanges(edits);
-				validateAnchorsFromLatestRead(filePath, edits);
-				const result = applyHashlineEdits(sourceContent, edits);
+        if (applied.content === sourceContent && !moveTo) {
+          throw new Error(
+            `No changes made to ${req.path}. The edits produced identical content. Re-read and adjust anchors/content.`,
+          );
+        }
 
-				if (result.lines === sourceContent && !movePath) {
-					throw new Error(
-						`No changes made to ${req.path}. The edits produced identical content. Re-read the file and adjust anchors/content.`,
-					);
-				}
+        const diffInfo = generateDiffString(sourceContent, applied.content);
 
-				plan.push({
-					kind: "write",
-					filePath,
-					movePath,
-					content: result.lines,
-					summary: movePath
-						? `Moved ${req.path} to ${req.move}`
-						: `Updated ${req.path}`,
-					warnings: result.warnings ?? [],
-					firstChangedLine: result.firstChangedLine,
-				});
-			}
+        // keep state in sync with expected post-edit content
+        reconcileAnchors(absolutePath, applied.content.split("\n"));
 
-			// Commit pass: mutate files only after full preflight succeeded.
-			const restoreState = new Map<string, string | null>();
-			for (const op of plan) {
-				if (restoreState.has(op.filePath)) continue;
-				try {
-					restoreState.set(op.filePath, await readFile(op.filePath, "utf8"));
-				} catch {
-					restoreState.set(op.filePath, null);
-				}
-			}
+        plan.push({
+          kind: "write",
+          requestedPath: req.path,
+          absolutePath,
+          moveTo,
+          content: applied.content,
+          summary: moveTo
+            ? `Moved ${req.path} to ${req.move}`
+            : `Updated ${req.path}`,
+          warnings: applied.warnings,
+          diff: diffInfo.diff,
+          firstChangedLine:
+            applied.firstChangedLine ?? diffInfo.firstChangedLine,
+        });
+      }
 
-			try {
-				for (const op of plan) {
-					if (op.kind === "delete") {
-						await unlink(op.filePath);
-						continue;
-					}
-					await writeFile(op.filePath, op.content, "utf8");
-					if (op.movePath) await rename(op.filePath, op.movePath);
-					if (op.warnings.length > 0) warningsAll.push(...op.warnings);
-					if (
-						firstChangedLine === undefined &&
-						op.firstChangedLine !== undefined
-					) {
-						firstChangedLine = op.firstChangedLine;
-					}
-				}
-			} catch (err: any) {
-				for (const op of [...plan].reverse()) {
-					const before = restoreState.get(op.filePath);
-					if (before === undefined) continue;
-					try {
-						if (before === null) {
-							await unlink(op.filePath).catch(() => undefined);
-						} else {
-							await writeFile(op.filePath, before, "utf8");
-						}
-					} catch {
-						// Best-effort rollback; continue restoring other files.
-					}
-				}
-				throw new Error(`Batch commit failed and was rolled back: ${err?.message ?? String(err)}`);
-			}
+      // Commit phase with best-effort rollback
+      const backup = new Map<string, string | null>();
+      for (const op of plan) {
+        if (backup.has(op.absolutePath)) continue;
+        try {
+          backup.set(op.absolutePath, await readFile(op.absolutePath, "utf8"));
+        } catch {
+          backup.set(op.absolutePath, null);
+        }
+      }
 
-			const summary = plan.map((op) => op.summary).join("\n");
-			const warningsBlock = warningsAll.length
-				? `\n\nWarnings:\n${warningsAll.join("\n")}`
-				: "";
+      try {
+        for (const op of plan) {
+          if (op.kind === "delete") {
+            await unlink(op.absolutePath);
+            dropAnchorState(op.absolutePath);
+            continue;
+          }
+          await ensureParentDir(op.absolutePath);
+          await writeFile(op.absolutePath, op.content, "utf8");
+          if (op.moveTo) {
+            await ensureParentDir(op.moveTo.absolute);
+            await rename(op.absolutePath, op.moveTo.absolute);
+            const state = anchorStateByFile.get(op.absolutePath);
+            if (state) {
+              anchorStateByFile.set(op.moveTo.absolute, state);
+              anchorStateByFile.delete(op.absolutePath);
+            }
+          }
+        }
+      } catch (error: any) {
+        for (const [file, previous] of backup.entries()) {
+          try {
+            if (previous === null) {
+              await unlink(file).catch(() => undefined);
+              dropAnchorState(file);
+            } else {
+              await ensureParentDir(file);
+              await writeFile(file, previous, "utf8");
+              reconcileAnchors(file, previous.split("\n"));
+            }
+          } catch {
+            // best effort
+          }
+        }
+        throw new Error(
+          `Batch commit failed and was rolled back: ${error?.message ?? String(error)}`,
+        );
+      }
 
-			return {
-				content: [
-					{
-						type: "text" as const,
-						text: `${summary}${warningsBlock}`,
-					},
-				],
-				details: {
-					firstChangedLine,
-				},
-			};
-		},
-	});
+      const summaries = plan.map((op) => op.summary).join("\n");
+      const warnings = plan
+        .filter(
+          (op): op is Extract<PlannedOp, { kind: "write" }> =>
+            op.kind === "write",
+        )
+        .flatMap((op) => op.warnings);
+
+      const diffBlocks = plan
+        .filter(
+          (op): op is Extract<PlannedOp, { kind: "write" }> =>
+            op.kind === "write",
+        )
+        .map((op) => ({
+          path: op.moveTo?.requested ?? op.requestedPath,
+          diff: op.diff,
+        }))
+        .filter((x) => x.diff && x.diff.length > 0)
+        .map((x) => (plan.length > 1 ? `*** ${x.path}\n\n${x.diff}` : x.diff!));
+
+      const firstChangedLine = plan
+        .filter(
+          (op): op is Extract<PlannedOp, { kind: "write" }> =>
+            op.kind === "write",
+        )
+        .reduce<number | undefined>((min, op) => {
+          if (op.firstChangedLine === undefined) return min;
+          if (min === undefined) return op.firstChangedLine;
+          return Math.min(min, op.firstChangedLine);
+        }, undefined);
+
+      const warningText =
+        warnings.length > 0 ? `\n\nWarnings:\n${warnings.join("\n")}` : "";
+
+      return {
+        content: [
+          { type: "text" as const, text: `${summaries}${warningText}` },
+        ],
+        details: {
+          diff: diffBlocks.join("\n\n"),
+          firstChangedLine,
+        },
+      };
+    },
+  });
 }
