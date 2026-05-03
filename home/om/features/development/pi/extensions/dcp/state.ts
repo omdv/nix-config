@@ -100,8 +100,10 @@ export interface DcpState {
 	currentTurn: number;
 
 	// ── Statistics ─────────────────────────────────────────────────────────────
-	/** Running total of tokens estimated to have been saved by pruning/compression */
+	/** Running total of net tokens estimated to have been saved by pruning/compression */
 	tokensSaved: number;
+	/** Running total of tokens replaced by compression blocks (pre-summary size) */
+	tokensReplacedByCompression: number;
 	/** Number of discrete pruning operations performed */
 	totalPruneCount: number;
 
@@ -141,6 +143,7 @@ export function createState(): DcpState {
 		messageIdSnapshot: new Map(),
 		currentTurn: 0,
 		tokensSaved: 0,
+		tokensReplacedByCompression: 0,
 		totalPruneCount: 0,
 		manualMode: false,
 		nudgeCounter: 0,
@@ -161,6 +164,7 @@ export function resetState(state: DcpState): void {
 	state.messageIdSnapshot.clear();
 	state.currentTurn = 0;
 	state.tokensSaved = 0;
+	state.tokensReplacedByCompression = 0;
 	state.totalPruneCount = 0;
 	state.manualMode = false;
 	state.nudgeCounter = 0;

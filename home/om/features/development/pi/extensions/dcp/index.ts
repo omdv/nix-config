@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------------------
 
 import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
+import { BenchmarkLogger } from "./benchmark";
 import { registerCommands } from "./commands";
 import { registerCompressTool } from "./compress-tool";
 import { loadConfig } from "./config";
@@ -39,6 +40,7 @@ function saveState(pi: ExtensionAPI, state: DcpState): void {
 		nextBlockId: state.nextBlockId,
 		prunedToolIds: persistedPrunedToolIds,
 		tokensSaved: state.tokensSaved,
+		tokensReplacedByCompression: state.tokensReplacedByCompression,
 		totalPruneCount: state.totalPruneCount,
 		manualMode: state.manualMode,
 	});
@@ -56,6 +58,7 @@ export default function (pi: ExtensionAPI) {
 
 	// ── 2. Create state ───────────────────────────────────────────────────────
 	const state = createState();
+	const benchmark = new BenchmarkLogger(process.cwd());
 
 	// Apply config baseline for manual mode before any session events fire.
 	if (config.manualMode.enabled) {
@@ -66,7 +69,17 @@ export default function (pi: ExtensionAPI) {
 	registerCompressTool(pi, state, config);
 
 	// ── 4. Register /dcp commands ─────────────────────────────────────────────
-	registerCommands(pi, state, config);
+	registerCommands(pi, state, config, {
+		onManualModeChanged: (manualMode) => {
+			benchmark.recordManualModeChange(manualMode);
+		},
+		onEvent: (type, payload) => {
+			benchmark.recordEvent(type, payload ?? {});
+		},
+		onBenchmarkStatus: (ctx) => {
+			ctx.ui.notify(benchmark.status(state, ctx.getContextUsage()), "info");
+		},
+	});
 
 	// ── 5. session_start: restore state from session entries ──────────────────
 	pi.on("session_start", async (_event, ctx) => {
@@ -101,6 +114,8 @@ export default function (pi: ExtensionAPI) {
 								1
 							: 1);
 					state.tokensSaved = data.tokensSaved ?? 0;
+					state.tokensReplacedByCompression =
+						data.tokensReplacedByCompression ?? 0;
 					state.totalPruneCount = data.totalPruneCount ?? 0;
 				}
 
@@ -118,10 +133,12 @@ export default function (pi: ExtensionAPI) {
 
 		// Show a status indicator in the pi TUI.
 		ctx.ui.setStatus("dcp", state.manualMode ? "DCP [manual]" : "DCP");
+		benchmark.startSession(state.manualMode);
 	});
 
 	// ── 6. session_shutdown: save state ───────────────────────────────────────
 	pi.on("session_shutdown", async (_event, _ctx) => {
+		benchmark.endSession(state);
 		saveState(pi, state);
 	});
 
@@ -156,6 +173,7 @@ export default function (pi: ExtensionAPI) {
 				tokenEstimate: 0,
 			});
 		}
+		benchmark.recordToolCall(event.toolName);
 	});
 
 	// ── 9. tool_result: finalise tool record with result info ─────────────────
@@ -185,6 +203,7 @@ export default function (pi: ExtensionAPI) {
 				tokenEstimate,
 			});
 		}
+		benchmark.recordToolResult(event.toolName, event.isError);
 	});
 
 	// ── 10. context: apply pruning and inject nudges ──────────────────────────
@@ -196,6 +215,7 @@ export default function (pi: ExtensionAPI) {
 		// In manual mode we still apply pruning strategies (if
 		// automaticStrategies is on) but skip autonomous nudge injection.
 		const usage = ctx.getContextUsage();
+		benchmark.recordSnapshot(usage, state, state.manualMode);
 		if (usage && usage.tokens !== null && !state.manualMode) {
 			const contextPercent = usage.tokens / usage.contextWindow;
 
@@ -229,6 +249,7 @@ export default function (pi: ExtensionAPI) {
 				}
 
 				injectNudge(prunedMessages, nudgeText);
+				benchmark.recordNudge(nudgeType);
 				state.nudgeCounter = 0;
 			} else {
 				state.nudgeCounter++;
@@ -240,6 +261,7 @@ export default function (pi: ExtensionAPI) {
 
 	// ── 11. agent_end: persist state after each agent run ────────────────────
 	pi.on("agent_end", async (_event, _ctx) => {
+		benchmark.flush();
 		saveState(pi, state);
 	});
 }

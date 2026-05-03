@@ -282,9 +282,10 @@ function applyCompressionBlocks(messages: any[], state: DcpState): any[] {
 		// Re-sort by timestamp
 		messages.sort((a, b) => (a.timestamp ?? 0) - (b.timestamp ?? 0));
 
-		// Update tokens saved
+		// Update token metrics
 		const saved = removedTokens - addedTokens;
 		if (saved > 0) state.tokensSaved += saved;
+		state.tokensReplacedByCompression += removedTokens;
 	}
 
 	return messages;
