@@ -1,4 +1,11 @@
-import { readFile, rename, unlink, writeFile } from "node:fs/promises";
+import {
+	access as fsAccess,
+	readFile,
+	rename,
+	unlink,
+	writeFile,
+} from "node:fs/promises";
+import { constants } from "node:fs";
 import * as path from "node:path";
 import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
 import { Type } from "@sinclair/typebox";
@@ -68,24 +75,56 @@ const locSchema = Type.Union(
 	{ description: "insert location" },
 );
 
-const hashlineEditSchema = Type.Object(
+const fileEditItemSchema = Type.Object(
 	{
 		path: Type.String({ description: "path" }),
-		edits: Type.Array(
-			Type.Object(
-				{
-					loc: locSchema,
-					content: linesSchema,
-				},
-				{ additionalProperties: false },
+		edits: Type.Optional(
+			Type.Array(
+				Type.Object(
+					{
+						loc: locSchema,
+						content: linesSchema,
+					},
+					{ additionalProperties: false },
+				),
+				{ description: "edits over $path" },
 			),
-			{ description: "edits over $path" },
 		),
 		delete: Type.Optional(
 			Type.Boolean({ description: "If true, delete $path" }),
 		),
 		move: Type.Optional(
 			Type.String({ description: "If set, move $path to $move" }),
+		),
+	},
+	{ additionalProperties: false },
+);
+
+const hashlineEditSchema = Type.Object(
+	{
+		path: Type.Optional(Type.String({ description: "path" })),
+		edits: Type.Optional(
+			Type.Array(
+				Type.Object(
+					{
+						loc: locSchema,
+						content: linesSchema,
+					},
+					{ additionalProperties: false },
+				),
+				{ description: "edits over $path" },
+			),
+		),
+		delete: Type.Optional(
+			Type.Boolean({ description: "If true, delete $path" }),
+		),
+		move: Type.Optional(
+			Type.String({ description: "If set, move $path to $move" }),
+		),
+		files: Type.Optional(
+			Type.Array(fileEditItemSchema, {
+				description: "Batch edits over multiple files",
+			}),
 		),
 	},
 	{ additionalProperties: false },
@@ -679,85 +718,190 @@ export default function (pi: ExtensionAPI) {
 		parameters: hashlineEditSchema,
 		async execute(_toolCallId, params, _signal, _onUpdate, ctx) {
 			const cwd = ctx.cwd;
-			const filePath = path.isAbsolute(params.path)
-				? path.normalize(params.path)
-				: path.resolve(cwd, params.path);
-			const movePath = params.move
-				? path.isAbsolute(params.move)
-					? path.normalize(params.move)
-					: path.resolve(cwd, params.move)
-				: undefined;
+			const requests: Array<{
+				path: string;
+				edits?: Array<{ loc: any; content: string[] | string | null }>;
+				delete?: boolean;
+				move?: string;
+			}> = [];
 
-			if (params.delete) {
-				await unlink(filePath);
-				return {
-					content: [{ type: "text" as const, text: `Deleted ${params.path}` }],
-				};
+			if (params.path) {
+				requests.push({
+					path: params.path,
+					edits: params.edits,
+					delete: params.delete,
+					move: params.move,
+				});
 			}
 
-			const toolEdits = params.edits as Array<{
-				loc: any;
-				content: string[] | string | null;
-			}>;
-
-			let sourceContent: string;
-			try {
-				sourceContent = await readFile(filePath, "utf8");
-			} catch {
-				// Match oh-my-pi creation behavior: only prepend/append on missing file.
-				const lines: string[] = [];
-				for (const edit of toolEdits) {
-					if (edit.loc === "append")
-						lines.push(...hashlineParseText(edit.content));
-					else if (edit.loc === "prepend")
-						lines.unshift(...hashlineParseText(edit.content));
-					else throw new Error(`File not found: ${params.path}`);
+			if (Array.isArray(params.files)) {
+				for (const item of params.files) {
+					requests.push(item as any);
 				}
-				await writeFile(filePath, lines.join("\n"), "utf8");
-				if (movePath) await rename(filePath, movePath);
-				return {
-					content: [
-						{
-							type: "text" as const,
-							text: movePath
-								? `Created ${params.path} and moved to ${params.move}`
-								: `Created ${params.path}`,
-						},
-					],
-				};
 			}
 
-			const edits = resolveEditAnchors(toolEdits);
-
-			validateNoOverlappingRanges(edits);
-			validateAnchorsFromLatestRead(filePath, edits);
-			const result = applyHashlineEdits(sourceContent, edits);
-
-			if (result.lines === sourceContent && !movePath) {
+			if (requests.length === 0) {
 				throw new Error(
-					`No changes made to ${params.path}. The edits produced identical content. Re-read the file and adjust anchors/content.`,
+					"No edits provided. Supply path+edits or files[] for batch edits.",
 				);
 			}
 
-			await writeFile(filePath, result.lines, "utf8");
-			if (movePath) await rename(filePath, movePath);
+			type PlannedOp =
+				| { kind: "delete"; filePath: string; summary: string }
+				| {
+						kind: "write";
+						filePath: string;
+						movePath?: string;
+						content: string;
+						summary: string;
+						warnings: string[];
+						firstChangedLine?: number;
+				  };
 
-			const resultText = movePath
-				? `Moved ${params.path} to ${params.move}`
-				: `Updated ${params.path}`;
-			const warningsBlock = result.warnings?.length
-				? `\n\nWarnings:\n${result.warnings.join("\n")}`
+			const plan: PlannedOp[] = [];
+			const warningsAll: string[] = [];
+			let firstChangedLine: number | undefined;
+
+			// Preflight pass: validate and compute all outputs without mutating files.
+			for (const req of requests) {
+				const filePath = path.isAbsolute(req.path)
+					? path.normalize(req.path)
+					: path.resolve(cwd, req.path);
+				const movePath = req.move
+					? path.isAbsolute(req.move)
+						? path.normalize(req.move)
+						: path.resolve(cwd, req.move)
+					: undefined;
+
+				if (req.delete) {
+					await fsAccess(filePath, constants.F_OK);
+					plan.push({
+						kind: "delete",
+						filePath,
+						summary: `Deleted ${req.path}`,
+					});
+					continue;
+				}
+
+				const toolEdits = (req.edits ?? []) as Array<{
+					loc: any;
+					content: string[] | string | null;
+				}>;
+				if (toolEdits.length === 0) {
+					throw new Error(`No edits provided for ${req.path}`);
+				}
+
+				let sourceContent: string | null = null;
+				try {
+					sourceContent = await readFile(filePath, "utf8");
+				} catch {
+					sourceContent = null;
+				}
+
+				if (sourceContent === null) {
+					const lines: string[] = [];
+					for (const edit of toolEdits) {
+						if (edit.loc === "append")
+							lines.push(...hashlineParseText(edit.content));
+						else if (edit.loc === "prepend")
+							lines.unshift(...hashlineParseText(edit.content));
+						else throw new Error(`File not found: ${req.path}`);
+					}
+					plan.push({
+						kind: "write",
+						filePath,
+						movePath,
+						content: lines.join("\n"),
+						summary: movePath
+							? `Created ${req.path} and moved to ${req.move}`
+							: `Created ${req.path}`,
+						warnings: [],
+					});
+					continue;
+				}
+
+				const edits = resolveEditAnchors(toolEdits);
+				validateNoOverlappingRanges(edits);
+				validateAnchorsFromLatestRead(filePath, edits);
+				const result = applyHashlineEdits(sourceContent, edits);
+
+				if (result.lines === sourceContent && !movePath) {
+					throw new Error(
+						`No changes made to ${req.path}. The edits produced identical content. Re-read the file and adjust anchors/content.`,
+					);
+				}
+
+				plan.push({
+					kind: "write",
+					filePath,
+					movePath,
+					content: result.lines,
+					summary: movePath
+						? `Moved ${req.path} to ${req.move}`
+						: `Updated ${req.path}`,
+					warnings: result.warnings ?? [],
+					firstChangedLine: result.firstChangedLine,
+				});
+			}
+
+			// Commit pass: mutate files only after full preflight succeeded.
+			const restoreState = new Map<string, string | null>();
+			for (const op of plan) {
+				if (restoreState.has(op.filePath)) continue;
+				try {
+					restoreState.set(op.filePath, await readFile(op.filePath, "utf8"));
+				} catch {
+					restoreState.set(op.filePath, null);
+				}
+			}
+
+			try {
+				for (const op of plan) {
+					if (op.kind === "delete") {
+						await unlink(op.filePath);
+						continue;
+					}
+					await writeFile(op.filePath, op.content, "utf8");
+					if (op.movePath) await rename(op.filePath, op.movePath);
+					if (op.warnings.length > 0) warningsAll.push(...op.warnings);
+					if (
+						firstChangedLine === undefined &&
+						op.firstChangedLine !== undefined
+					) {
+						firstChangedLine = op.firstChangedLine;
+					}
+				}
+			} catch (err: any) {
+				for (const op of [...plan].reverse()) {
+					const before = restoreState.get(op.filePath);
+					if (before === undefined) continue;
+					try {
+						if (before === null) {
+							await unlink(op.filePath).catch(() => undefined);
+						} else {
+							await writeFile(op.filePath, before, "utf8");
+						}
+					} catch {
+						// Best-effort rollback; continue restoring other files.
+					}
+				}
+				throw new Error(`Batch commit failed and was rolled back: ${err?.message ?? String(err)}`);
+			}
+
+			const summary = plan.map((op) => op.summary).join("\n");
+			const warningsBlock = warningsAll.length
+				? `\n\nWarnings:\n${warningsAll.join("\n")}`
 				: "";
 
 			return {
 				content: [
 					{
 						type: "text" as const,
-						text: `${resultText}${warningsBlock}`,
+						text: `${summary}${warningsBlock}`,
 					},
 				],
 				details: {
-					firstChangedLine: result.firstChangedLine,
+					firstChangedLine,
 				},
 			};
 		},

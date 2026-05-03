@@ -13,33 +13,34 @@
       "deepseek/deepseek-v4-pro"
     ];
     packages = [
-      "npm:pi-lens"
+      "npm:pi-mcp-adapter"
     ];
     extensions = [
       "${piAgentDir}/extensions/security"
-      "${piAgentDir}/extensions/hashline"
-      "${piAgentDir}/extensions/dcp"
+      # "${piAgentDir}/extensions/hashline"
+      # "${piAgentDir}/extensions/dcp"
     ];
   };
 in {
   home.sessionVariables.NPM_CONFIG_PREFIX = "${config.home.homeDirectory}/.npm-global";
 
+  # Settings
   home.file.".pi/agent/settings.json".text = builtins.toJSON piSettings;
+  home.file.".pi/agent/AGENTS.md".source = ./AGENTS.md;
+
+  # Extensions
   home.file.".pi/agent/extensions/security" = {
     source = ./extensions/security;
     recursive = true;
   };
-  home.file.".pi/agent/extensions/hashline" = {
-    source = ./extensions/hashline;
-    recursive = true;
-  };
-  home.file.".pi/agent/extensions/dcp" = {
-    source = ./extensions/dcp;
-    recursive = true;
-  };
+  # home.file.".pi/agent/extensions/hashline" = {
+  #   source = ./extensions/hashline;
+  #   recursive = true;
+  # };
+
+  # Skills
   home.file.".pi/agent/skills/analyze-repo" = {
     source = ./skills/analyze-repo;
     recursive = true;
   };
-  home.file.".pi/agent/AGENTS.md".source = ./AGENTS.md;
 }
