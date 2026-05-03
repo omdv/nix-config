@@ -10,7 +10,7 @@
       "glm-5.1"
       "gpt-5.3-codex"
       "deepseek-v4-pro"
-      "deepseek-v4-flash"
+      "deepseek/deepseek-v4-pro"
     ];
     packages = [
       "npm:pi-mcp-adapter"
