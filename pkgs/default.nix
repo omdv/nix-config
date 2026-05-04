@@ -1,7 +1,7 @@
 # Build them using 'nix build .#example'
 {pkgs ? import <nixpkgs> {}, ...}: rec {
+  dirac = pkgs.callPackage ./dirac {};
   pi-coding-agent = pkgs.callPackage ./pi-coding-agent {};
   mirage-proxy = pkgs.callPackage ./mirage-proxy {};
-  jjcai = pkgs.callPackage ./jjcai {aichat = pkgs.unstable.aichat;};
-  openstack = pkgs.callPackage ./openspec {};
+  openspec = pkgs.callPackage ./openspec {};
 }
