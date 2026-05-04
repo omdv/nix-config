@@ -14,7 +14,6 @@
   hasFd = hasPackage "fd";
   hasKubecolor = hasPackage "kubecolor";
   hasGopass = hasPackage "gopass";
-  hasJJCai = hasPackage "jjcai";
 
   hasBat = config.programs.bat.enable;
   hasNeovim = config.programs.neovim.enable || config.programs.nixvim.enable;
@@ -57,7 +56,6 @@ in {
 
       # Better tools
       ai = "aichat";
-      jjcai = mkIf hasJJCai "jjcai";
       cat = mkIf hasBat "bat";
       find = mkIf hasFd "fd";
       k = mkIf hasKubecolor "kubecolor";
@@ -145,7 +143,4 @@ in {
       bind \cs _sgpt_commandline
     '';
   };
-
-
-
 }

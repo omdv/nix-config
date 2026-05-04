@@ -9,29 +9,16 @@ nix flake update
 echo "Checking flake..."
 nix flake check
 
-if ! jj diff --name-only flake.lock | grep -q .; then
+if git diff --quiet -- flake.lock; then
   echo "No flake.lock changes to commit."
   exit 0
 fi
 
-echo "Committing flake.lock with jj..."
-jj commit flake.lock -m "flake: update inputs $(date +%Y-%m-%d)"
-
-BOOKMARK=""
-if jj bookmark list | grep -q '^main:'; then
-  BOOKMARK="main"
-elif jj bookmark list | grep -q '^master:'; then
-  BOOKMARK="master"
-fi
-
-if [[ -n "$BOOKMARK" ]]; then
-  jj bookmark move "$BOOKMARK" --to @-
-  echo "Moved bookmark '$BOOKMARK' -> @-"
-else
-  echo "No main/master bookmark found; skipped bookmark move."
-fi
+echo "Committing flake.lock with git..."
+git add flake.lock
+git commit -m "flake: update inputs $(date +%Y-%m-%d)"
 
 echo "✓ Flake inputs updated and committed"
 echo ""
 echo "Changed inputs:"
-jj show --summary @-
+git show --stat --oneline --no-patch HEAD

@@ -23,7 +23,7 @@ in {
     settings = {
       format = ''
         $username$hostname($shlvl)( $cmd_duration) $fill ($nix_shell)''${custom.nix_inspect} ($python)($rust)($nodejs)
-        $directory(''${custom.jj_state}''${custom.git_branch}''${custom.git_commit}''${custom.git_state}''${custom.git_status}) $fill $time
+        $directory($git_branch$git_commit$git_state$git_status) $fill $time
         $jobs$character
       '';
 
@@ -84,82 +84,7 @@ in {
         format = "[$symbol$version]($style) ";
         style = "bold #${colors.base0B}";
       };
-      custom.jj_state = {
-        when = "jj root >/dev/null 2>&1";
-        shell = ["bash" "--noprofile" "--norc"];
-        command = ''
-          # Prefer main, fallback master
-          bm="$(jj bookmark list --all-remotes --color=never | sed -n 's/^\(main\|master\):.*/\1/p' | head -n1)"
-          if [[ -z "$bm" ]]; then
-            echo "jj:@ ?"
-            exit 0
-          fi
 
-          # Local commits not yet moved onto bookmark (e.g. @- ahead of bookmark)
-          local_count="$(jj log -r "$bm..@-" --ignore-working-copy --no-graph --color=never --template 'commit_id.short() ++ "\n"' 2>/dev/null | sed '/^$/d' | wc -l | tr -d ' ')"
-
-          # Remote tracking relation (requires tracked remote bookmark)
-          if ! jj log -r "$bm@origin" -n1 --ignore-working-copy --no-graph --color=never >/dev/null 2>&1; then
-            if [[ "$local_count" -gt 0 ]]; then
-              echo "jj:$bm +$local_count ?"
-            else
-              echo "jj:$bm ?"
-            fi
-            exit 0
-          fi
-
-          ahead="$(jj log -r "$bm@origin..$bm" --ignore-working-copy --no-graph --color=never --template 'commit_id.short() ++ "\n"' 2>/dev/null | sed '/^$/d' | wc -l | tr -d ' ')"
-          behind="$(jj log -r "$bm..$bm@origin" --ignore-working-copy --no-graph --color=never --template 'commit_id.short() ++ "\n"' 2>/dev/null | sed '/^$/d' | wc -l | tr -d ' ')"
-
-          state=""
-          if [[ "$local_count" -gt 0 ]]; then
-            state="+$local_count"
-          fi
-
-          if [[ "$ahead" -gt 0 ]]; then
-            if [[ -n "$state" ]]; then state="$state "; fi
-            state="''${state}⇡$ahead"
-          fi
-          if [[ "$behind" -gt 0 ]]; then
-            if [[ -n "$state" ]]; then state="$state "; fi
-            state="''${state}⇣$behind"
-          fi
-
-          if [[ -z "''${state//[[:space:]]/}" ]]; then
-            state="✓"
-          fi
-
-          echo "jj:$bm $state"
-        '';
-        format = "[$output]($style) ";
-        style = "bold #${colors.base0E}";
-      };
-
-      git_branch.disabled = true;
-      git_commit.disabled = true;
-      git_state.disabled = true;
-      git_status.disabled = true;
-
-      custom.git_branch = {
-        when = "! jj --ignore-working-copy root";
-        command = "starship module git_branch";
-        style = "";
-      };
-      custom.git_commit = {
-        when = "! jj --ignore-working-copy root";
-        command = "starship module git_commit";
-        style = "";
-      };
-      custom.git_state = {
-        when = "! jj --ignore-working-copy root";
-        command = "starship module git_state";
-        style = "";
-      };
-      custom.git_status = {
-        when = "! jj --ignore-working-copy root";
-        command = "starship module git_status";
-        style = "";
-      };
       character = {
         error_symbol = "[~~>](bold #${colors.base08})";
         success_symbol = "[->>](bold #${colors.base0B})";
