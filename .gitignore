@@ -1,3 +1,8 @@
+# Coding agents
+.claude/
+.pi/
+.agents/
+
 .direnv
 result*
 *.qcow2
@@ -8,7 +13,4 @@ result*
 *.code-workspace
 *.code-workspace.lock
 .envrc
-.aider*
 .env
-.claude/
-.pi/

@@ -11,10 +11,10 @@
       "8.8.8.8"
     ];
     domains = ["~."];
-    extraConfig = ''
-      DNSStubListener=yes
-      MulticastDNS=yes
-    '';
+    settings.Resolve = {
+      DNSStubListener = "yes";
+      MulticastDNS = "yes";
+    };
   };
 
   networking = {
@@ -22,7 +22,7 @@
     useNetworkd = false;
     networkmanager = {
       enable = true;
-      dns = lib.mkForce "none";
+      dns = "systemd-resolved";
     };
   };
 
