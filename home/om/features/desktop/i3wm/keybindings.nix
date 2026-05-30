@@ -55,7 +55,7 @@ in {
           }}";
           # keybinding cheatsheet
           "${mod}+F1" = "exec ${mkScriptFromFile {
-            deps = [pkgs.imagemagick pkgs.feh pkgs.xorg.xdpyinfo];
+            deps = [pkgs.imagemagick pkgs.feh pkgs.xdpyinfo];
             scriptFile = ./scripts/keybinding-cheatsheet.sh;
             args = [
               "${config.fontProfiles.monospace.family} 16"

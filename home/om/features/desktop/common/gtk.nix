@@ -19,16 +19,16 @@
         rev = "76cac96ca7fe45dc9e5b9822b0fbb5f4cad47984";
         sha256 = "sha256-0eCAfm/MWXv6BbCl2vbVbvgv8DiUH09TAUhoKq7Ow0k=";
       };
-      buildInputs = with pkgs; [
-        sassc
-        bc
-        which
+      buildInputs = [
+        pkgs.sassc
+        pkgs.bc
+        pkgs.which
         rendersvg
-        meson
-        ninja
-        nodePackages.sass
-        gtk4.dev
-        optipng
+        pkgs.meson
+        pkgs.ninja
+        pkgs."dart-sass"
+        pkgs.gtk4.dev
+        pkgs.optipng
       ];
       phases = ["unpackPhase" "installPhase"];
       installPhase = ''
@@ -88,6 +88,7 @@ in rec {
         lib.mapAttrs (_: v: lib.removePrefix "#" v) colors
       );
     };
+    gtk4.theme = config.gtk.theme;
     iconTheme = {
       name = "Papirus";
       package = pkgs.papirus-icon-theme;

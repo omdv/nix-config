@@ -32,7 +32,7 @@
     '';
   };
 
-  xdg.configFile."qutebrowser/config.py".onChange = lib.mkForce ''
+  home.file."${config.xdg.configHome}/qutebrowser/config.py".onChange = lib.mkForce ''
     ${pkgs.procps}/bin/pkill -u $USER -HUP qutebrowser || true
   '';
 }

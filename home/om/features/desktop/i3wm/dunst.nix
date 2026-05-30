@@ -62,10 +62,12 @@ in {
         progress_bar_corner_radius = 4;
         progress_bar_corners = "all";
 
-        # Icons — explicit nix store path sidesteps GTK theme lookup at runtime
+        # Icons — explicit nix store path sidesteps GTK theme lookup at runtime.
+        # Home Manager also provides a default hicolor search path; force ours so
+        # Dunst prefers the Papirus action icons used by the OSD notifications.
         icon_position = "left";
         enable_recursive_icon_lookup = false;
-        icon_path = iconPath;
+        icon_path = lib.mkForce iconPath;
         min_icon_size = 32;
         max_icon_size = 64;
         icon_corner_radius = 4;
