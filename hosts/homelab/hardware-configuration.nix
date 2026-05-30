@@ -16,7 +16,10 @@
     kernelModules = ["kvm-intel"];
     extraModulePackages = [];
     supportedFilesystems = ["ext4" "zfs"];
-    zfs.extraPools = ["pool"];
+    zfs = {
+      extraPools = ["pool"];
+      forceImportRoot = true;
+    };
   };
 
   fileSystems."/" = {
