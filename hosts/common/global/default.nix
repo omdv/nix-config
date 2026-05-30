@@ -14,6 +14,7 @@
       ./nix-index.nix
       ./nix-ld.nix
       ./openssh.nix
+      ./resolved.nix
       ./sops.nix
     ]
     ++ (builtins.attrValues outputs.nixosModules);
