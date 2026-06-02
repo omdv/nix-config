@@ -26,6 +26,7 @@ in {
             remote_path = "borg1";
             exclude_patterns = [
               "*.pyc"
+              "/home/om/.local"
               "/home/om/.cache"
               "/home/om/.ssh"
               "/home/om/.config/borg"

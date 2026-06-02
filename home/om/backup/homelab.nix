@@ -31,6 +31,7 @@ in {
             exclude_patterns = [
               "*.pyc"
               "/home/om/.cache"
+              "/home/om/.local"
               "/home/om/.ssh"
               "/home/om/.config/borg"
               "/home/om/*/node_modules/"
