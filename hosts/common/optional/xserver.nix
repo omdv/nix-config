@@ -1,4 +1,5 @@
 {pkgs, ...}: {
+  programs.dconf.enable = true;
   services.displayManager.defaultSession = "none+i3";
 
   services.xserver = {
