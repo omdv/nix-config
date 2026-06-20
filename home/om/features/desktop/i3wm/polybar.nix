@@ -99,6 +99,32 @@ in {
         label = "%{T3}%{T-} %temperature%";
         label-warn = "%{T3}%{T-} %temperature%";
       };
+      "module/system" = {
+        type = "custom/script";
+        exec = mkScriptFromFile {
+          deps = [pkgs.gawk];
+          scriptFile = ./polybar/system-metrics.sh;
+          args = [
+            "${colors.base05}"
+            "${colors.base02}"
+            "${colors.base00}"
+            "${colors.base0A}"
+            "${colors.base00}"
+            "${colors.base08}"
+            "70"
+            "90"
+            "75"
+            "90"
+            "70"
+            "85"
+            "4"
+          ];
+        };
+        interval = 1;
+        format = "<label>";
+        label = "%output%";
+        label-font = 1;
+      };
       "module/audio" = {
         type = "custom/script";
         tail = true;

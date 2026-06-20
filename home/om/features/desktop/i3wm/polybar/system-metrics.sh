@@ -29,7 +29,7 @@ read_cpu_sample() {
 }
 
 read_cpu_percent() {
-    if [ -n "$POLYBAR_SYSTEM_CPU_PERCENT" ]; then
+    if [ -n "${POLYBAR_SYSTEM_CPU_PERCENT:-}" ]; then
         printf '%s\n' "$POLYBAR_SYSTEM_CPU_PERCENT"
         return
     fi
@@ -59,7 +59,7 @@ EOF
 }
 
 read_mem_percent() {
-    if [ -n "$POLYBAR_SYSTEM_MEM_PERCENT" ]; then
+    if [ -n "${POLYBAR_SYSTEM_MEM_PERCENT:-}" ]; then
         printf '%s\n' "$POLYBAR_SYSTEM_MEM_PERCENT"
         return
     fi
@@ -79,7 +79,7 @@ read_mem_percent() {
 }
 
 read_temp_celsius() {
-    if [ -n "$POLYBAR_SYSTEM_TEMP_C" ]; then
+    if [ -n "${POLYBAR_SYSTEM_TEMP_C:-}" ]; then
         printf '%s\n' "$POLYBAR_SYSTEM_TEMP_C"
         return
     fi

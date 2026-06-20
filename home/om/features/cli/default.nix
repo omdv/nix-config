@@ -66,7 +66,6 @@
     nixd # Nix language server
     nix-tree # Nix tree
     nix-inspect # Nix inspect
-    nix-du # Nix du
     nix-index # Nix index
     nix-melt # Nix melt
     nvd # Nix version diff

@@ -32,6 +32,7 @@ in {
           "${mod}+h" = "split h";
           "${mod}+v" = "split v";
           "${mod}+f" = "fullscreen toggle";
+          "${mod}+space" = lib.mkForce null;
           "${mod}+Return" = "exec ${lib.getExe config.programs.kitty.package}";
           "${mod}+d" = "exec ${pkgs.rofi}/bin/rofi -show drun";
           "${mod}+l" = "exec ${pkgs.i3lock}/bin/i3lock -c ${config.colorscheme.palette.base00}";

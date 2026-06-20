@@ -5,6 +5,7 @@
     crawlTiles
     cataclysm-dda # roguelike
     en-croissant # chess toolkit
+    pawn-appetit # chess
     openttd # open-source clone of Transport Tycoon Deluxe
     openrct2 # open-source clone of RollerCoaster Tycoon 2
     # vcmi # client for VCMI engine - Heroes of Might and Magic 3
