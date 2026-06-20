@@ -21,6 +21,7 @@
     })
     + " "
     + quotedArgs;
+  brightnessDeps = with pkgs; [acpilight dunst];
 in {
   xsession.windowManager.i3 = {
     config = {
@@ -86,22 +87,22 @@ in {
 
           # brightness control
           "XF86MonBrightnessUp" = "exec ${mkScriptFromFile {
-            deps = [];
+            deps = brightnessDeps;
             scriptFile = ./scripts/brightness-control.sh;
             args = ["up" "1"];
           }}";
           "XF86MonBrightnessDown" = "exec ${mkScriptFromFile {
-            deps = [];
+            deps = brightnessDeps;
             scriptFile = ./scripts/brightness-control.sh;
             args = ["down" "1"];
           }}";
           "${mod}+XF86MonBrightnessUp" = "exec ${mkScriptFromFile {
-            deps = [];
+            deps = brightnessDeps;
             scriptFile = ./scripts/brightness-control.sh;
             args = ["up" "1"];
           }}";
           "${mod}+XF86MonBrightnessDown" = "exec ${mkScriptFromFile {
-            deps = [];
+            deps = brightnessDeps;
             scriptFile = ./scripts/brightness-control.sh;
             args = ["down" "1"];
           }}";

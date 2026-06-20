@@ -8,7 +8,7 @@
 # https://gist.github.com/sebastiencs/5d7227f388d93374cebdf72e783fbd6a
 
 function get_brightness {
-  xbacklight -G | cut -d '.' -f 1
+  xbacklight -get | cut -d '.' -f 1
 }
 
 function send_notification {
@@ -23,11 +23,11 @@ function send_notification {
 
 case $1 in
   up)
-    xbacklight -A "$2"
+    xbacklight -inc "$2"
     send_notification
     ;;
   down)
-    xbacklight -U "$2"
+    xbacklight -dec "$2"
     send_notification
     ;;
 esac
