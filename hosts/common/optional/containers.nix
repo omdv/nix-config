@@ -1,8 +1,21 @@
 {pkgs, ...}: let
   dockerEnabled = false;
 in {
-  # Enable common container config files in /etc/containers
-  virtualisation.containers.enable = true;
+  virtualisation.containers = {
+    enable = true;
+    policy = {
+      default = [
+        {type = "insecureAcceptAnything";}
+      ];
+      transports = {
+        docker-daemon = {
+          "" = [
+            {type = "insecureAcceptAnything";}
+          ];
+        };
+      };
+    };
+  };
 
   virtualisation = {
     podman = {
