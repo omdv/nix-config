@@ -12,6 +12,7 @@ lib.homeManagerConfiguration {
     ../home/${name}/nixpkgs.nix
     inputs.sops-nix.homeManagerModules.sops
     inputs.nix-colors.homeManagerModules.default
+    inputs.nix-doom-emacs-unstraightened.homeModule
   ];
   extraSpecialArgs = {
     inherit inputs outputs;
