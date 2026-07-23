@@ -1,9 +1,9 @@
-{pkgs, ...}: {
+{config, ...}: {
   programs.nixvim.plugins.treesitter = {
     enable = true;
-    settings.highlight.enable = true;
-    settings.indent.enable = true;
-    grammarPackages = with pkgs.vimPlugins.nvim-treesitter.builtGrammars; [
+    highlight.enable = true;
+    indent.enable = true;
+    grammarPackages = with config.programs.nixvim.plugins.treesitter.package.builtGrammars; [
       nix
       python
       lua
