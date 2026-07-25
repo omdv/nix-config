@@ -22,6 +22,10 @@
     firefox-addons.url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
     nixvim.url = "github:nix-community/nixvim/nixos-26.05";
     nix-colors.url = "github:misterio77/nix-colors";
+    nix-doom-emacs-unstraightened = {
+      url = "github:marienz/nix-doom-emacs-unstraightened";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     # Run foreign ELF binaries via FHS env or nix-ld (not in nixpkgs)
     nix-alien.url = "github:thiagokokada/nix-alien";
