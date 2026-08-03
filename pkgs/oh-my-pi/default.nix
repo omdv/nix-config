@@ -5,13 +5,13 @@
   patchelf,
 }: let
   pname = "oh-my-pi";
-  version = "15.5.15";
+  version = "17.2.2";
 
   # Platform-specific download URLs
   sources = {
     x86_64-linux = {
       url = "https://github.com/can1357/oh-my-pi/releases/download/v${version}/omp-linux-x64";
-      hash = "sha256-tvFIN5P2YnJmoQ3yZWx2+PIg97FKknB382Ngw41V6qY=";
+      hash = "sha256-MG9VVjfWPc7YDP+y/pCNp+BUOJ+FjAcfMEvBfj7WIt4=";
     };
   };
 
