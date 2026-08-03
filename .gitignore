@@ -2,6 +2,7 @@
 .claude/
 .pi/
 .agents/
+openspec/
 
 .direnv
 result*
