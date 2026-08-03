@@ -66,9 +66,6 @@
     nixd # Nix language server
     nix-tree # Nix tree
     nix-inspect # Nix inspect
-    nix-index # Nix index
-    nix-melt # Nix melt
-    nvd # Nix version diff
 
     # misc
     awscli2

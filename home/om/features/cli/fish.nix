@@ -93,6 +93,12 @@ in {
           printf "use flake\n" > .envrc
         end
       '';
+      omp = ''
+        set -lx OPENROUTER_API_KEY (pass show llm/openrouter/general-key)
+        or return 1
+
+        command omp $argv
+      '';
     };
     interactiveShellInit = ''
       # XDG configs
