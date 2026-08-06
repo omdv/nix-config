@@ -15,5 +15,6 @@
     pkgs.unstable.aichat
     pkgs.oh-my-pi # oh-my-pi binary package with interpreter patching
     pkgs.openspec # openspec helper
+    pkgs.nono # agent sandbox binary package
   ];
 }

@@ -2,4 +2,5 @@
 {pkgs ? import <nixpkgs> {}, ...}: rec {
   openspec = pkgs.callPackage ./openspec {};
   oh-my-pi = pkgs.callPackage ./oh-my-pi {};
+  nono = pkgs.callPackage ./nono {};
 }
