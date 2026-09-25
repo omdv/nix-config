@@ -71,6 +71,7 @@
     awscli2
     qgis # Great qt-based GIS
     tldr # Simplified man
+    runpodctl # Runpod CLI for managing GPU pods and serverless endpoints
     simplescreenrecorder # record screen
   ];
 }

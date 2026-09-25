@@ -93,11 +93,30 @@ in {
           printf "use flake\n" > .envrc
         end
       '';
-      omp = ''
+      omp-legacy = ''
         set -lx OPENROUTER_API_KEY (pass show llm/openrouter/general-key)
         or return 1
 
         command omp $argv
+      '';
+      omp = ''
+        set -lx OPENROUTER_API_KEY (pass show llm/openrouter/general-key)
+        or return 1
+
+        set -l omp_path (realpath (command -s omp))
+        set -l nono_args \
+          --allow-cwd \
+          --allow "$PWD" \
+          --allow "$HOME/.omp" \
+          --allow "$HOME/.npm" \
+          --allow "$HOME/.local/share/pnpm" \
+          --allow "$HOME/.cache/pnpm" \
+          --allow-file "$HOME/.npmrc" \
+          --read "$HOME/.config/git" \
+          --read "$HOME/.config/pnpm" \
+          --read /nix/store
+
+        nono run $nono_args -- "$omp_path" --approval-mode yolo $argv
       '';
     };
     interactiveShellInit = ''
