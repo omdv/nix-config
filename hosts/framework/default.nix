@@ -39,6 +39,8 @@
       "aarch64-linux"
       "i686-linux"
     ];
+    zswap.enable = true;
+    kernel.sysctl."vm.swappiness" = 100;
   };
 
   # Low priority scheduling for Nix daemon (responsive system, slower builds)
@@ -59,8 +61,6 @@
   };
 
   hardware.graphics.enable = true;
-
-  zramSwap.enable = true;
 
   system.stateVersion = "23.05";
 }

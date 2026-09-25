@@ -3,13 +3,14 @@
 
   systemd.sleep.settings.Sleep = {
     AllowSuspend = "yes";
-    AllowHibernation = "no";
+    AllowHibernation = "yes";
     AllowHybridSleep = "no";
-    AllowSuspendThenHibernate = "no";
+    AllowSuspendThenHibernate = "yes";
+    HibernateDelaySec = "2h";
   };
 
   services.logind.settings.Login = {
-    HandleLidSwitch = "suspend";
+    HandleLidSwitch = "suspend-then-hibernate";
     HandleLidSwitchExternalPower = "ignore";
   };
 

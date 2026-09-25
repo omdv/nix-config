@@ -22,6 +22,7 @@ in {
       "wireshark"
       "lp"
       "lpadmin"
+      "dialout"
     ];
 
     packages = [pkgs.home-manager];
