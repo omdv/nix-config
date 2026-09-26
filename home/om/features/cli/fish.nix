@@ -113,7 +113,6 @@ in {
           --allow "$HOME/.cache/pnpm" \
           --allow-file "$HOME/.npmrc" \
           --read "$HOME/.config/git" \
-          --read "$HOME/.config/pnpm" \
           --read /nix/store
 
         nono run $nono_args -- "$omp_path" --approval-mode yolo $argv

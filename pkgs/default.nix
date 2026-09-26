@@ -1,6 +1,7 @@
 # Build them using 'nix build .#example'
 {pkgs ? import <nixpkgs> {}, ...}: rec {
   openspec = pkgs.callPackage ./openspec {};
+  feynman = pkgs.callPackage ./feynman {};
   oh-my-pi = pkgs.callPackage ./oh-my-pi {};
   nono = pkgs.callPackage ./nono {};
 }

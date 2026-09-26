@@ -5,12 +5,12 @@
   autoPatchelfHook,
 }: let
   pname = "nono";
-  version = "0.71.0";
+  version = "0.78.0";
 
   sources = {
     x86_64-linux = {
       url = "https://github.com/nolabs-ai/nono/releases/download/v${version}/nono-v${version}-x86_64-unknown-linux-gnu.tar.gz";
-      hash = "sha256-nuKWYYTor6ZkGZwh4Inq5ZbI12M3GiUxBGI+D1sPCi0=";
+      hash = "sha256-r16DeXPVR6r208370S45UiJNG7d7cpKWLqGRgDmcONs=";
     };
   };
 
