@@ -3,7 +3,7 @@
     # brogue # roguelike
     crawl
     crawlTiles
-    cataclysm-dda # roguelike
+    # cataclysm-dda # roguelike
     en-croissant # chess toolkit
     pawn-appetit # chess
     openttd # open-source clone of Transport Tycoon Deluxe
