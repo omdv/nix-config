@@ -3,7 +3,6 @@
     ./global
 
     ./features/cli
-    ./features/nixvim
     ./features/pass
 
     ./backup/homelab.nix
