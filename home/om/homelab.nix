@@ -1,10 +1,7 @@
 {colors, ...}: {
   imports = [
     ./global
-
     ./features/cli
-    ./features/pass
-
     ./backup/homelab.nix
   ];
 
