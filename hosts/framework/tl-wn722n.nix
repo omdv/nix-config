@@ -1,4 +1,10 @@
-{pkgs, ...}: {
+{pkgs, ...}: let
+  airgeddonWithResources = pkgs.writeShellScriptBin "airgeddon" ''
+    export scriptfolder="${pkgs.airgeddon}/share/airgeddon/"
+    export scriptname="${pkgs.airgeddon}/bin/airgeddon"
+    exec ${pkgs.airgeddon}/bin/airgeddon "$@"
+  '';
+in {
   boot.kernelModules = ["ath9k_htc"];
 
   hardware.enableRedistributableFirmware = true;
@@ -8,7 +14,11 @@
 
   environment.systemPackages = with pkgs; [
     aircrack-ng
+    airgeddonWithResources
+    hcxdumptool
+    hcxtools
     iw
     usbutils
+    wifite2
   ];
 }
