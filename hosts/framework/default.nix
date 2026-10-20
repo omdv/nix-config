@@ -8,6 +8,7 @@
     inputs.hardware.nixosModules.common-pc-ssd
     ./hardware-configuration.nix
     ./networking.nix
+    ./tl-wn722n.nix
 
     ../common/global
     ../common/users/om

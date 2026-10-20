@@ -10,6 +10,7 @@ hosts/
 │   ├── default.nix        # System config entry point
 │   ├── hardware-configuration.nix
 │   ├── networking.nix
+│   ├── tl-wn722n.nix       # TL-WN722N v1 monitor/injection support
 │   └── secrets.yaml       # SOPS-encrypted host secrets
 ├── homelab/               # Homelab server (headless)
 │   ├── default.nix
@@ -34,12 +35,32 @@ hosts/
 - PipeWire audio
 - Full development toolchain
 - Gaming support (Steam)
+- TP-Link TL-WN722N v1 monitor-mode and packet-injection support
 - Backup automation
 
 **Build:**
 
 ```bash
 sudo nixos-rebuild switch --flake .#framework
+```
+
+#### TL-WN722N v1
+
+`framework/tl-wn722n.nix` supports the Atheros AR9271 revision (`0cf3:9271`).
+It loads `ath9k_htc`, enables redistributable firmware, reserves the adapter's
+permanent MAC address from NetworkManager, and installs `aircrack-ng`, `iw`,
+and `usbutils`.
+
+Use `iw dev` to find the adapter interface, then create a monitor interface:
+
+```bash
+sudo airmon-ng start <interface>
+```
+
+Run injection tests only against networks you are authorized to test:
+
+```bash
+sudo aireplay-ng --test <monitor-interface>
 ```
 
 ### `homelab` - Server
