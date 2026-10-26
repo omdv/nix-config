@@ -13,6 +13,7 @@
     ../common/users/om
 
     ../common/optional/k3s.nix
+    ../common/optional/paseo.nix
     ../common/optional/samba.nix
     ../common/optional/zfs-base.nix
 
