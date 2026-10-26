@@ -27,6 +27,7 @@ lib/               -- mkHost, mkHome, mkSecret helpers
 - Mullvad VPN, Tailscale
 - libvirt, Steam, Java
 - zram swap, btrfs with monthly scrub
+- Paseo daemon for AI coding agents
 - auto-cpufreq, xss-lock + i3lock
 
 **homelab** -- headless server
@@ -45,6 +46,7 @@ lib/               -- mkHost, mkHome, mkSecret helpers
 | browser | Brave |
 | passwords | pass |
 | backups | restic |
+| AI agent daemon | Paseo (`hosts/common/optional/paseo.nix`) |
 
 ## Commands
 

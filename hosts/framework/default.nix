@@ -21,6 +21,7 @@
     ../common/optional/light.nix
     ../common/optional/ollama.nix
     ../common/optional/pipewire.nix
+    ../common/optional/paseo.nix
     ../common/optional/poweropts.nix
     ../common/optional/printers.nix
     ../common/optional/qemu.nix

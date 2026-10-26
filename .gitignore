@@ -4,6 +4,7 @@
 .agents/
 openspec/
 
+.cache
 .direnv
 result*
 *.qcow2

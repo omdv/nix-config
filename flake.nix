@@ -29,6 +29,7 @@
 
     # Run foreign ELF binaries via FHS env or nix-ld (not in nixpkgs)
     nix-alien.url = "github:thiagokokada/nix-alien";
+    paseo.url = "github:getpaseo/paseo";
   };
 
   outputs = {
