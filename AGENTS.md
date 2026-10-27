@@ -15,7 +15,7 @@ flake.nix
 ├── overlays/       — three overlays applied to pkgs: flake-inputs, unstable, additions
 ├── lib/
 │   ├── mkHost.nix  — wraps lib.nixosSystem; loads hosts/<name>/
-│   ├── mkHome.nix  — wraps lib.homeManagerConfiguration; loads a host profile and passes its declared host name
+│   ├── mkHome.nix  — wraps lib.homeManagerConfiguration; passes declared host identity and local flake path
 │   └── mkSecret.nix— produces a sops.secrets entry (owner=om, mode=0400, /run/user-secrets/<name>)
 ├── hosts/          — NixOS system configs
 ├── home/           — home-manager user configs
@@ -304,7 +304,7 @@ writeShellScriptBin "pi" ''
 |---|---|
 | `flake.nix` | Root: all inputs, overlays wiring, `mkHost`/`mkHome` calls, package outputs |
 | `lib/mkHost.nix` | NixOS system factory |
-| `lib/mkHome.nix` | home-manager config factory; injects host identity, sops-nix, nix-colors, and shared repository HM modules |
+| `lib/mkHome.nix` | home-manager config factory; injects host identity, local flake path, sops-nix, nix-colors, and shared HM modules |
 | `lib/mkSecret.nix` | sops secret entry factory |
 | `overlays/default.nix` | Defines `unstable`, `additions`, `flake-inputs` overlays |
 | `pkgs/default.nix` | Custom package index (callPackage per entry) |

@@ -1,4 +1,9 @@
-{...}: {
+{
+  config,
+  flakePath,
+  hostName,
+  ...
+}: {
   programs.nixvim.plugins.lsp = {
     enable = true;
     servers = {
@@ -8,8 +13,8 @@
         settings = {
           nixpkgs.expr = "import <nixpkgs> {}";
           options = {
-            nixos.expr = "(builtins.getFlake \"/home/om/nix-config\").nixosConfigurations.framework.options";
-            home_manager.expr = "(builtins.getFlake \"/home/om/nix-config\").homeConfigurations.\"om@framework\".options";
+            nixos.expr = "(builtins.getFlake \"${flakePath}\").nixosConfigurations.${hostName}.options";
+            home_manager.expr = "(builtins.getFlake \"${flakePath}\").homeConfigurations.\"${config.home.username}@${hostName}\".options";
           };
         };
       };

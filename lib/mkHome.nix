@@ -18,6 +18,7 @@ lib.homeManagerConfiguration {
   extraSpecialArgs = {
     inherit inputs outputs;
     hostName = host;
+    flakePath = "/home/${name}/nix-config";
     # Note: lib is NOT passed here - modules get HM-extended lib automatically
     mkSecret = import ./mkSecret.nix {inherit lib;};
     colors = inputs.nix-colors;
