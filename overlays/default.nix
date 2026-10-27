@@ -24,7 +24,6 @@
         system = final.stdenv.hostPlatform.system;
         config = {
           allowUnfree = true;
-          allowUnfreePredicate = _: true;
         };
       };
     };

@@ -19,7 +19,7 @@ flake.nix
 │   └── mkSecret.nix— produces a sops.secrets entry (owner=om, mode=0400, /run/user-secrets/<name>)
 ├── hosts/          — NixOS system configs
 ├── home/           — home-manager user configs
-├── modules/        — custom NixOS + HM modules exported as flake outputs
+├── modules/        — custom NixOS modules exported; custom HM modules loaded by mkHome
 └── pkgs/           — custom package derivations exposed as flake packages
 ```
 
@@ -126,8 +126,7 @@ graph TB
     modules --> hm_mod
     framework -.uses.-> nixos_mod
     homelab -.uses.-> nixos_mod
-    hm_framework -.uses.-> hm_mod
-    hm_homelab -.uses.-> hm_mod
+    mkHome -.loads.-> hm_mod
 
     %% Overlay application
     overlays -.applied to.-> framework
@@ -159,13 +158,13 @@ graph TB
 | `hosts/common/global/` | NixOS modules applied to every host (locale, nix, openssh, sops, fish, nix-ld, nix-index) |
 | `hosts/common/optional/` | Optional NixOS modules selected per host (i3wm, pipewire, k3s, libvirt, steam, etc.) |
 | `home/om/` | Home-manager config for user `om`; host entry points select role-appropriate feature bundles |
-| `home/om/global/` | Universal HM identity, Home Manager, Git, Nix, and shared module wiring; always imported |
+| `home/om/global/` | Universal HM identity, lifecycle, and Nix configuration; always imported |
 | `home/om/features/cli/` | Portable shell, terminal, editor, and command-line tooling imported by both hosts |
 | `home/om/features/development/` | Portable development and operations tooling imported by both hosts |
 | `home/om/features/desktop/` | Framework-only desktop applications, fonts, Kitty, graphical utilities, and launchers |
 | `home/om/features/development/graphical/` | Framework-only graphical editors and development applications |
 | `modules/nixos/` | Custom NixOS modules (`smartd.nix`) exported as `nixosModules` |
-| `modules/home-manager/` | Custom HM modules (`fonts`, `i3scaling`) exported as `homeManagerModules` |
+| `modules/home-manager/` | Custom HM modules (`fonts`, `i3scaling`) loaded directly by `mkHome` |
 | `overlays/` | Nixpkgs overlay definitions |
 | `pkgs/` | Custom package derivations (`oh-my-pi`, `pi-coding-agent`, `rustledger`) |
 | `scripts/` | Ad-hoc shell scripts (k3s management, homelab ops) |
@@ -304,7 +303,7 @@ writeShellScriptBin "pi" ''
 |---|---|
 | `flake.nix` | Root: all inputs, overlays wiring, `mkHost`/`mkHome` calls, package outputs |
 | `lib/mkHost.nix` | NixOS system factory |
-| `lib/mkHome.nix` | home-manager config factory; injects sops-nix, nix-colors |
+| `lib/mkHome.nix` | home-manager config factory; injects sops-nix, nix-colors, and repository HM modules |
 | `lib/mkSecret.nix` | sops secret entry factory |
 | `overlays/default.nix` | Defines `unstable`, `additions`, `flake-inputs` overlays |
 | `pkgs/default.nix` | Custom package index (callPackage per entry) |

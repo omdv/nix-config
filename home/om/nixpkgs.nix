@@ -4,7 +4,6 @@
     overlays = outputs.lib.orderedOverlays;
     config = {
       allowUnfree = true;
-      allowUnfreePredicate = _: true;
     };
   };
 }

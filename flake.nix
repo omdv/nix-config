@@ -46,7 +46,6 @@
         inherit overlays;
         config = {
           allowUnfree = true;
-          allowUnfreePredicate = _: true;
         };
       };
 
@@ -71,7 +70,6 @@
   in {
     lib = lib // {orderedOverlays = overlayDefinitions.ordered;};
     nixosModules = import ./modules/nixos;
-    homeManagerModules = import ./modules/home-manager;
 
     overlays = overlayDefinitions.named;
 
