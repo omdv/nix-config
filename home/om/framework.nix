@@ -51,6 +51,11 @@
   # base0F = "#FF5370"; # deprecated, opening/closing embedded language tags
   colorscheme = colors.colorSchemes.catppuccin-mocha;
 
+  home.sessionVariables = {
+    LEDGER_FILE = "${config.home.homeDirectory}/Documents/ledger/hledger.journal";
+    KUBECONFIG = "${config.home.homeDirectory}/.kube/config:${config.home.homeDirectory}/Documents/devops/homelab-server/provision/kubeconfig";
+  };
+
   # sops-nix
   sops = {
     defaultSopsFile = ./secrets.yaml;

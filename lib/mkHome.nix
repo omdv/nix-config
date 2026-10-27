@@ -17,6 +17,7 @@ lib.homeManagerConfiguration {
     ++ builtins.attrValues (import ../modules/home-manager);
   extraSpecialArgs = {
     inherit inputs outputs;
+    hostName = host;
     # Note: lib is NOT passed here - modules get HM-extended lib automatically
     mkSecret = import ./mkSecret.nix {inherit lib;};
     colors = inputs.nix-colors;

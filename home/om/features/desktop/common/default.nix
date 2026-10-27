@@ -22,4 +22,6 @@
     pkgs.simplescreenrecorder
     pkgs.steam-run
   ];
+
+  services.gpg-agent.pinentry.package = pkgs.pinentry-rofi;
 }

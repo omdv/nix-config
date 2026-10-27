@@ -1,10 +1,9 @@
 {
   lib,
   config,
+  hostName,
   ...
-}: let
-  hostName = builtins.getEnv "HOSTNAME";
-in {
+}: {
   programs.ssh = {
     enable = true;
     enableDefaultConfig = false;
@@ -18,7 +17,7 @@ in {
 
     generateSSHKey = lib.hm.dag.entryAfter ["writeBoundary"] ''
       if [ ! -f ~/.ssh/id_rsa ]; then
-        /run/current-system/sw/bin/ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_rsa -N "" -C "${config.home.username}@${hostName}";
+        /run/current-system/sw/bin/ssh-keygen -t ed25519 -f ~/.ssh/id_rsa -N "" -C "${config.home.username}@${hostName}";
       fi
     '';
   };

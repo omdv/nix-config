@@ -1,4 +1,8 @@
-{pkgs, ...}: {
+{
+  pkgs,
+  lib,
+  ...
+}: {
   programs.gpg = {
     enable = true;
     settings = {};
@@ -8,7 +12,7 @@
   services.gpg-agent = {
     enable = true;
     enableFishIntegration = true;
-    pinentry.package = pkgs.pinentry-rofi;
+    pinentry.package = lib.mkDefault pkgs.pinentry-curses;
     defaultCacheTtl = 1800;
     extraConfig = ''
       allow-emacs-pinentry

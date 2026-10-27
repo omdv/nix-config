@@ -15,7 +15,7 @@ flake.nix
 ├── overlays/       — three overlays applied to pkgs: flake-inputs, unstable, additions
 ├── lib/
 │   ├── mkHost.nix  — wraps lib.nixosSystem; loads hosts/<name>/
-│   ├── mkHome.nix  — wraps lib.homeManagerConfiguration; loads home/<name>/<host>.nix
+│   ├── mkHome.nix  — wraps lib.homeManagerConfiguration; loads a host profile and passes its declared host name
 │   └── mkSecret.nix— produces a sops.secrets entry (owner=om, mode=0400, /run/user-secrets/<name>)
 ├── hosts/          — NixOS system configs
 ├── home/           — home-manager user configs
@@ -230,8 +230,8 @@ Every feature module is a function `{ pkgs, config, lib, inputs, outputs, ... }:
 Home Manager modules are grouped by runtime role:
 
 - `global` MUST remain safe for every host and contain only universal identity, lifecycle, Nix, and shared module configuration.
-- `features/cli` and `features/development` MUST remain usable on the headless `homelab` profile. Terminal and TUI applications belong here.
-- `features/desktop` owns graphical applications, fonts, Kitty, XDG desktop entries, and helpers that require a graphical terminal.
+- `features/cli` and `features/development` MUST remain usable on the headless `homelab` profile. Terminal and TUI applications, including terminal pinentry, belong here.
+- `features/desktop` owns graphical applications, fonts, Kitty, graphical pinentry, XDG desktop entries, and helpers that require a graphical terminal.
 - `features/development/graphical` owns graphical editors and development applications.
 
 `home/om/homelab.nix` imports only universal and portable roles. `home/om/framework.nix` imports those roles plus desktop and graphical development roles.
@@ -304,7 +304,7 @@ writeShellScriptBin "pi" ''
 |---|---|
 | `flake.nix` | Root: all inputs, overlays wiring, `mkHost`/`mkHome` calls, package outputs |
 | `lib/mkHost.nix` | NixOS system factory |
-| `lib/mkHome.nix` | home-manager config factory; injects sops-nix, nix-colors, and shared repository HM modules |
+| `lib/mkHome.nix` | home-manager config factory; injects host identity, sops-nix, nix-colors, and shared repository HM modules |
 | `lib/mkSecret.nix` | sops secret entry factory |
 | `overlays/default.nix` | Defines `unstable`, `additions`, `flake-inputs` overlays |
 | `pkgs/default.nix` | Custom package index (callPackage per entry) |

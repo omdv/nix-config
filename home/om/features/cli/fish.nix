@@ -126,8 +126,6 @@ in {
       set -gx XDG_STATE_HOME $HOME/.local/state
       set -gx XDG_CACHE_HOME $HOME/.cache
 
-      # kitty TERM for ssh
-      set -gx TERM xterm-256color
 
       # xdg folder cleanup
       set -gx ASDF_DATA_DIR $XDG_DATA_HOME/asdf
@@ -142,7 +140,6 @@ in {
       set -gx JUPYTER_CONFIG_DIR $XDG_CONFIG_HOME/jupyter
       set -gx KERAS_HOME $XDG_STATE_HOME/keras
       set -gx LESSHISTFILE $XDG_CACHE_HOME/less/history
-      set -gx LEDGER_FILE $HOME/Documents/ledger/hledger.journal
       set -gx LEIN_HOME $XDG_DATA_HOME/lein
       set -gx NVM_DIR $XDG_DATA_HOME/nvm
       set -gx OCI_CLI_RC_FILE $XDG_CONFIG_HOME/oci
@@ -152,11 +149,6 @@ in {
       set -gx SQLITE_HISTORY $XDG_CACHE_HOME/sqlite_history
       set -gx ZDOTDIR $XDG_CONFIG_HOME/zsh
 
-      # kubeconfig
-      set -gx KUBECONFIG $HOME/.kube/config:$HOME/Documents/devops/homelab-server/provision/kubeconfig
-
-      # direnv
-      direnv hook fish | source
 
       # fzf.fish and settings
       fzf_configure_bindings --git_status=\eg --variables=\cv --directory=\cf --git_log=\cl --processes=\ct
