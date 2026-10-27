@@ -41,6 +41,7 @@
   } @ inputs: let
     inherit (self) outputs;
     lib = nixpkgs.lib // home-manager.lib;
+    overlayDefinitions = import ./overlays {inherit inputs;};
 
     # Function to create a pkgs set with specific overlays for a given system
     mkPkgsWithOverlays = system: overlays:
@@ -56,7 +57,7 @@
     # Overlays to apply to pkgsFor (used by flake outputs: packages, devShells, etc.)
     # Currently empty because flake outputs don't need custom overlays.
     # If you need access to pkgs.unstable or custom packages in devShells/packages,
-    # populate with: builtins.attrValues outputs.overlays
+    # populate with: outputs.lib.orderedOverlays
     # Note: NixOS hosts get overlays via hosts/common/global/default.nix
     #       home-manager gets overlays via home/om/nixpkgs.nix
     flakeOutputOverlays = [
@@ -72,11 +73,11 @@
     mkHost = import ./lib/mkHost.nix {inherit lib inputs outputs;};
     mkHome = import ./lib/mkHome.nix {inherit lib inputs outputs pkgsFor;};
   in {
-    inherit lib;
+    lib = lib // {orderedOverlays = overlayDefinitions.ordered;};
     nixosModules = import ./modules/nixos;
     homeManagerModules = import ./modules/home-manager;
 
-    overlays = import ./overlays {inherit inputs outputs;};
+    overlays = overlayDefinitions.named;
 
     packages = forEachSystem (pkgs: import ./pkgs {inherit pkgs;});
     devShells = forEachSystem (pkgs: import ./shell.nix {inherit pkgs;});

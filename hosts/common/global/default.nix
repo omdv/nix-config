@@ -25,7 +25,7 @@
   };
 
   nixpkgs = {
-    overlays = builtins.attrValues outputs.overlays;
+    overlays = outputs.lib.orderedOverlays;
     config = {
       allowUnfree = true;
     };
