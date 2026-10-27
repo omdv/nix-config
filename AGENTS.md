@@ -73,7 +73,7 @@ graph TB
     %% Custom modules
     modules[Custom Modules]
     nixos_mod[modules/nixos/<br/>smartd]
-    hm_mod[modules/home-manager/<br/>fonts, i3scaling,<br/>monitors, wallpaper]
+    hm_mod[modules/home-manager/<br/>fonts, i3scaling]
 
     %% Connections - Entry
     flake --> inputs
@@ -165,7 +165,7 @@ graph TB
 | `home/om/features/desktop/` | Framework-only desktop applications, fonts, Kitty, graphical utilities, and launchers |
 | `home/om/features/development/graphical/` | Framework-only graphical editors and development applications |
 | `modules/nixos/` | Custom NixOS modules (`smartd.nix`) exported as `nixosModules` |
-| `modules/home-manager/` | Custom HM modules (`fonts`, `i3scaling`, `monitors`, `wallpaper`) exported as `homeManagerModules` |
+| `modules/home-manager/` | Custom HM modules (`fonts`, `i3scaling`) exported as `homeManagerModules` |
 | `overlays/` | Nixpkgs overlay definitions |
 | `pkgs/` | Custom package derivations (`oh-my-pi`, `pi-coding-agent`, `rustledger`) |
 | `scripts/` | Ad-hoc shell scripts (k3s management, homelab ops) |

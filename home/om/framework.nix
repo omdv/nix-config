@@ -51,17 +51,6 @@
   # base0F = "#FF5370"; # deprecated, opening/closing embedded language tags
   colorscheme = colors.colorSchemes.catppuccin-mocha;
 
-  monitors = [
-    {
-      name = "eDP-1";
-      width = 2256;
-      height = 1504;
-      workspace = "1";
-      primary = true;
-      scale = 1.0;
-    }
-  ];
-
   # sops-nix
   sops = {
     defaultSopsFile = ./secrets.yaml;
