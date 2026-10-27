@@ -93,7 +93,7 @@ in {
           printf "use flake\n" > .envrc
         end
       '';
-      omp-legacy = ''
+      omp-yolo = ''
         set -lx OPENROUTER_API_KEY (pass show llm/openrouter/general-key)
         or return 1
 
