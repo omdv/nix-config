@@ -160,6 +160,7 @@ graph TB
 | `hosts/common/optional/` | Optional NixOS modules selected per host (i3wm, pipewire, k3s, libvirt, steam, etc.) |
 | `home/om/` | Home-manager config for user `om`; host entry points select role-appropriate feature bundles |
 | `home/om/global/` | Universal HM identity, lifecycle, and Nix configuration; always imported |
+| `home/om/backup/` | Shared Borgmatic policy plus explicit framework and homelab repository, source, and schedule inputs |
 | `home/om/features/cli/` | Portable shell, terminal, editor, and command-line tooling imported by both hosts |
 | `home/om/features/development/` | Portable development and operations tooling imported by both hosts |
 | `home/om/features/desktop/` | Framework-only desktop applications, fonts, Kitty, graphical utilities, and launchers |
