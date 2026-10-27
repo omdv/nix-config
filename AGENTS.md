@@ -19,7 +19,7 @@ flake.nix
 │   └── mkSecret.nix— produces a sops.secrets entry (owner=om, mode=0400, /run/user-secrets/<name>)
 ├── hosts/          — NixOS system configs
 ├── home/           — home-manager user configs
-├── modules/        — custom NixOS modules exported; custom HM modules loaded by mkHome
+├── modules/        — custom NixOS modules exported; custom HM modules loaded by owning scopes
 └── pkgs/           — custom package derivations exposed as flake packages
 ```
 
@@ -126,7 +126,8 @@ graph TB
     modules --> hm_mod
     framework -.uses.-> nixos_mod
     homelab -.uses.-> nixos_mod
-    mkHome -.loads.-> hm_mod
+    mkHome -.loads i3scaling.-> hm_mod
+    graphical -.loads fonts.-> hm_mod
 
     %% Overlay application
     overlays -.applied to.-> framework
@@ -164,7 +165,7 @@ graph TB
 | `home/om/features/desktop/` | Framework-only desktop applications, fonts, Kitty, graphical utilities, and launchers |
 | `home/om/features/development/graphical/` | Framework-only graphical editors and development applications |
 | `modules/nixos/` | Custom NixOS modules (`smartd.nix`) exported as `nixosModules` |
-| `modules/home-manager/` | Custom HM modules (`fonts`, `i3scaling`) loaded directly by `mkHome` |
+| `modules/home-manager/` | Custom HM modules: `i3scaling` loaded by `mkHome`, `fonts` loaded by the desktop font feature |
 | `overlays/` | Nixpkgs overlay definitions |
 | `pkgs/` | Custom package derivations (`oh-my-pi`, `pi-coding-agent`, `rustledger`) |
 | `scripts/` | Ad-hoc shell scripts (k3s management, homelab ops) |
@@ -303,7 +304,7 @@ writeShellScriptBin "pi" ''
 |---|---|
 | `flake.nix` | Root: all inputs, overlays wiring, `mkHost`/`mkHome` calls, package outputs |
 | `lib/mkHost.nix` | NixOS system factory |
-| `lib/mkHome.nix` | home-manager config factory; injects sops-nix, nix-colors, and repository HM modules |
+| `lib/mkHome.nix` | home-manager config factory; injects sops-nix, nix-colors, and shared repository HM modules |
 | `lib/mkSecret.nix` | sops secret entry factory |
 | `overlays/default.nix` | Defines `unstable`, `additions`, `flake-inputs` overlays |
 | `pkgs/default.nix` | Custom package index (callPackage per entry) |
