@@ -273,22 +273,4 @@
       };
     };
   };
-
-  xdg = {
-    desktopEntries = {
-      k9s = {
-        name = "k9s";
-        genericName = "k8s CLI";
-        comment = "Monitor and control k8s clusters";
-        exec = "k9s";
-        icon = "kubernetes";
-        terminal = true;
-        categories = [
-          "Network"
-          "ConsoleOnly"
-        ];
-        type = "Application";
-      };
-    };
-  };
 }

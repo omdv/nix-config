@@ -11,6 +11,7 @@
 
     ./features/cli
     ./features/development
+    ./features/development/graphical
     ./features/productivity
 
     ./features/optional/discord.nix

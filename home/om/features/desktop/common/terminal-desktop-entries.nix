@@ -1,30 +1,25 @@
 {
-  pkgs,
-  lib,
-  ...
-}: let
-  pname = "cursor";
-  version = "3.0";
-  cursorAppImage = pkgs.fetchurl {
-    url = "https://api2.cursor.sh/updates/download/golden/linux-x64/cursor/3.0";
-    sha256 = "sha256-AAAA";
-    name = "${pname}-${version}.AppImage";
-  };
-in {
-  home.packages = with pkgs; [
-    (writeShellScriptBin "cursor" ''
-      #!${stdenv.shell}
-      ${lib.getExe pkgs.appimage-run} ${cursorAppImage} "$@"
-    '')
-  ];
-
   xdg.desktopEntries = {
-    cursor = {
-      name = "Cursor";
+    k9s = {
+      name = "k9s";
+      genericName = "k8s CLI";
+      comment = "Monitor and control k8s clusters";
+      exec = "k9s";
+      icon = "kubernetes";
+      terminal = true;
+      categories = [
+        "Network"
+        "ConsoleOnly"
+      ];
+      type = "Application";
+    };
+
+    nvim = {
+      name = "Neovim";
       genericName = "Text Editor";
       comment = "Edit text files";
-      exec = "cursor %F";
-      icon = "cursor";
+      exec = "kitty -e nvim %F";
+      icon = "nvim";
       mimeType = [
         "text/english"
         "text/plain"
@@ -42,12 +37,11 @@ in {
         "text/x-c"
         "text/x-c++"
       ];
-      terminal = false;
+      terminal = true;
       type = "Application";
       categories = [
         "Utility"
         "TextEditor"
-        "Development"
       ];
     };
   };

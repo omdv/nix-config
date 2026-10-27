@@ -67,9 +67,9 @@ graph TB
     home[Home Manager Configurations]
     hm_framework[home/om/framework.nix<br/>Laptop User Config]
     hm_homelab[home/om/homelab.nix<br/>Server User Config]
-    hm_global[home/om/global/<br/>Base config]
-    features[home/om/features/<br/>Feature bundles]
-
+    hm_global[home/om/global/<br/>Universal config]
+    portable[features/cli + development<br/>Portable terminal tools]
+    graphical[features/desktop + development/graphical<br/>Graphical applications]
     %% Custom modules
     modules[Custom Modules]
     nixos_mod[modules/nixos/<br/>smartd]
@@ -116,9 +116,10 @@ graph TB
     home --> hm_framework
     home --> hm_homelab
     hm_framework --> hm_global
-    hm_framework --> features
+    hm_framework --> portable
+    hm_framework --> graphical
     hm_homelab --> hm_global
-    hm_homelab --> features
+    hm_homelab --> portable
 
     %% Module connections
     modules --> nixos_mod
@@ -143,7 +144,7 @@ graph TB
     class flake entryPoint
     class mkHost,mkHome,mkSecret factory
     class framework,homelab,hm_framework,hm_homelab config
-    class overlays,pkgs,modules resource
+    class overlays,pkgs,modules,portable,graphical resource
 ```
 
 ---
@@ -157,9 +158,12 @@ graph TB
 | `hosts/<name>/` | NixOS system config per machine (hardware, boot, sops, optional modules) |
 | `hosts/common/global/` | NixOS modules applied to every host (locale, nix, openssh, sops, fish, nix-ld, nix-index) |
 | `hosts/common/optional/` | Optional NixOS modules selected per host (i3wm, pipewire, k3s, libvirt, steam, etc.) |
-| `home/om/` | Home-manager config for user `om` |
-| `home/om/global/` | Base HM config (git, kitty, fonts); always imported |
-| `home/om/features/` | Feature bundles: `cli/`, `desktop/`, `nixvim/`, `productivity/`, `pass/`, `gaming/`, `optional/` |
+| `home/om/` | Home-manager config for user `om`; host entry points select role-appropriate feature bundles |
+| `home/om/global/` | Universal HM identity, Home Manager, Git, Nix, and shared module wiring; always imported |
+| `home/om/features/cli/` | Portable shell, terminal, editor, and command-line tooling imported by both hosts |
+| `home/om/features/development/` | Portable development and operations tooling imported by both hosts |
+| `home/om/features/desktop/` | Framework-only desktop applications, fonts, Kitty, graphical utilities, and launchers |
+| `home/om/features/development/graphical/` | Framework-only graphical editors and development applications |
 | `modules/nixos/` | Custom NixOS modules (`smartd.nix`) exported as `nixosModules` |
 | `modules/home-manager/` | Custom HM modules (`fonts`, `i3scaling`, `monitors`, `wallpaper`) exported as `homeManagerModules` |
 | `overlays/` | Nixpkgs overlay definitions |
@@ -220,6 +224,17 @@ Every feature module is a function `{ pkgs, config, lib, inputs, outputs, ... }:
   };
 }
 ```
+
+### Home Manager host roles
+
+Home Manager modules are grouped by runtime role:
+
+- `global` MUST remain safe for every host and contain only universal identity, lifecycle, Nix, and shared module configuration.
+- `features/cli` and `features/development` MUST remain usable on the headless `homelab` profile. Terminal and TUI applications belong here.
+- `features/desktop` owns graphical applications, fonts, Kitty, XDG desktop entries, and helpers that require a graphical terminal.
+- `features/development/graphical` owns graphical editors and development applications.
+
+`home/om/homelab.nix` imports only universal and portable roles. `home/om/framework.nix` imports those roles plus desktop and graphical development roles.
 
 ### Stable vs. unstable packages
 

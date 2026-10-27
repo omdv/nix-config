@@ -9,10 +9,10 @@
     ./gpg.nix
     ./btop.nix
     ./htop.nix
+    ./k9s.nix
     ./navi.nix
     ./nixvim
     ./pass.nix
-    ./qutebrowser.nix
     ./ssh.nix
     ./starship.nix
     ./zellij.nix
@@ -23,7 +23,6 @@
     file
     zip
     wget
-    feh
 
     # better utils
     bc # Calculator
@@ -32,7 +31,6 @@
     eza # Better ls
     fd # Better find
     jq # json
-    maim # Screenshot tool
     ripgrep # Better grep
 
     # system tools
@@ -70,9 +68,7 @@
     # misc
     awscli2
     feynman # AI research agent
-    qgis # Great qt-based GIS
     tldr # Simplified man
     runpodctl # Runpod CLI for managing GPU pods and serverless endpoints
-    simplescreenrecorder # record screen
   ];
 }
