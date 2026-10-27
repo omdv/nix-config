@@ -101,11 +101,6 @@
           "pager"
         ];
       }
-      {
-        key = "H";
-        map = ["pager"];
-        action = "<pipe-message>${pkgs.w3m}/bin/w3m -I UTF-8 -T text/html -dump<enter><exit>";
-      }
     ];
     extraConfig = let
       # Collect all addresses and aliases
@@ -119,7 +114,8 @@
       + ''
         set mailcap_path = "${config.xdg.configHome}/neomutt/mailcap"
 
-        set implicit_autoview
+        unset implicit_autoview
+        auto_view text/html
         alternative_order text/plain text/enriched text/html multipart/related multipart/alternative
         set allow_ansi
 
@@ -166,10 +162,10 @@
   };
 
   xdg.configFile."neomutt/mailcap".text = ''
-    text/html; ${pkgs.w3m}/bin/w3m -I %{charset} -T text/html -dump %s; copiousoutput
-    text/html; ${pkgs.w3m}/bin/w3m -I UTF-8 -T text/html -dump %s; copiousoutput
-    image/png; ${pkgs.feh}/bin/feh %s; copiousoutput
-    image/jpeg; ${pkgs.feh}/bin/feh %s; copiousoutput
-    image/gif; ${pkgs.feh}/bin/feh %s; copiousoutput
+    text/html; ${pkgs.w3m}/bin/w3m -I %{charset} -O UTF-8 -T text/html -o auto_image=false -o use_cookie=false %s; needsterminal
+    text/html; ${pkgs.w3m}/bin/w3m -I %{charset} -O UTF-8 -T text/html -o auto_image=false -o use_cookie=false -dump %s; copiousoutput
+    image/png; ${pkgs.feh}/bin/feh %s
+    image/jpeg; ${pkgs.feh}/bin/feh %s
+    image/gif; ${pkgs.feh}/bin/feh %s
   '';
 }

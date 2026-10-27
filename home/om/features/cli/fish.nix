@@ -105,13 +105,14 @@ in {
 
         set -l omp_path (realpath (command -s omp))
         set -l nono_args \
-          --allow-cwd \
           --allow "$PWD" \
+          --allow /tmp \
           --allow "$HOME/.omp" \
           --allow "$HOME/.npm" \
           --allow "$HOME/.local/share/pnpm" \
           --allow "$HOME/.cache/pnpm" \
           --allow-file "$HOME/.npmrc" \
+          --allow-file /dev/ptmx \
           --read "$HOME/.config/git" \
           --read /nix/store
 
