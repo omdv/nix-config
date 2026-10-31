@@ -11,14 +11,14 @@
 
   services.logind.settings.Login = {
     HandleLidSwitch = "suspend-then-hibernate";
-    HandleLidSwitchExternalPower = "ignore";
+    HandleLidSwitchExternalPower = "suspend";
   };
 
   services.auto-cpufreq = {
     enable = true;
     settings = {
       charger = {
-        governor = "performance";
+        governor = "powersave";
         turbo = "auto";
       };
       battery = {

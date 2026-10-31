@@ -16,3 +16,4 @@ result*
 *.code-workspace.lock
 .envrc
 .env
+.tmp-nix
