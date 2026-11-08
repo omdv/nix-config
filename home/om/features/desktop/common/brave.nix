@@ -1,7 +1,7 @@
 {pkgs, ...}: {
   programs.brave = {
     enable = true;
-    package = pkgs.unstable.brave;
+    package = pkgs.inputs."brave-nixpkgs".brave;
     extensions = [
       {id = "ddkjiahejlhfcafbddmgiahcphecmpfh";} # ublock
       {id = "nngceckbapebfimnlniiiahkandclblb";} # bitwarden

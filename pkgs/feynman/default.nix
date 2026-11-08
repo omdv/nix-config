@@ -5,16 +5,16 @@
   patchelf,
 }: let
   pname = "feynman";
-  version = "0.5.5";
+  version = "0.5.65";
 
   sources = {
     x86_64-linux = {
       url = "https://github.com/Companion-Inc/feynman/releases/download/v${version}/feynman-${version}-linux-x64.tar.gz";
-      hash = "sha256-us6nvxpoQjosMSMxefAvhbEaUtVEePeaL2lyjtZpbOA=";
+      hash = "sha256-uwXUcguCCWHDlNgvtlPOU3T1UM2CoZGNbAorScp6HIo=";
     };
     aarch64-linux = {
       url = "https://github.com/Companion-Inc/feynman/releases/download/v${version}/feynman-${version}-linux-arm64.tar.gz";
-      hash = "sha256-22WVuYIoTKC9bGxpT10YMSE/S7CIKDWu6xpYzbdFmiU=";
+      hash = "sha256-7jLbLoV3/bQpbb1Srn/VFy+ym3g+sZCPp09xEkcUWCc=";
     };
   };
 

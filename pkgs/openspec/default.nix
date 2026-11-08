@@ -4,5 +4,5 @@
 }:
 writeShellScriptBin "openspec" ''
   export PATH="${nodejs_22}/bin:$PATH"
-  exec npx @fission-ai/openspec@1.13.2 "$@"
+  exec npx @fission-ai/openspec@1.16.1 "$@"
 ''

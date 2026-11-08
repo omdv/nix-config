@@ -1,6 +1,6 @@
 {pkgs, ...}: {
   programs.java = {
     enable = true;
-    package = pkgs.openjdk;
+    package = pkgs.jdk25;
   };
 }

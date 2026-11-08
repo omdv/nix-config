@@ -7,7 +7,7 @@
 
   home.packages = [
     pkgs.beancount
-    pkgs.unstable.obsidian
+    pkgs.obsidian
     pkgs.sc-im
   ];
 }
