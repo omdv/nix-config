@@ -16,6 +16,22 @@
         "type": "github"
       }
     },
+    "brave-nixpkgs": {
+      "locked": {
+        "lastModified": 1794150530,
+        "narHash": "sha256-7ArYJxEdrRzAKXS2ziAeK5THfsQjawTbfLrGKMk0y64=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "74b89c527c44b19c7396d7686412dab882c7aee7",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "ref": "master",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "firefox-addons": {
       "inputs": {
         "nixpkgs": "nixpkgs"
@@ -336,6 +352,7 @@
     },
     "root": {
       "inputs": {
+        "brave-nixpkgs": "brave-nixpkgs",
         "firefox-addons": "firefox-addons",
         "hardware": "hardware",
         "home-manager": "home-manager",
