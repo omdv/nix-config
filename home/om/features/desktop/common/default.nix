@@ -1,7 +1,6 @@
 {pkgs, ...}: {
   imports = [
     ./brave.nix
-    ./cursor.nix
     ./fonts.nix
     ./firefox.nix
     ./gtk.nix

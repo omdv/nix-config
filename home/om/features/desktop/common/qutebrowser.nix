@@ -13,6 +13,7 @@
 
   programs.qutebrowser = {
     enable = true;
+    package = pkgs.unstable.qutebrowser;
     loadAutoconfig = true;
     settings = {
       downloads.open_dispatcher = "${lib.getExe pkgs.handlr-regex} open {}";

@@ -45,7 +45,11 @@ in {
 
           # open localhost port in qutebrowser
           "${mod}+o" = "exec ${mkScriptFromFile {
-            deps = [pkgs.iproute2 pkgs.rofi pkgs.qutebrowser];
+            deps = [
+              pkgs.iproute2
+              config.programs.rofi.package
+              config.programs.qutebrowser.package
+            ];
             scriptFile = ./scripts/open-port.sh;
             args = ["${config.fontProfiles.monospace.family} 16"];
           }}";
