@@ -1,4 +1,10 @@
-{pkgs, ...}: {
+{inputs, ...}: {
+  imports = [
+    inputs.bootvine.nixosModules.default
+  ];
+
+  services.bootvine.enable = true;
+
   console = {
     useXkbConfig = true;
     earlySetup = false;
@@ -7,15 +13,7 @@
   boot = {
     initrd.systemd.enable = true;
 
-    plymouth = {
-      enable = true;
-      theme = "cubes";
-      themePackages = with pkgs; [
-        (adi1090x-plymouth-themes.override {
-          selected_themes = ["cubes"];
-        })
-      ];
-    };
+    plymouth.enable = false;
 
     consoleLogLevel = 0;
     initrd.verbose = false;

@@ -20,6 +20,10 @@
     hardware.url = "github:nixos/nixos-hardware";
 
     # Third party programs, packaged with nix
+    bootvine = {
+      url = "git+https://codeberg.org/wvhulle/bootvine";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     firefox-addons.url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
     nixvim.url = "github:nix-community/nixvim/nixos-26.05";
     nix-colors.url = "github:misterio77/nix-colors";
