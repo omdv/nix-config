@@ -65,6 +65,9 @@
     nix-tree # Nix tree
     nix-inspect # Nix inspect
 
+    # editors
+    inputs.lem.lem-ncurses
+
     # misc
     awscli2
     feynman # AI research agent

@@ -336,6 +336,7 @@ writeShellScriptBin "pi" ''
 |---|---|
 | fish (primary shell) | `home/om/features/cli/fish.nix` |
 | neovim (nixvim) | `home/om/features/nixvim/` |
+| Lem (terminal editor) | `home/om/features/cli/default.nix` |
 | kitty (primary terminal) | `home/om/global/kitty.nix` |
 | tmux | `home/om/features/cli/tmux.nix` |
 | starship | `home/om/features/cli/starship.nix` |
