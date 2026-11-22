@@ -93,10 +93,6 @@ in rec {
       name = "Papirus";
       package = pkgs.papirus-icon-theme;
     };
-    cursorTheme = {
-      name = "Hackneyed";
-      size = config.i3scaling.cursorSize;
-    };
   };
 
   services.xsettingsd = {
@@ -106,8 +102,8 @@ in rec {
       "Net/IconThemeName" = "${gtk.iconTheme.name}";
       "Xft/Antialias" = true;
       "Xft/DPI" = config.i3scaling.dpi * 1024;
-      "Xcursor/size" = config.i3scaling.cursorSize;
-      "Xcursor/theme" = "Hackneyed";
+      "Xcursor/size" = config.home.pointerCursor.size;
+      "Xcursor/theme" = config.home.pointerCursor.name;
     };
   };
 

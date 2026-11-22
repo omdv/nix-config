@@ -5,8 +5,8 @@
 }: {
   home.pointerCursor = let
     getFrom = url: hash: name: {
-      gtk.enable = false;
-      x11.enable = false;
+      gtk.enable = true;
+      x11.enable = true;
       name = name;
       size = config.i3scaling.cursorSize;
       package = pkgs.runCommand "moveUp" {} ''
