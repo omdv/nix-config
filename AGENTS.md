@@ -249,7 +249,7 @@ Three patterns in use:
 
 1. **Prebuilt binary + patchelf** (`oh-my-pi`): `stdenv.mkDerivation` with `fetchurl`, `dontUnpack = true`, manual `patchelf --set-interpreter` for self-contained binaries (e.g., Bun-compiled). Do NOT use `autoPatchelfHook` for self-contained binaries.
 
-2. **Prebuilt binary + autoPatchelfHook** (`rustledger`): `stdenv.mkDerivation` with `fetchurl` + `autoPatchelfHook` for binaries that do need library resolution.
+2. **Prebuilt binary + autoPatchelfHook** (`strix`): `stdenv.mkDerivation` with `fetchurl` + `autoPatchelfHook` for binaries that do need library resolution.
 
 3. **Shell wrapper** (`pi-coding-agent`): `writeShellScriptBin` that patches `$PATH` and delegates to an external tool.
 
@@ -330,6 +330,18 @@ writeShellScriptBin "pi" ''
 - **nixpkgs channel**: stable `nixos-25.11`; unstable via separate input.
 - **home-manager channel**: `release-25.11` tracking stable nixpkgs.
 
+### Strix on rootless Podman
+
+- Strix is framework-only: `home/om/features/optional/strix.nix` installs a wrapper around `pkgs.strix` and declares the rootless `podman.socket` user unit. Homelab MUST remain unchanged.
+- The wrapper preserves an explicit `DOCKER_HOST`; otherwise it uses `unix://${XDG_RUNTIME_DIR}/podman/podman.sock`. Keep `virtualisation.podman.enable` and `dockerCompat` enabled and `virtualisation.docker.enable` disabled.
+- This is an experimental compatibility path, not upstream-supported Podman integration. Native support is still proposed in [usestrix/strix#1284](https://github.com/usestrix/strix/pull/1284).
+- Locally verified with Podman 5.8.9, Docker SDK 7.1.0, and API 1.44: ping/version negotiation, image pull, container creation, bind mounts, `NET_ADMIN`/`NET_RAW`, `host.docker.internal=host-gateway`, start, exec, inspect, and delete all succeeded.
+- The user socket grants broad control over that user's containers. Keep it on the local Unix socket; NEVER expose it over TCP.
+- Interactive Fish `strix` invocations set `STRIX_LLM=openrouter/z-ai/glm-5.3` and retrieve `LLM_API_KEY` from `pass show llm/openrouter/general-key` with function-local exports. Credential retrieval failure stops before Strix launches; non-Fish callers must supply their own provider environment.
+- First local scan downloads Strix's sandbox image. NEVER use global Strix provider exports, place credentials in Nix, or commit them.
+- Run Strix only against targets you are authorized to assess. Verification MUST NOT launch a penetration test or consume model credits.
+- Update through Nix, not `strix --update`: change the version, URL, and hash in `pkgs/strix/default.nix`, then run `nix build .#strix` and re-run the Podman compatibility probe.
+
 ### Key tools configured in this repo
 
 | Tool | Config location |
@@ -337,6 +349,7 @@ writeShellScriptBin "pi" ''
 | fish (primary shell) | `home/om/features/cli/fish.nix` |
 | neovim (nixvim) | `home/om/features/nixvim/` |
 | Lem (terminal editor) | `home/om/features/cli/default.nix` |
+| Strix (experimental Podman compatibility) | `home/om/features/optional/strix.nix`, `pkgs/strix/default.nix` |
 | kitty (primary terminal) | `home/om/global/kitty.nix` |
 | tmux | `home/om/features/cli/tmux.nix` |
 | starship | `home/om/features/cli/starship.nix` |

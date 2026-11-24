@@ -4,4 +4,5 @@
   feynman = pkgs.callPackage ./feynman {};
   oh-my-pi = pkgs.callPackage ./oh-my-pi {};
   nono = pkgs.callPackage ./nono {};
+  strix = pkgs.callPackage ./strix {};
 }

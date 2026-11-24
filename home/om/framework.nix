@@ -19,6 +19,7 @@
     ./features/optional/mpv.nix
     ./features/optional/pyradio.nix
     ./features/optional/quickemu.nix
+    ./features/optional/strix.nix
     ./features/optional/telegram.nix
     ./features/optional/torrent.nix
     ./features/optional/zathura.nix
