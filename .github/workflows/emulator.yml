@@ -1,0 +1,468 @@
+name: NixOS emulator
+
+on:
+  pull_request:
+    paths:
+      - 'flake.nix'
+      - 'flake.lock'
+      - 'lib/**'
+      - 'hosts/**'
+      - 'home/**'
+      - 'modules/**'
+      - 'overlays/**'
+      - 'pkgs/**'
+      - '.github/workflows/emulator.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'flake.nix'
+      - 'flake.lock'
+      - 'lib/**'
+      - 'hosts/**'
+      - 'home/**'
+      - 'modules/**'
+      - 'overlays/**'
+      - 'pkgs/**'
+      - '.github/workflows/emulator.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Never cancel a promotion while its deployed smoke / rollback is running.
+concurrency:
+  group: emulator-${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  NIX_CONFIG: experimental-features = nix-command flakes
+
+jobs:
+  runtime:
+    name: Build and boot on native ARM
+    # GitHub documents this native ARM label for public and private repositories.
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 120
+    steps:
+      - name: Check out candidate without persistent credentials
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Install Nix
+        uses: cachix/install-nix-action@3dc140bfc76c49fbd4dd958429132e3746bcb086 # v31
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+      - name: Build the complete release
+        run: |
+          mkdir -p emulator-smoke-output
+          nix build --print-build-logs --no-update-lock-file \
+            .#packages.aarch64-linux.emulator --out-link emulator-site \
+            2>&1 | tee emulator-smoke-output/build.log
+          cp emulator-site/manifest.json emulator-smoke-output/manifest.json
+          printf '%s\n' "$GITHUB_SHA" > emulator-smoke-output/source-revision.txt
+          nix build --print-build-logs --no-update-lock-file \
+            .#packages.aarch64-linux.emulator.passthru.smoke --out-link emulator-check
+      - name: Serve locally and run the shared real-browser smoke
+        env:
+          EMULATOR_SMOKE_OUTPUT: ${{ github.workspace }}/emulator-smoke-output/local
+          PORT: '8080'
+        run: |
+          nix run --no-update-lock-file .#apps.aarch64-linux.emulator \
+            > emulator-smoke-output/serve.log 2>&1 &
+          server=$!
+          trap 'kill "$server" 2>/dev/null || true; wait "$server" 2>/dev/null || true' EXIT
+          ready=false
+          for _attempt in {1..180}; do
+            if curl --fail --silent http://127.0.0.1:8080/manifest.json > /dev/null; then
+              ready=true
+              break
+            fi
+            kill -0 "$server"
+            sleep 1
+          done
+          if [[ "$ready" != true ]]; then
+            echo 'Local emulator server did not become available' >&2
+            exit 1
+          fi
+          ./emulator-check/bin/emulator-smoke \
+            http://127.0.0.1:8080/ 2>&1 | tee emulator-smoke-output/local-smoke.log
+      - name: Package the tested candidate for trusted publication
+        if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+        run: |
+          tar --dereference --sparse -C emulator-site -cf "$RUNNER_TEMP/emulator-site.tar" .
+      - name: Retain the tested candidate
+        if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: emulator-site-${{ github.sha }}
+          path: ${{ runner.temp }}/emulator-site.tar
+          compression-level: 0
+          retention-days: 3
+          if-no-files-found: error
+      - name: Retain build and browser evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: emulator-runtime-${{ github.run_id }}-${{ github.run_attempt }}
+          path: emulator-smoke-output/
+          retention-days: 7
+          if-no-files-found: warn
+
+  publish:
+    name: Publish verified immutable release
+    needs: runtime
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 90
+    # Configure required reviewers and restrict this environment to main.
+    environment: emulator
+    permissions:
+      contents: read
+    concurrency:
+      group: emulator-publication
+      cancel-in-progress: false
+    steps:
+      - name: Check out only the trusted tested revision
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install Nix
+        uses: cachix/install-nix-action@3dc140bfc76c49fbd4dd958429132e3746bcb086 # v31
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+      - name: Download this run's tested candidate
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: emulator-site-${{ github.sha }}
+          path: ${{ runner.temp }}/emulator-candidate
+      - name: Prepare locked publication tools without storage credentials
+        run: |
+          mkdir -p candidate emulator-smoke-output/deployed
+          tar --extract --sparse --no-same-owner --no-same-permissions \
+            -f "$RUNNER_TEMP/emulator-candidate/emulator-site.tar" -C candidate
+          nix build --no-update-lock-file --impure --expr "$(cat <<'NIX'
+            let
+              flake = builtins.getFlake ("git+file://" + toString ./.);
+              pkgs = import flake.inputs.nixpkgs { system = "aarch64-linux"; };
+            in pkgs.symlinkJoin {
+              name = "emulator-publication-tools";
+              paths = [ (pkgs.python3.withPackages (p: [ p.boto3 ])) ];
+              postBuild = "ln -s ${flake.packages.aarch64-linux.emulator.passthru.smoke}/bin/emulator-smoke $out/bin/emulator-smoke";
+            }
+          NIX
+          )" --out-link publication-tools
+          printf 'EMULATOR_SMOKE_PROGRAM=%s/publication-tools/bin/emulator-smoke\n' \
+            "$GITHUB_WORKSPACE" >> "$GITHUB_ENV"
+      - name: Upload, verify, promote and smoke with conditional rollback
+        env:
+          EMULATOR_S3_ENDPOINT: ${{ vars.EMULATOR_S3_ENDPOINT }}
+          EMULATOR_BUCKET: ${{ vars.EMULATOR_BUCKET }}
+          EMULATOR_PUBLIC_URL: ${{ vars.EMULATOR_PUBLIC_URL }}
+          AWS_DEFAULT_REGION: ${{ vars.AWS_DEFAULT_REGION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_EC2_METADATA_DISABLED: 'true'
+          EMULATOR_SMOKE_OUTPUT: ${{ github.workspace }}/emulator-smoke-output/deployed
+        run: |
+          ./publication-tools/bin/python <<'PY'
+          import base64
+          import hashlib
+          import html
+          import json
+          import os
+          from pathlib import Path, PurePosixPath
+          import re
+          import signal
+          import subprocess
+          import sys
+          import urllib.request
+          from urllib.parse import quote, urlsplit
+
+          import boto3
+          from botocore.config import Config
+          from botocore.exceptions import ClientError
+
+          required = (
+              'EMULATOR_S3_ENDPOINT', 'EMULATOR_BUCKET', 'EMULATOR_PUBLIC_URL',
+              'AWS_DEFAULT_REGION', 'AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY',
+          )
+          missing = [name for name in required if not os.environ.get(name, '').strip()]
+          if missing:
+              sys.exit('Missing deployment configuration: ' + ', '.join(missing))
+          for name in ('EMULATOR_S3_ENDPOINT', 'EMULATOR_PUBLIC_URL'):
+              parsed = urlsplit(os.environ[name])
+              if (parsed.scheme != 'https' or not parsed.hostname or parsed.username
+                      or parsed.password or parsed.query or parsed.fragment):
+                  sys.exit(name + ' must be an HTTPS URL without credentials, query or fragment')
+
+          site = Path('candidate')
+          evidence = Path('emulator-smoke-output')
+          bucket = os.environ['EMULATOR_BUCKET']
+          public = os.environ['EMULATOR_PUBLIC_URL'].rstrip('/') + '/'
+          revision = os.environ['GITHUB_SHA']
+          if not re.fullmatch(r'[0-9a-f]{40}', revision):
+              sys.exit('Invalid source revision')
+          prefix = 'releases/' + revision + '/'
+          deployment = os.environ['GITHUB_RUN_ID'] + '-' + os.environ['GITHUB_RUN_ATTEMPT']
+          immutable_cache = 'public, max-age=31536000, immutable, no-transform'
+          pointer_cache = 'no-cache, no-transform'
+          s3 = boto3.client(
+              's3', endpoint_url=os.environ['EMULATOR_S3_ENDPOINT'],
+              region_name=os.environ['AWS_DEFAULT_REGION'],
+              config=Config(
+                  signature_version='s3v4', s3={'addressing_style': 'path'},
+                  request_checksum_calculation='when_required',
+                  response_checksum_validation='when_required',
+                  connect_timeout=30, read_timeout=300,
+                  retries={'mode': 'standard', 'total_max_attempts': 1},
+              ),
+          )
+
+          # Do not silently follow an HTTP redirect to another asset origin.
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self, req, fp, code, msg, headers, newurl):
+                  return None
+
+          http = urllib.request.build_opener(NoRedirect)
+
+          def request(path, method='GET', headers=None):
+              return http.open(urllib.request.Request(
+                  public + quote(path, safe='/'), method=method,
+                  headers={'Accept-Encoding': 'identity', **(headers or {})},
+              ), timeout=120)
+
+          def require(condition, message):
+              if not condition:
+                  raise RuntimeError(message)
+
+          def digest(stream):
+              sha = hashlib.sha256()
+              md5 = hashlib.md5(usedforsecurity=False)
+              length = 0
+              while chunk := stream.read(1024 * 1024):
+                  sha.update(chunk)
+                  md5.update(chunk)
+                  length += len(chunk)
+              return sha.hexdigest(), base64.b64encode(md5.digest()).decode(), length
+
+          def verify_headers(response, info, cache):
+              require(response.status == 200, 'Unexpected public object status')
+              require(int(response.headers.get('Content-Length', '-1')) == info['bytes'],
+                      'Public object size mismatch')
+              require(response.headers.get('Content-Type', '').split(';')[0].strip()
+                      == info['contentType'].split(';')[0], 'Public object MIME mismatch')
+              require(response.headers.get('Cache-Control') == cache,
+                      'Public object cache policy mismatch')
+              require(response.headers.get('Content-Encoding', 'identity') == 'identity',
+                      'Public objects must not be transformed or compressed')
+
+          def upload(path, info):
+              with path.open('rb') as stream:
+                  sha, md5, length = digest(stream)
+                  require(sha == info['sha256'] and length == info['bytes'],
+                          'Candidate content does not match manifest: ' + path.name)
+                  require(length <= 5 * 1024 ** 3,
+                          'Candidate exceeds the conditional single-PUT 5 GiB limit')
+                  stream.seek(0)
+                  try:
+                      s3.put_object(
+                          Bucket=bucket, Key=prefix + info['path'], Body=stream,
+                          ContentLength=length, ContentMD5=md5,
+                          ContentType=info['contentType'], CacheControl=immutable_cache,
+                          Metadata={'sha256': sha}, IfNoneMatch='*',
+                      )
+                  except ClientError as error:
+                      if error.response['ResponseMetadata']['HTTPStatusCode'] != 412:
+                          raise
+                      # A rerun may reuse identical objects, never overwrite them.
+                      existing = s3.get_object(Bucket=bucket, Key=prefix + info['path'])
+                      with existing['Body'] as body:
+                          old_sha, _, old_length = digest(body)
+                      require(old_sha == sha and old_length == length
+                              and existing.get('ContentType') == info['contentType']
+                              and existing.get('CacheControl') == immutable_cache,
+                              'Existing immutable release differs: ' + info['path'])
+              with request(prefix + info['path'], 'HEAD') as response:
+                  verify_headers(response, info, immutable_cache)
+              print('Verified release object: ' + info['path'], flush=True)
+
+          previous = None
+          pointer = None
+          promotion_attempted = False
+          committed = False
+
+          def interrupted(signum, frame):
+              raise RuntimeError('Deployment interrupted; restoring previous pointer')
+
+          signal.signal(signal.SIGTERM, interrupted)
+          signal.signal(signal.SIGINT, interrupted)
+
+          try:
+              manifest_bytes = (site / 'manifest.json').read_bytes()
+              manifest = json.loads(manifest_bytes)
+              require(manifest.get('schemaVersion') == 1, 'Unsupported release manifest')
+              require(manifest.get('system') == 'aarch64-linux', 'Wrong candidate architecture')
+              require(bool(manifest.get('runtimeVersion')), 'Missing pinned runtime version')
+              files = manifest['files']
+              require('manifest.json' not in files and 'release.json' not in files,
+                      'Reserved publication metadata path in payload')
+              actual = {str(path.relative_to(site)) for path in site.rglob('*') if path.is_file()}
+              require(actual == set(files) | {'manifest.json'}, 'Candidate inventory mismatch')
+              for name, info in files.items():
+                  path = PurePosixPath(name)
+                  require(not path.is_absolute() and '..' not in path.parts
+                          and str(path) == name, 'Invalid manifest asset path')
+                  require(not (site / name).is_symlink(), 'Candidate contains a symlink')
+                  info['path'] = name
+              image = manifest['image']
+              require(image['path'] in files and image['bytes'] == files[image['path']]['bytes']
+                      and image['sha256'] == files[image['path']]['sha256'],
+                      'Image metadata does not match file inventory')
+
+              release_bytes = (json.dumps({
+                  'schemaVersion': 1, 'sourceRevision': revision,
+                  'runtimeVersion': manifest['runtimeVersion'], 'system': manifest['system'],
+                  'manifestSha256': hashlib.sha256(manifest_bytes).hexdigest(),
+              }, sort_keys=True, indent=2) + '\n').encode()
+              (evidence / 'release.json').write_bytes(release_bytes)
+              (evidence / 'manifest.json').write_bytes(manifest_bytes)
+              for name, info in sorted(files.items()):
+                  upload(site / name, info)
+              upload(evidence / 'release.json', {
+                  'path': 'release.json', 'bytes': len(release_bytes),
+                  'sha256': hashlib.sha256(release_bytes).hexdigest(),
+                  'contentType': 'application/json',
+              })
+              # The completion marker is always uploaded after every payload object.
+              upload(site / 'manifest.json', {
+                  'path': 'manifest.json', 'bytes': len(manifest_bytes),
+                  'sha256': hashlib.sha256(manifest_bytes).hexdigest(),
+                  'contentType': 'application/json',
+              })
+              with request(prefix + 'manifest.json') as response:
+                  require(response.read() == manifest_bytes, 'Remote manifest differs from candidate')
+              with request(prefix + image['path'], headers={'Range': 'bytes=0-0'}) as response:
+                  require(response.status == 206, 'Image host does not support byte ranges')
+                  require(response.headers.get('Content-Range') == 'bytes 0-0/' + str(image['bytes']),
+                          'Image host returned an incorrect byte range')
+                  require(response.headers.get('Content-Length') == '1' and len(response.read(2)) == 1,
+                          'Image range body has an incorrect size')
+
+              # Snapshot exactly the body and serving metadata we would replace.
+              try:
+                  previous = s3.get_object(Bucket=bucket, Key='index.html')
+                  with previous.pop('Body') as body:
+                      previous['body'] = body.read()
+                  (evidence / 'previous-index.html').write_bytes(previous['body'])
+                  (evidence / 'previous-index-metadata.json').write_text(json.dumps({
+                      key: previous[key] for key in (
+                          'ETag', 'ContentType', 'CacheControl', 'ContentEncoding',
+                          'ContentLanguage', 'ContentDisposition', 'WebsiteRedirectLocation',
+                          'Metadata',
+                      ) if key in previous
+                  }, indent=2) + '\n')
+              except ClientError as error:
+                  if error.response['ResponseMetadata']['HTTPStatusCode'] != 404:
+                      raise
+              target = './' + prefix + 'index.html'
+              pointer = (
+                  '<!doctype html><meta charset="utf-8">\n'
+                  '<meta http-equiv="refresh" content="0;url=' + html.escape(target, quote=True) + '">\n'
+                  '<title>NixOS emulator</title>\n'
+                  '<a href="' + html.escape(target, quote=True) + '">Open verified release</a>\n'
+                  '<!-- deployment ' + deployment + ' -->\n'
+              ).encode()
+              (evidence / 'promoted-index.html').write_bytes(pointer)
+              condition = {'IfMatch': previous['ETag']} if previous else {'IfNoneMatch': '*'}
+              promotion_attempted = True
+              s3.put_object(
+                  Bucket=bucket, Key='index.html', Body=pointer,
+                  ContentType='text/html; charset=utf-8', CacheControl=pointer_cache,
+                  Metadata={'deployment': deployment, 'revision': revision}, **condition,
+              )
+              with request('index.html') as response:
+                  verify_headers(response, {'bytes': len(pointer), 'contentType': 'text/html'}, pointer_cache)
+                  require(response.read() == pointer, 'Default URL has not adopted the release pointer')
+
+              # The page/browser process receives no storage authority.
+              child_env = {key: value for key, value in os.environ.items()
+                           if not key.startswith('AWS_')
+                           and key not in ('EMULATOR_S3_ENDPOINT', 'EMULATOR_BUCKET')}
+              with (evidence / 'deployed-smoke.log').open('w') as log:
+                  result = subprocess.run(
+                      [os.environ['EMULATOR_SMOKE_PROGRAM'], public + 'index.html'],
+                      env=child_env, stdout=log, stderr=subprocess.STDOUT, timeout=1200,
+                  )
+              require(result.returncode == 0, 'Deployed browser smoke failed; see retained evidence')
+              committed = True
+              print('Verified and promoted source revision ' + revision, flush=True)
+          except Exception as error:
+              # SDK/network exceptions can contain endpoint URLs. Report no values or traces.
+              if isinstance(error, RuntimeError):
+                  print(str(error), file=sys.stderr)
+              elif isinstance(error, ClientError):
+                  print('Storage operation failed with HTTP status ' + str(
+                      error.response['ResponseMetadata']['HTTPStatusCode']), file=sys.stderr)
+              else:
+                  print('Publication failed: ' + type(error).__name__, file=sys.stderr)
+              sys.exit(1)
+          finally:
+              if promotion_attempted and not committed:
+                  # Includes an ambiguous PUT response: inspect ownership before rollback.
+                  signal.signal(signal.SIGTERM, signal.SIG_IGN)
+                  signal.signal(signal.SIGINT, signal.SIG_IGN)
+                  try:
+                      current = s3.get_object(Bucket=bucket, Key='index.html')
+                      with current['Body'] as body:
+                          owned = (body.read() == pointer and
+                                   current.get('Metadata', {}).get('deployment') == deployment)
+                      if owned:
+                          if previous:
+                              metadata = {key: previous[key] for key in (
+                                  'ContentType', 'CacheControl', 'ContentEncoding',
+                                  'ContentLanguage', 'ContentDisposition', 'WebsiteRedirectLocation',
+                                  'Metadata', 'Expires',
+                              ) if key in previous}
+                              s3.put_object(
+                                  Bucket=bucket, Key='index.html', Body=previous['body'],
+                                  IfMatch=current['ETag'], **metadata,
+                              )
+                              print('Restored previous default pointer', flush=True)
+                          else:
+                              # R2 documents conditional PUT, not conditional DELETE.
+                              unavailable = (
+                                  'Emulator unavailable: the initial deployment failed verification.\n'
+                                  'Deployment: ' + deployment + '\n'
+                              ).encode()
+                              s3.put_object(
+                                  Bucket=bucket, Key='index.html', Body=unavailable,
+                                  ContentType='text/plain; charset=utf-8', CacheControl=pointer_cache,
+                                  Metadata={'deployment': deployment, 'status': 'unavailable'},
+                                  IfMatch=current['ETag'],
+                              )
+                              print('Disabled failed first-deployment redirect; releases retained', flush=True)
+                      else:
+                          print('Default pointer is not owned by this attempt; left unchanged', flush=True)
+                  except ClientError as error:
+                      if error.response['ResponseMetadata']['HTTPStatusCode'] == 404:
+                          print('No default pointer exists; releases retained', flush=True)
+                      else:
+                          print('ROLLBACK FAILED: restore retained previous-index evidence manually', file=sys.stderr)
+                  except Exception:
+                      print('ROLLBACK FAILED: restore retained previous-index evidence manually', file=sys.stderr)
+          PY
+      - name: Retain deployment and rollback evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: emulator-publication-${{ github.run_id }}-${{ github.run_attempt }}
+          path: emulator-smoke-output/
+          retention-days: 14
+          if-no-files-found: warn

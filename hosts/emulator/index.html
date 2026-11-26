@@ -1,0 +1,500 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>NixOS emulator</title>
+  <style>
+    :root { font: 16px/1.5 system-ui, sans-serif; color: #cdd6f4; background: #11111b; }
+    * { box-sizing: border-box; }
+    body { margin: 0 auto; padding: 24px; max-width: 1440px; }
+    h1 { margin: 0; font-size: 1.75rem; }
+    p { margin: 8px 0; }
+    header, .controls { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    header { justify-content: space-between; }
+    button { font: inherit; padding: 8px 18px; border: 1px solid #7f849c; border-radius: 6px; background: #313244; color: #cdd6f4; cursor: pointer; }
+    button:hover:enabled { background: #45475a; }
+    button:disabled { opacity: .5; cursor: default; }
+    button:focus-visible, summary:focus-visible { outline: 2px solid #89b4fa; outline-offset: 3px; }
+    #boot { background: #89b4fa; color: #11111b; }
+    .notice { color: #f9e2af; margin: 18px 0; }
+    .hint, #release { color: #a6adc8; font-size: .875rem; }
+    #status { margin: 16px 0 8px; }
+    #status[data-state="error"], #error { color: #f38ba8; }
+    #error { white-space: pre-wrap; overflow-wrap: anywhere; }
+    #terminal-frame { height: min(68vh, 800px); min-height: 320px; width: 100%; padding: 12px; background: #1e1e2e; border: 1px solid #45475a; border-radius: 6px; }
+    #terminal { height: 100%; width: 100%; }
+    #terminal:empty::before { content: "Boot to open the configured om shell."; color: #7f849c; }
+    #terminal .xterm-viewport { scrollbar-width: none; }
+    details { margin-top: 18px; }
+    summary { cursor: pointer; }
+    #boot-log { max-height: 350px; overflow: auto; padding: 12px; background: #181825; white-space: pre-wrap; overflow-wrap: anywhere; font: 12px/1.5 ui-monospace, monospace; }
+    @media (max-width: 600px) { body { padding: 12px; } #terminal-frame { padding: 6px; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>NixOS emulator</h1>
+    <div class="controls" aria-label="Machine controls">
+      <button id="boot" type="button">Boot</button>
+      <button id="restart" type="button" disabled>Fresh restart</button>
+    </div>
+  </header>
+  <p class="notice">Ephemeral and offline: files and configuration changes disappear on restart or when this page closes. No guest network, persistent disk, or host-directory access.</p>
+  <p class="hint">The browser downloads this release's assets; the guest itself has no internet access. Boot needs a browser with WebAssembly JSPI and enough memory for a 2 GiB guest. Initial loading and NixOS activation can take several minutes.</p>
+  <p id="release" aria-label="Release metadata"></p>
+  <p id="status" role="status" aria-live="polite" data-state="idle">Idle — boot a fresh machine to begin.</p>
+  <p id="error" role="alert" hidden></p>
+  <div id="terminal-frame"><div id="terminal" aria-label="Interactive guest terminal"></div></div>
+  <p class="hint">Click the terminal to type. Control keys go to the guest; the terminal resizes with this window. Use Ctrl+Shift+C to copy selected text or Ctrl+Shift+V to paste.</p>
+  <details id="diagnostics">
+    <summary>Boot log and diagnostics</summary>
+    <pre id="boot-log"></pre>
+  </details>
+  <noscript><p>JavaScript is required to run this machine. No guest has been started.</p></noscript>
+  <script>
+    // The module cannot report its own syntax/load failure if it never starts.
+    window.addEventListener("error", function (event) {
+      if (window.emulator) return;
+      const message = event.message || "The launcher script could not load.";
+      const status = document.getElementById("status");
+      status.dataset.state = "error";
+      status.textContent = "Launcher failed to load.";
+      const error = document.getElementById("error");
+      error.hidden = false;
+      error.textContent = message;
+    });
+  </script>
+  <script nomodule>
+    document.getElementById("status").textContent = "Unsupported browser: JavaScript modules and WebAssembly JSPI are required.";
+    document.getElementById("status").dataset.state = "error";
+    document.getElementById("boot").disabled = true;
+  </script>
+  <script type="module">
+    const RUNTIME_VERSION = "0.2.0-261124-c08e977";
+    const READY_TIMEOUT = 180000;
+    const RELEASE_BASE = new URL("./", location.href);
+    const bootButton = document.getElementById("boot");
+    const restartButton = document.getElementById("restart");
+    const status = document.getElementById("status");
+    const errorBox = document.getElementById("error");
+    const terminalElement = document.getElementById("terminal");
+    const logElement = document.getElementById("boot-log");
+    const diagnostics = document.getElementById("diagnostics");
+    let current = null;
+    let state = "idle";
+    let assetsPromise;
+    let logText = "";
+    let logFrame = 0;
+
+    const readiness = `
+      set -eu
+      fail() { printf 'Readiness failed: %s\\n' "$*" >&2; exit 1; }
+      [ "$(id -un)" = om ] || fail 'process is not running as om'
+      [ "$HOME" = /home/om ] && [ -w "$HOME" ] || fail 'home is missing or not writable'
+      [ "$(cat /proc/1/comm)" = systemd ] || fail 'PID 1 is not systemd'
+      . /etc/os-release
+      [ "$ID" = nixos ] || fail 'guest is not NixOS'
+      [ "$(systemctl show home-manager-om.service -p ActiveState --value)" = active ] || fail 'Home Manager service is not active'
+      [ "$(systemctl show home-manager-om.service -p Result --value)" = success ] || fail 'Home Manager activation did not succeed'
+      [ -s "$HOME/.config/starship.toml" ] || fail 'managed Starship configuration is missing'
+      [ -s "$HOME/.config/fish/config.fish" ] || fail 'managed Fish configuration is missing'
+      [ "$(git config --get commit.gpgSign)" = false ] || fail 'Git signing has not been disabled'
+      for tool in fish starship git bat fzf fd eza jq rg nvim; do
+        command -v "$tool" >/dev/null || fail "missing selected tool: $tool"
+      done
+      command -v fish
+    `;
+
+    function active(session) {
+      return current === session && !session.abort.signal.aborted;
+    }
+
+    function requireActive(session) {
+      if (!active(session)) throw new DOMException("This boot was superseded or stopped.", "AbortError");
+    }
+
+    function setState(next, message = "") {
+      state = next;
+      status.dataset.state = next;
+      status.textContent = message;
+      status.hidden = !message;
+      bootButton.disabled = next === "booting" || next === "ready";
+      restartButton.disabled = !current;
+    }
+
+    function appendLog(session, text) {
+      if (current !== session) return;
+      logText = (logText + text).slice(-250000);
+      if (!logFrame) logFrame = requestAnimationFrame(() => {
+        logFrame = 0;
+        const atEnd = logElement.scrollTop + logElement.clientHeight >= logElement.scrollHeight - 24;
+        logElement.textContent = logText;
+        if (atEnd) logElement.scrollTop = logElement.scrollHeight;
+      });
+    }
+
+    function messageOf(error) {
+      return error instanceof Error ? error.message : String(error);
+    }
+
+    function stopSession(session) {
+      if (!session) return Promise.resolve();
+      if (session.stopping) return session.stopping;
+      session.abort.abort();
+      clearTimeout(session.deadline);
+      for (const dispose of session.cleanup) dispose();
+      session.cleanup.length = 0;
+      if (session.terminal) session.terminal.options.disableStdin = true;
+      session.stopping = Promise.all([
+        session.pty?.close(),
+        session.vm?.stop({ reason: "Discarding ephemeral emulator session" }),
+      ]);
+      return session.stopping;
+    }
+
+    function fail(session, error) {
+      if (!active(session)) return;
+      const message = messageOf(error);
+      setState("error", "Machine failed — inspect the boot log, then try a fresh restart.");
+      errorBox.hidden = false;
+      errorBox.textContent = message;
+      diagnostics.open = true;
+      appendLog(session, `\n[launcher] ERROR: ${message}\n`);
+      void stopSession(session).catch(stopError => {
+        appendLog(session, `[launcher] Stop failed: ${messageOf(stopError)}\n`);
+      });
+    }
+
+    function waitFor(session, promise) {
+      const signal = session.abort.signal;
+      if (signal.aborted) return Promise.reject(new DOMException("Boot cancelled", "AbortError"));
+      return new Promise((resolve, reject) => {
+        const cancel = () => reject(new DOMException("Boot cancelled", "AbortError"));
+        signal.addEventListener("abort", cancel, { once: true });
+        Promise.resolve(promise).then(resolve, reject).finally(() => signal.removeEventListener("abort", cancel));
+      });
+    }
+
+    function assetUrl(path) {
+      if (typeof path !== "string" || !/^[a-zA-Z0-9_.-]+(?:\/[a-zA-Z0-9_.-]+)*$/.test(path)
+          || path.split("/").some(part => part === "." || part === "..")) {
+        throw new Error(`Manifest contains an invalid release-relative path: ${String(path)}`);
+      }
+      return new URL(path, RELEASE_BASE).href;
+    }
+
+    async function loadManifest(session) {
+      const response = await fetch(new URL("manifest.json", RELEASE_BASE), { signal: session.abort.signal, cache: "no-cache" });
+      if (!response.ok) throw new Error(`Release manifest could not load (HTTP ${response.status}).`);
+      const manifest = await response.json();
+      if (manifest?.schemaVersion !== 1 || manifest.runtimeVersion !== RUNTIME_VERSION || manifest.system !== "aarch64-linux") {
+        throw new Error(`Incompatible release manifest: expected schema 1, aarch64-linux and Unkernel ${RUNTIME_VERSION}.`);
+      }
+      if (!manifest.files || typeof manifest.files !== "object" || Array.isArray(manifest.files)) {
+        throw new Error("Release manifest is missing its asset inventory.");
+      }
+      for (const [path, entry] of Object.entries(manifest.files)) {
+        assetUrl(path);
+        if (!entry || !Number.isSafeInteger(entry.bytes) || entry.bytes < 0
+            || !/^[a-fA-F0-9]{64}$/.test(entry.sha256) || typeof entry.contentType !== "string" || !entry.contentType) {
+          throw new Error(`Invalid release metadata for ${path}.`);
+        }
+      }
+      for (const path of ["runtime/web.mjs", "runtime/_chunks/core.mjs", "runtime/unkernel.wasm", "terminal/lib/xterm.js", "terminal/css/xterm.css", "fit/lib/addon-fit.js"]) {
+        if (!manifest.files[path]?.bytes) throw new Error(`Release manifest is missing ${path}.`);
+      }
+      const image = manifest.image;
+      if (!image) throw new Error("Release manifest is missing the NixOS image.");
+      assetUrl(image.path);
+      const entry = manifest.files[image.path];
+      if (!entry || image.bytes <= 0 || image.bytes !== entry.bytes || image.sha256 !== entry.sha256) {
+        throw new Error("Image metadata does not match the release inventory.");
+      }
+      return manifest;
+    }
+
+    function loadAsset(path, stylesheet = false) {
+      return new Promise((resolve, reject) => {
+        const node = document.createElement(stylesheet ? "link" : "script");
+        const timer = setTimeout(() => finish(new Error(`Timed out loading ${path}.`)), 30000);
+        function finish(error) {
+          clearTimeout(timer);
+          node.onload = node.onerror = null;
+          if (error) { node.remove(); reject(error); } else resolve();
+        }
+        node.onload = () => finish();
+        node.onerror = () => finish(new Error(`Could not load ${path}. Check this release's files and MIME types.`));
+        if (stylesheet) { node.rel = "stylesheet"; node.href = assetUrl(path); }
+        else node.src = assetUrl(path);
+        document.head.append(node);
+      });
+    }
+
+    function loadTerminalAssets() {
+      if (!assetsPromise) assetsPromise = (async () => {
+        await Promise.all([loadAsset("terminal/lib/xterm.js"), loadAsset("terminal/css/xterm.css", true)]);
+        await loadAsset("fit/lib/addon-fit.js");
+        if (typeof window.Terminal !== "function" || typeof window.FitAddon?.FitAddon !== "function") {
+          throw new Error("The bundled terminal scripts did not provide Terminal and FitAddon.");
+        }
+      })().catch(error => { assetsPromise = undefined; throw error; });
+      return assetsPromise;
+    }
+
+    async function checkImage(session, image) {
+      const response = await fetch(assetUrl(image.path), {
+        headers: { Range: "bytes=0-0" }, signal: session.abort.signal,
+      });
+      if (response.status !== 206 || response.headers.get("Content-Range") !== `bytes 0-0/${image.bytes}`) {
+        await response.body?.cancel();
+        throw new Error(`NixOS image could not be range-read (HTTP ${response.status}). The server must serve this release's ${image.bytes}-byte image with byte ranges.`);
+      }
+      if ((await response.arrayBuffer()).byteLength !== 1) throw new Error("The image server returned an invalid byte range.");
+    }
+
+    function openTerminal(session) {
+      const terminal = new window.Terminal({
+        cursorBlink: true, disableStdin: true, fontSize: 14, scrollback: 3000,
+        fontFamily: "ui-monospace, 'DejaVu Sans Mono', monospace",
+        theme: { background: "#1e1e2e", foreground: "#cdd6f4", cursor: "#f5e0dc", selectionBackground: "#585b70" },
+      });
+      session.terminal = terminal;
+      const fit = new window.FitAddon.FitAddon();
+      terminal.loadAddon(fit);
+      terminal.open(terminalElement);
+      const resize = () => {
+        if (!active(session)) return;
+        try { fit.fit(); } catch (error) { fail(session, error); }
+      };
+      const observer = new ResizeObserver(resize);
+      observer.observe(terminalElement);
+      session.cleanup.push(() => observer.disconnect());
+      const onResize = terminal.onResize(({ cols, rows }) => {
+        if (!active(session) || !session.pty) return;
+        try { session.pty.resize(cols, rows); } catch (error) { fail(session, error); }
+      });
+      const send = data => {
+        if (active(session) && state === "ready" && session.pty) {
+          void session.pty.write(data).catch(error => fail(session, error));
+        }
+      };
+      const onData = terminal.onData(send);
+      const onBinary = terminal.onBinary(data => send(Uint8Array.from(data, character => character.charCodeAt(0))));
+      session.cleanup.push(() => onResize.dispose(), () => onData.dispose(), () => onBinary.dispose());
+      resize();
+    }
+
+    function createConsoleFilter() {
+      // Keep parser state across reads, but never buffer control-string payloads.
+      let state = "text";
+      let osc = false;
+      let escaped = false;
+      return text => {
+        let plain = "";
+        for (const character of text) {
+          const code = character.codePointAt(0);
+          if (code === 0x18 || code === 0x1a) {
+            state = "text";
+            continue;
+          }
+          if (state === "string") {
+            if (code === 0x9c || (osc && code === 0x07) || (escaped && character === "\\")) state = "text";
+            escaped = code === 0x1b;
+            continue;
+          }
+          if (code === 0x1b) { state = "escape"; continue; }
+          if (code === 0x9b) { state = "csi"; continue; }
+          if ("\x90\x98\x9d\x9e\x9f".includes(character)) {
+            state = "string"; osc = code === 0x9d; escaped = false;
+            continue;
+          }
+          if (state === "escape") {
+            if (character === "[") state = "csi";
+            else if ("]PX^_".includes(character)) {
+              state = "string"; osc = character === "]"; escaped = false;
+            } else if (code >= 0x20 && code <= 0x2f) state = "intermediate";
+            else if (code >= 0x30 && code <= 0x7e) state = "text";
+            continue;
+          }
+          if (state === "intermediate") {
+            if (code >= 0x30 && code <= 0x7e) state = "text";
+            continue;
+          }
+          if (state === "csi") {
+            if (code >= 0x40 && code <= 0x7e) state = "text";
+            continue;
+          }
+          if (character === "\n" || character === "\r" || character === "\t"
+              || (code >= 0x20 && (code < 0x7f || code > 0x9f))) plain += character;
+        }
+        return plain;
+      };
+    }
+
+    async function consumeConsole(session) {
+      const reader = session.vm.output.getReader();
+      const decoder = new TextDecoder();
+      const plainText = createConsoleFilter();
+      try {
+        while (active(session)) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          appendLog(session, plainText(decoder.decode(value, { stream: true })));
+        }
+        appendLog(session, plainText(decoder.decode()));
+      } finally { reader.releaseLock(); }
+    }
+
+    async function consumeTerminal(session) {
+      const reader = session.pty.output.getReader();
+      try {
+        while (active(session)) {
+          const { value, done } = await reader.read();
+          if (done || !active(session)) break;
+          // Keep the PTY's flow control tied to xterm, not an unbounded JS queue.
+          await waitFor(session, new Promise(resolve => session.terminal.write(value, resolve)));
+        }
+      } finally { reader.releaseLock(); }
+    }
+
+    function progress(session, event) {
+      if (!active(session)) return;
+      const text = event.stage === "download"
+        ? `Loading ${event.what}: ${(event.loaded / 1048576).toFixed(1)} MiB${event.total ? ` / ${(event.total / 1048576).toFixed(1)} MiB` : ""}`
+        : ({ compile: "Compiling the WebAssembly kernel", compiled: "Kernel compiled", memory: "Allocating guest memory", instantiate: "Creating the kernel", start: "Starting NixOS" }[event.stage] || event.stage);
+      setState("booting", `${text}…`);
+    }
+
+    async function run(session, previous) {
+      try {
+        await stopSession(previous);
+        if (previous) {
+          await previous.task.catch(() => {});
+          previous.terminal?.dispose();
+        }
+        requireActive(session);
+        terminalElement.replaceChildren();
+        session.deadline = setTimeout(() => fail(session, new Error("Loading or booting exceeded five minutes. Check the boot log and the release server.")), 300000);
+        if (!["https:", "http:"].includes(location.protocol)) throw new Error("Serve this release over HTTP(S); opening index.html as a local file cannot load the image.");
+        if (typeof WebAssembly !== "object" || typeof WebAssembly.Suspending !== "function" || typeof WebAssembly.promising !== "function" || typeof BigInt !== "function") {
+          throw new Error("This browser lacks WebAssembly JSPI. Use a browser with working WebAssembly.Suspending and WebAssembly.promising support; no alternative guest will be started.");
+        }
+        if (typeof ResizeObserver !== "function") throw new Error("This browser lacks ResizeObserver, required for the interactive terminal.");
+        setState("booting", "Loading the release manifest…");
+        const manifest = await loadManifest(session);
+        requireActive(session);
+        document.getElementById("release").textContent = `aarch64-linux · Unkernel ${manifest.runtimeVersion} · image ${(manifest.image.bytes / 1073741824).toFixed(2)} GiB`;
+        appendLog(session, `[launcher] Unkernel ${manifest.runtimeVersion}; image ${manifest.image.path}, ${manifest.image.bytes} bytes\n[launcher] Published image SHA-256: ${manifest.image.sha256}\n`);
+        setState("booting", "Loading the bundled runtime and terminal…");
+        const [runtime] = await waitFor(session, Promise.all([
+          import(assetUrl("runtime/web.mjs")).catch(error => { throw new Error(`Runtime module could not load: ${messageOf(error)}. Check the release files and JavaScript MIME types.`); }),
+          loadTerminalAssets(),
+          checkImage(session, manifest.image),
+        ]));
+        const support = await waitFor(session, runtime.checkSupport());
+        requireActive(session);
+        if (!support.ok) throw new Error(`Browser compatibility check failed: ${support.problems.join("; ")}`);
+        openTerminal(session);
+        requireActive(session);
+        session.vm = await runtime.createKernel({
+          kernel: assetUrl("runtime/unkernel.wasm"),
+          distro: assetUrl(manifest.image.path),
+          memoryMiB: 2048, memoryFallbackMiB: [],
+          cmdline: "console=hvc0 rdinit=/init kw.user=om",
+          signal: session.abort.signal,
+          onProgress: event => progress(session, event),
+          log: message => appendLog(session, `${message}\n`),
+        });
+        if (!active(session)) {
+          await session.vm.stop();
+          requireActive(session);
+        }
+        session.vm.exited.then(exit => {
+          if (!active(session)) return;
+          const description = `${exit.kind}: ${exit.reason} (code ${exit.code})`;
+          if (state === "ready" && (exit.kind === "halt" || exit.kind === "stopped")) {
+            setState("stopped", `Machine stopped — ${description}. Boot again for a fresh session.`);
+            void stopSession(session).catch(error => appendLog(session, `[launcher] Stop failed: ${messageOf(error)}\n`));
+          } else fail(session, new Error(`Guest exited: ${description}`));
+        }, error => fail(session, error));
+        void consumeConsole(session).catch(error => fail(session, error));
+        setState("booting", "Waiting for NixOS, systemd and Home Manager activation…");
+        clearTimeout(session.deadline);
+        session.deadline = setTimeout(() => fail(session, new Error("NixOS and Home Manager did not become ready within 180 seconds. The terminal transport starts only after successful activation; inspect the guest boot log.")), READY_TIMEOUT);
+        const result = await session.vm.exec("/run/current-system/sw/bin/bash", ["-lc", readiness], {
+          user: "om", timeout: READY_TIMEOUT, signal: session.abort.signal,
+        });
+        requireActive(session);
+        appendLog(session, `[readiness] ${result.stdout}${result.stderr}`);
+        if (result.exitCode !== 0) throw new Error(`NixOS/Home Manager readiness check failed (exit ${result.exitCode}, signal ${result.signal}). ${result.stderr.trim()}`);
+        const fish = result.stdout.trim();
+        if (!/^\/[^\r\n]+\/fish$/.test(fish)) throw new Error("Readiness did not return a valid Fish executable path.");
+        session.pty = await session.vm.spawn(fish, ["--login", "--interactive"], {
+          user: "om", cols: session.terminal.cols, rows: session.terminal.rows,
+          timeout: READY_TIMEOUT, signal: session.abort.signal,
+        });
+        requireActive(session);
+        session.pty.resize(session.terminal.cols, session.terminal.rows);
+        session.pty.ended.then(end => {
+          if (!active(session)) return;
+          if (end.type === "exit" && end.code === 0) {
+            setState("stopped", "Fish exited. Boot again for a fresh machine; this session has been discarded.");
+            void stopSession(session).catch(error => appendLog(session, `[launcher] Stop failed: ${messageOf(error)}\n`));
+          } else fail(session, new Error(`Terminal session ended unexpectedly: ${JSON.stringify(end)}`));
+        }, error => fail(session, error));
+        void consumeTerminal(session).catch(error => fail(session, error));
+        clearTimeout(session.deadline);
+        session.terminal.options.disableStdin = false;
+        setState("ready");
+        session.terminal.focus();
+        return session.vm;
+      } catch (error) {
+        fail(session, error);
+        throw error;
+      }
+    }
+
+    function restart() {
+      const previous = current;
+      const session = { abort: new AbortController(), cleanup: [], vm: null, pty: null, terminal: null, task: null, stopping: null, deadline: null };
+      current = session;
+      logText = "";
+      logElement.textContent = "";
+      errorBox.hidden = true;
+      errorBox.textContent = "";
+      diagnostics.open = false;
+      setState("booting", previous ? "Stopping the old runtime and discarding session changes…" : "Preparing a fresh machine…");
+      session.task = run(session, previous);
+      return session.task;
+    }
+
+    function boot() {
+      if (state === "booting" || state === "ready") return current.task;
+      return restart();
+    }
+
+    window.emulator = Object.freeze({
+      get vm() { return current?.vm ?? null; },
+      get terminal() { return current?.terminal ?? null; },
+      get state() { return state; },
+      boot, restart,
+    });
+    bootButton.addEventListener("click", () => { void boot().catch(() => {}); });
+    restartButton.addEventListener("click", () => { void restart().catch(() => {}); });
+    window.addEventListener("error", event => {
+      if (current && event.error) fail(current, event.error);
+    });
+    window.addEventListener("unhandledrejection", event => {
+      if (current) fail(current, event.reason);
+    });
+    window.addEventListener("pagehide", () => {
+      if (current) {
+        setState("stopped", "Page closed; the ephemeral machine has been discarded.");
+        void stopSession(current).catch(() => {});
+      }
+    });
+  </script>
+</body>
+</html>

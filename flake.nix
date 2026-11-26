@@ -75,13 +75,28 @@
 
     mkHost = import ./lib/mkHost.nix {inherit lib inputs outputs;};
     mkHome = import ./lib/mkHome.nix {inherit lib inputs outputs pkgsFor;};
+    emulatorBuild = import ./pkgs/emulator.nix {
+      pkgs = pkgsFor.aarch64-linux;
+      nixosConfig = self.nixosConfigurations.emulator.config;
+      nixpkgsPath = nixpkgs.outPath;
+    };
   in {
     lib = lib // {orderedOverlays = overlayDefinitions.ordered;};
     nixosModules = import ./modules/nixos;
 
     overlays = overlayDefinitions.named;
 
-    packages = forEachSystem (pkgs: import ./pkgs {inherit pkgs;});
+    packages = forEachSystem (pkgs:
+      (import ./pkgs {inherit pkgs;})
+      // lib.optionalAttrs (pkgs.stdenv.hostPlatform.system == "aarch64-linux") {
+        emulator = emulatorBuild.site;
+      });
+    apps.aarch64-linux = {
+      emulator = {
+        type = "app";
+        program = "${emulatorBuild.serve}/bin/emulator";
+      };
+    };
     devShells = forEachSystem (pkgs: import ./shell.nix {inherit pkgs;});
     formatter = forEachSystem (pkgs: pkgs.alejandra);
 
@@ -102,8 +117,9 @@
 
     # Host configurations
     nixosConfigurations = {
-      framework = mkHost "framework";
-      homelab = mkHost "homelab";
+      framework = mkHost ./hosts/framework;
+      homelab = mkHost ./hosts/homelab;
+      emulator = mkHost ./hosts/emulator;
     };
 
     # Home configurations

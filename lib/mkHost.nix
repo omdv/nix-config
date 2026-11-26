@@ -3,9 +3,9 @@
   lib,
   inputs,
   outputs,
-}: name:
+}: hostModule:
 lib.nixosSystem {
-  modules = [../hosts/${name}];
+  modules = [hostModule];
   specialArgs = {
     inherit inputs outputs lib;
     mkSecret = import ./mkSecret.nix {inherit lib;};
