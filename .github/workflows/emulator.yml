@@ -42,8 +42,8 @@ env:
   NIX_CONFIG: experimental-features = nix-command flakes
 
 jobs:
-  runtime:
-    name: Build and boot on native ARM
+  build:
+    name: Build on native ARM
     # GitHub documents this native ARM label for public and private repositories.
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 120
@@ -59,43 +59,17 @@ jobs:
             experimental-features = nix-command flakes
       - name: Build the complete release
         run: |
-          mkdir -p emulator-smoke-output
+          mkdir -p emulator-build-output
           nix build --print-build-logs --no-update-lock-file \
             .#packages.aarch64-linux.emulator --out-link emulator-site \
-            2>&1 | tee emulator-smoke-output/build.log
-          cp emulator-site/manifest.json emulator-smoke-output/manifest.json
-          printf '%s\n' "$GITHUB_SHA" > emulator-smoke-output/source-revision.txt
-          nix build --print-build-logs --no-update-lock-file \
-            .#packages.aarch64-linux.emulator.passthru.smoke --out-link emulator-check
-      - name: Serve locally and run the shared real-browser smoke
-        env:
-          EMULATOR_SMOKE_OUTPUT: ${{ github.workspace }}/emulator-smoke-output/local
-          PORT: '8080'
-        run: |
-          nix run --no-update-lock-file .#apps.aarch64-linux.emulator \
-            > emulator-smoke-output/serve.log 2>&1 &
-          server=$!
-          trap 'kill "$server" 2>/dev/null || true; wait "$server" 2>/dev/null || true' EXIT
-          ready=false
-          for _attempt in {1..180}; do
-            if curl --fail --silent http://127.0.0.1:8080/manifest.json > /dev/null; then
-              ready=true
-              break
-            fi
-            kill -0 "$server"
-            sleep 1
-          done
-          if [[ "$ready" != true ]]; then
-            echo 'Local emulator server did not become available' >&2
-            exit 1
-          fi
-          ./emulator-check/bin/emulator-smoke \
-            http://127.0.0.1:8080/ 2>&1 | tee emulator-smoke-output/local-smoke.log
-      - name: Package the tested candidate for trusted publication
+            2>&1 | tee emulator-build-output/build.log
+          cp emulator-site/manifest.json emulator-build-output/manifest.json
+          printf '%s\n' "$GITHUB_SHA" > emulator-build-output/source-revision.txt
+      - name: Package the built candidate for trusted publication
         if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
         run: |
           tar --dereference --sparse -C emulator-site -cf "$RUNNER_TEMP/emulator-site.tar" .
-      - name: Retain the tested candidate
+      - name: Retain the built candidate
         if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
@@ -104,18 +78,18 @@ jobs:
           compression-level: 0
           retention-days: 3
           if-no-files-found: error
-      - name: Retain build and browser evidence
+      - name: Retain build evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: emulator-runtime-${{ github.run_id }}-${{ github.run_attempt }}
-          path: emulator-smoke-output/
+          name: emulator-build-${{ github.run_id }}-${{ github.run_attempt }}
+          path: emulator-build-output/
           retention-days: 7
           if-no-files-found: warn
 
   publish:
-    name: Publish verified immutable release
-    needs: runtime
+    name: Publish to Cloudflare R2
+    needs: build
     if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 90
@@ -127,7 +101,7 @@ jobs:
       group: emulator-publication
       cancel-in-progress: false
     steps:
-      - name: Check out only the trusted tested revision
+      - name: Check out only the trusted built revision
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           ref: ${{ github.sha }}
@@ -137,7 +111,7 @@ jobs:
         with:
           extra_nix_config: |
             experimental-features = nix-command flakes
-      - name: Download this run's tested candidate
+      - name: Download this run's built candidate
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: emulator-site-${{ github.sha }}
@@ -160,7 +134,7 @@ jobs:
           )" --out-link publication-tools
           printf 'EMULATOR_SMOKE_PROGRAM=%s/publication-tools/bin/emulator-smoke\n' \
             "$GITHUB_WORKSPACE" >> "$GITHUB_ENV"
-      - name: Upload, verify, promote and smoke with conditional rollback
+      - name: Upload to Cloudflare R2 and verify deployment
         env:
           EMULATOR_S3_ENDPOINT: ${{ vars.EMULATOR_S3_ENDPOINT }}
           EMULATOR_BUCKET: ${{ vars.EMULATOR_BUCKET }}

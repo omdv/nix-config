@@ -150,10 +150,15 @@ a malicious publisher.
 
 ### GitHub publication prerequisites
 
-The R2 bucket and custom domain are configured; the workflow has not been run
-or deployed by this change. Do not commit, push or publish without separate
-authorization. PR jobs build and smoke without storage credentials. Only a
+The R2 bucket and custom domain are configured. The CI build job does not start a
+local server or run a browser smoke. Do not commit, push or publish without separate
+authorization. PR jobs build without storage credentials. Only a
 successful `main` push/manual run can enter the `emulator` deployment environment.
+
+The build job retains a GitHub artifact for transfer between jobs. The separate
+`publish` job's **Upload to Cloudflare R2 and verify deployment** step uploads
+that bundle to R2; it runs only after the build succeeds and any environment
+approval is granted. The GitHub artifact itself is not the hosted release.
 
 Create/protect that GitHub environment with required reviewers and a `main`-only
 deployment policy. Configure these **environment-scoped** values:
@@ -189,7 +194,7 @@ Cloudflare's JavaScript Detections from injecting scripts into the HTML and
 breaking exact-byte verification. JavaScript and WASM must retain their proper
 MIME types. No cross-origin-isolation headers are required by the single-CPU path.
 
-Publication uploads the tested payload under `releases/<commit>/`, records
+Publication uploads the built payload under `releases/<commit>/`, records
 release metadata, and uploads `manifest.json` last. Existing objects are reused
 only if identical. Remote headers, manifest and image ranges are checked before
 the root pointer changes. The shared smoke then opens the promoted default URL.
