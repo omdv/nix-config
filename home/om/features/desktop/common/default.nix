@@ -2,6 +2,7 @@
   imports = [
     ./brave.nix
     ./cursor.nix
+    ./easyeffects.nix
     ./fonts.nix
     ./firefox.nix
     ./gtk.nix

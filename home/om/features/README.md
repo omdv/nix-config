@@ -47,9 +47,9 @@ Applications used across all desktop environments:
 
 - **Browsers:** Firefox (with extensions), Brave
 - **Theme:** GTK themes, cursor themes
-- **System:** XDG config, keyring integration, pavucontrol
+- **System:** XDG config, keyring integration, pavucontrol, EasyEffects background audio processing
 
-**Sub-modules:** 8 files
+**Sub-modules:** 14 imported modules
 
 ### `desktop/i3wm/` - i3 Window Manager
 
