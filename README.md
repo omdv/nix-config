@@ -92,9 +92,9 @@ isolation guarantee; do not enter credentials.
 | `hosts/emulator/default.nix` | ARM system, user and upstream HM integration |
 | `hosts/emulator/unkernel.nix` | Unkernel boot compatibility and activation/terminal services |
 | `home/om/emulator.nix` | Explicit portable tool selection and emulator-only overrides |
-| `pkgs/emulator.nix` | Pinned dependencies, full root image, static site, serve and smoke commands |
+| `pkgs/emulator.nix` | Pinned dependencies, full root image, static site and local preview |
 | `hosts/emulator/index.html` | Visitor-side boot controls, interactive terminal, diagnostics and fresh restart |
-| `.github/workflows/emulator.yml` | Native ARM build, shared smoke, immutable publication and rollback |
+| `.github/workflows/emulator.yml` | Native ARM build, HTTP verification, immutable publication and rollback |
 
 `lib/mkHost.nix` accepts explicit module paths; `flake.nix` registers the new
 host and outputs. No native host directories move, no root manifest is added,
@@ -124,22 +124,17 @@ files before they are committed; these commands do not activate either native
 machine. See [host notes](hosts/README.md#emulator---disposable-browser-guest)
 for boot integration and measured local behavior.
 
-#### Maintainer verification
+#### Manual browser verification
 
-CI uses the bundle's internal `passthru.smoke` runner, not another public app.
-To run that same check locally while the preview is running:
+Use the local preview above, or visit the published `index.html`, in a compatible
+browser and press **Boot**. In the terminal, check `whoami` returns `om`,
+`systemctl is-system-running` reports `running`, and
+`systemctl is-active home-manager-om` reports `active`.
+Open a scratch file in Neovim, edit and save it, and check terminal resizing.
+Use **Fresh restart** and confirm the scratch file is gone.
 
-```bash
-runner=$(nix build --no-link --print-out-paths path:.#packages.aarch64-linux.emulator.passthru.smoke)
-"$runner/bin/emulator-smoke" http://127.0.0.1:8080/
-```
-
-The runner exercises real activation, the managed environment, Nixvim editing,
-terminal controls/resizing, fresh reset and a failed image request. It records
-screenshots and logs. On x86, set `BROWSER` to a **native** Chromium-family
-browser; `BROWSER_ARGS` accepts a JSON array of extra launch arguments.
-`EMULATOR_SMOKE_OUTPUT` selects the evidence directory (otherwise a temporary
-directory is printed). Neither preview nor verification runs inside the guest.
+CI verifies storage and HTTP delivery only; it does not launch Chromium or prove
+that the guest boots. Browser testing is manual, with no separate smoke runner.
 
 Guest writes live only in RAM. **Fresh restart**, closing or reloading the page
 discards them, including edited configuration. Immutable asset caches are not
@@ -150,13 +145,14 @@ a malicious publisher.
 
 ### GitHub publication prerequisites
 
-The R2 bucket and custom domain are configured. The CI build job does not start a
-local server or run a browser smoke. Do not commit, push or publish without separate
-authorization. PR jobs build without storage credentials. Only a
-successful `main` push/manual run can enter the `emulator` deployment environment.
+The R2 bucket and custom domain are configured. Neither CI job starts a local
+server or launches a browser; publication needs Python and the S3 SDK, not Chromium.
+Do not commit, push or publish without separate authorization. PR jobs build without
+storage credentials. Only a successful `main` push/manual run can enter the
+`emulator` deployment environment.
 
 The build job retains a GitHub artifact for transfer between jobs. The separate
-`publish` job's **Upload to Cloudflare R2 and verify deployment** step uploads
+`publish` job's **Upload to Cloudflare R2 and verify HTTP delivery** step uploads
 that bundle to R2; it runs only after the build succeeds and any environment
 approval is granted. The GitHub artifact itself is not the hosted release.
 
@@ -197,15 +193,15 @@ MIME types. No cross-origin-isolation headers are required by the single-CPU pat
 Publication uploads the built payload under `releases/<commit>/`, records
 release metadata, and uploads `manifest.json` last. Existing objects are reused
 only if identical. Remote headers, manifest and image ranges are checked before
-the root pointer changes. The shared smoke then opens the promoted default URL.
-Credentials are removed from the browser subprocess environment.
+the root pointer changes. The promoted default URL is then checked over HTTP for
+the expected pointer bytes and serving headers.
 
 Public HTTP checks identify themselves as `nix-config-emulator-publisher`.
 Cloudflare on this hostname rejects the generic `Python-urllib` User-Agent
 with HTTP 403. HTTP failures report the method, relative object path and
 status code, without dumping endpoint URLs, response bodies or credentials.
 
-On a failed deployed smoke, the workflow conditionally restores the previous
+On failed post-promotion HTTP verification, the workflow conditionally restores the previous
 pointer. If no prior pointer exists, it conditionally replaces its own failed
 redirect with a plain-text unavailable response rather than an unsafe deletion.
 Both paths use the current ETag and leave a concurrent replacement untouched.
@@ -213,14 +209,16 @@ The unavailable response is not a successful deployment; CI still fails.
 Previous releases are retained. For manual rollback, retrieve `previous-index.html` and
 `previous-index-metadata.json` from the publication evidence, read the current
 root object's ETag, then conditionally PUT the saved body with its original
-serving metadata using `If-Match` for that ETag. Verify the default URL with the
-same smoke command. Do not delete release objects. A hard runner termination
-can prevent automatic rollback; retained evidence supports operator recovery.
+serving metadata using `If-Match` for that ETag. Check the default URL's bytes and
+serving headers, then manually open the restored release in a compatible browser.
+Do not delete release objects. A hard runner termination can prevent automatic
+rollback; retained evidence supports operator recovery. Guest boot failures found
+manually do not trigger automatic rollback.
 
 Missing configuration fails explicitly before storage access. Live R2 probes
 have verified HTTPS delivery, byte ranges and unmodified HTML with the cache
-policies above. Complete S3 promotion/rollback and deployed-guest verification
-remain pending; a successful individual object upload is not deployment proof.
+policies above. Complete S3 promotion/rollback and manual deployed-guest verification
+remain pending; successful HTTP delivery alone does not prove that the guest boots.
 
 ## Secrets
 

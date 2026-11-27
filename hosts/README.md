@@ -156,7 +156,7 @@ image request without offering a shell.
 The host does not import `common/global`, which owns native boot and
 secret-management assumptions. Framework and Homelab retain standalone Home
 Manager. See the [root README](../README.md#emulator-guest) for the static launcher,
-shared real-browser smoke command and deployment prerequisites.
+manual browser verification and deployment prerequisites.
 
 `mkHost` takes an explicit module path. All three hosts pass their directories:
 `./hosts/framework`, `./hosts/homelab` and `./hosts/emulator`.

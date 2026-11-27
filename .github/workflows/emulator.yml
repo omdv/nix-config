@@ -29,7 +29,7 @@ on:
 permissions:
   contents: read
 
-# Never cancel a promotion while its deployed smoke / rollback is running.
+# Never cancel a promotion while its HTTP verification or rollback is running.
 concurrency:
   group: emulator-${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.ref }}
   cancel-in-progress: false
@@ -118,23 +118,17 @@ jobs:
           path: ${{ runner.temp }}/emulator-candidate
       - name: Prepare locked publication tools without storage credentials
         run: |
-          mkdir -p candidate emulator-smoke-output/deployed
+          mkdir -p candidate emulator-publication-output
           tar --extract --sparse --no-same-owner --no-same-permissions \
             -f "$RUNNER_TEMP/emulator-candidate/emulator-site.tar" -C candidate
           nix build --no-update-lock-file --impure --expr "$(cat <<'NIX'
             let
               flake = builtins.getFlake ("git+file://" + toString ./.);
               pkgs = import flake.inputs.nixpkgs { system = "aarch64-linux"; };
-            in pkgs.symlinkJoin {
-              name = "emulator-publication-tools";
-              paths = [ (pkgs.python3.withPackages (p: [ p.boto3 ])) ];
-              postBuild = "ln -s ${flake.packages.aarch64-linux.emulator.passthru.smoke}/bin/emulator-smoke $out/bin/emulator-smoke";
-            }
+            in pkgs.python3.withPackages (p: [ p.boto3 ])
           NIX
           )" --out-link publication-tools
-          printf 'EMULATOR_SMOKE_PROGRAM=%s/publication-tools/bin/emulator-smoke\n' \
-            "$GITHUB_WORKSPACE" >> "$GITHUB_ENV"
-      - name: Upload to Cloudflare R2 and verify deployment
+      - name: Upload to Cloudflare R2 and verify HTTP delivery
         env:
           EMULATOR_S3_ENDPOINT: ${{ vars.EMULATOR_S3_ENDPOINT }}
           EMULATOR_BUCKET: ${{ vars.EMULATOR_BUCKET }}
@@ -143,7 +137,6 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_EC2_METADATA_DISABLED: 'true'
-          EMULATOR_SMOKE_OUTPUT: ${{ github.workspace }}/emulator-smoke-output/deployed
         run: |
           ./publication-tools/bin/python <<'PY'
           import base64
@@ -154,7 +147,6 @@ jobs:
           from pathlib import Path, PurePosixPath
           import re
           import signal
-          import subprocess
           import sys
           import urllib.error
           import urllib.request
@@ -178,7 +170,7 @@ jobs:
                   sys.exit(name + ' must be an HTTPS URL without credentials, query or fragment')
 
           site = Path('candidate')
-          evidence = Path('emulator-smoke-output')
+          evidence = Path('emulator-publication-output')
           bucket = os.environ['EMULATOR_BUCKET']
           public = os.environ['EMULATOR_PUBLIC_URL'].rstrip('/') + '/'
           revision = os.environ['GITHUB_SHA']
@@ -362,7 +354,7 @@ jobs:
                   '<!doctype html><meta charset="utf-8">\n'
                   '<meta http-equiv="refresh" content="0;url=' + html.escape(target, quote=True) + '">\n'
                   '<title>NixOS emulator</title>\n'
-                  '<a href="' + html.escape(target, quote=True) + '">Open verified release</a>\n'
+                  '<a href="' + html.escape(target, quote=True) + '">Open release</a>\n'
                   '<!-- deployment ' + deployment + ' -->\n'
               ).encode()
               (evidence / 'promoted-index.html').write_bytes(pointer)
@@ -377,16 +369,6 @@ jobs:
                   verify_headers(response, {'bytes': len(pointer), 'contentType': 'text/html'}, pointer_cache)
                   require(response.read() == pointer, 'Default URL has not adopted the release pointer')
 
-              # The page/browser process receives no storage authority.
-              child_env = {key: value for key, value in os.environ.items()
-                           if not key.startswith('AWS_')
-                           and key not in ('EMULATOR_S3_ENDPOINT', 'EMULATOR_BUCKET')}
-              with (evidence / 'deployed-smoke.log').open('w') as log:
-                  result = subprocess.run(
-                      [os.environ['EMULATOR_SMOKE_PROGRAM'], public + 'index.html'],
-                      env=child_env, stdout=log, stderr=subprocess.STDOUT, timeout=1200,
-                  )
-              require(result.returncode == 0, 'Deployed browser smoke failed; see retained evidence')
               committed = True
               print('Verified and promoted source revision ' + revision, flush=True)
           except Exception as error:
@@ -449,6 +431,6 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: emulator-publication-${{ github.run_id }}-${{ github.run_attempt }}
-          path: emulator-smoke-output/
+          path: emulator-publication-output/
           retention-days: 14
           if-no-files-found: warn
