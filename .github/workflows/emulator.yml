@@ -156,6 +156,7 @@ jobs:
           import signal
           import subprocess
           import sys
+          import urllib.error
           import urllib.request
           from urllib.parse import quote, urlsplit
 
@@ -207,10 +208,21 @@ jobs:
           http = urllib.request.build_opener(NoRedirect)
 
           def request(path, method='GET', headers=None):
-              return http.open(urllib.request.Request(
-                  public + quote(path, safe='/'), method=method,
-                  headers={'Accept-Encoding': 'identity', **(headers or {})},
-              ), timeout=120)
+              try:
+                  return http.open(urllib.request.Request(
+                      public + quote(path, safe='/'), method=method,
+                      headers={
+                          'Accept-Encoding': 'identity',
+                          'User-Agent': 'nix-config-emulator-publisher',
+                          **(headers or {}),
+                      },
+                  ), timeout=120)
+              except urllib.error.HTTPError as error:
+                  error.close()
+                  raise RuntimeError(
+                      'Public verification failed: ' + method + ' ' + path
+                      + ' returned HTTP ' + str(error.code)
+                  ) from None
 
           def require(condition, message):
               if not condition:

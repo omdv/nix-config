@@ -200,6 +200,11 @@ only if identical. Remote headers, manifest and image ranges are checked before
 the root pointer changes. The shared smoke then opens the promoted default URL.
 Credentials are removed from the browser subprocess environment.
 
+Public HTTP checks identify themselves as `nix-config-emulator-publisher`.
+Cloudflare on this hostname rejects the generic `Python-urllib` User-Agent
+with HTTP 403. HTTP failures report the method, relative object path and
+status code, without dumping endpoint URLs, response bodies or credentials.
+
 On a failed deployed smoke, the workflow conditionally restores the previous
 pointer. If no prior pointer exists, it conditionally replaces its own failed
 redirect with a plain-text unavailable response rather than an unsafe deletion.
@@ -214,8 +219,8 @@ can prevent automatic rollback; retained evidence supports operator recovery.
 
 Missing configuration fails explicitly before storage access. Live R2 probes
 have verified HTTPS delivery, byte ranges and unmodified HTML with the cache
-policies above. S3 credential/conditional-write verification and a full deployed
-guest smoke still require an authorized run; those probes are not deployment proof.
+policies above. Complete S3 promotion/rollback and deployed-guest verification
+remain pending; a successful individual object upload is not deployment proof.
 
 ## Secrets
 
